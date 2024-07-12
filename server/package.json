@@ -18,6 +18,9 @@
     "graphql": "^16.9.0",
     "graphql-subscriptions": "^2.0.0",
     "graphql-ws": "^5.16.0",
+    "pg": "^8.12.0",
+    "sequelize": "^6.37.3",
+    "umzug": "^3.8.1",
     "ws": "^8.18.0"
   },
   "devDependencies": {
@@ -32,6 +35,7 @@
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.4.0",
     "nodemon": "^3.1.4",
+    "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   }
 }

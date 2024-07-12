@@ -10,27 +10,8 @@ import { expressMiddleware } from '@apollo/server/express4';
 import cors from 'cors';
 import { httpServer, app, apolloServer } from '../app';
 
-import config from '../config';
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
-const normalizePort = (val: string): string | number | false => {
-  const port = parseInt(val, 10);
-
-  if (Number.isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
-};
+import { PORT } from '../utils/config';
+import { connectToDatabase } from '../utils/sequelize';
 
 /**
  * Event listener for HTTP server "error" event.
@@ -65,7 +46,7 @@ const onError = (port: any) => (error: any) => {
 const onListening = (): void => {
   const addr = httpServer.address();
   const bind = typeof addr === 'string' ? `pipe ${addr}` : `port ${addr?.port}`;
-  debug('backend:server')(`Listening on ${bind}`);
+  debug('server:server')(`Listening on ${bind}`);
 };
 
 /**
@@ -73,17 +54,14 @@ const onListening = (): void => {
  */
 
 const start = async (): Promise<void> => {
-  // Get port from environment and store in Express.
-  const port = normalizePort(config.port);
-  app.set('port', port);
-
+  await connectToDatabase();
   await apolloServer.start();
 
+  app.set('port', PORT);
   app.use('/', cors(), express.json(), expressMiddleware(apolloServer));
 
-  // Listen on provided port, on all network interfaces.
-  httpServer.listen(port);
-  httpServer.on('error', onError(port));
+  httpServer.listen(PORT);
+  httpServer.on('error', onError(PORT));
   httpServer.on('listening', onListening);
 };
 
