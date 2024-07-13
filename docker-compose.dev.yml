@@ -10,11 +10,16 @@ services:
     environment:
       - PORT=3000
       - POSTGRES_URL=postgresql://postgres:example@postgres:5432
+      - MONGO_URL=mongodb://root:example@mongo:27017
     command: ['npm', 'start']
   postgres:
     image: postgres
     restart: always
-    ports:
-      - '5432:5432'
     environment:
       - POSTGRES_PASSWORD=example
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example

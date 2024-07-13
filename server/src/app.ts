@@ -9,14 +9,7 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 import http from 'http';
 import express from 'express';
 
-// import config from './config'
 import schema from './resources/schema';
-
-/**
- * Database setup
- */
-
-// TODO: implement database setup here
 
 /**
  * Servers setup

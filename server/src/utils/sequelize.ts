@@ -19,7 +19,7 @@ const sequelize = new Sequelize(POSTGRES_URL, {
 
 const migrationConf = {
   migrations: {
-    glob: 'migrations/*.ts',
+    glob: 'migrations/*.postgres.ts',
   },
   storage: new SequelizeStorage({ sequelize, modelName: 'migrations' }),
   context: sequelize.getQueryInterface(),
@@ -36,7 +36,7 @@ const runMigrations = async (): Promise<void> => {
 
 const seedsConf = {
   migrations: {
-    glob: 'seeds/*.ts',
+    glob: 'seeds/*.postgres.ts',
   },
   storage: new SequelizeStorage({ sequelize, modelName: 'seeds' }),
   context: sequelize.getQueryInterface(),
@@ -58,7 +58,7 @@ const rollbackMigration = async (): Promise<void> => {
   await migrator.down();
 };
 
-const connectToDatabase = async (): Promise<any> => {
+const connectToPostgres = async (): Promise<any> => {
   try {
     await sequelize.authenticate();
     await runMigrations();
@@ -72,4 +72,4 @@ const connectToDatabase = async (): Promise<any> => {
   return null;
 };
 
-export { sequelize, rollbackMigration, connectToDatabase };
+export { sequelize, rollbackMigration, connectToPostgres };

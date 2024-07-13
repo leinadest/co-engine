@@ -11,7 +11,8 @@ import cors from 'cors';
 import { httpServer, app, apolloServer } from '../app';
 
 import { PORT } from '../utils/config';
-import { connectToDatabase } from '../utils/sequelize';
+import { connectToPostgres } from '../utils/sequelize';
+import { connectToMongo } from '../utils/mongo';
 
 /**
  * Event listener for HTTP server "error" event.
@@ -54,8 +55,11 @@ const onListening = (): void => {
  */
 
 const start = async (): Promise<void> => {
-  await connectToDatabase();
-  await apolloServer.start();
+  await Promise.all([
+    connectToPostgres(),
+    connectToMongo(),
+    apolloServer.start(),
+  ]);
 
   app.set('port', PORT);
   app.use('/', cors(), express.json(), expressMiddleware(apolloServer));
