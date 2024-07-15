@@ -11,6 +11,7 @@ services:
       - PORT=3000
       - POSTGRES_URL=postgresql://postgres:example@postgres:5432
       - MONGO_URL=mongodb://root:example@mongo:27017
+      - JWT_SECRET=secret1211
     command: ['npm', 'start']
   postgres:
     image: postgres

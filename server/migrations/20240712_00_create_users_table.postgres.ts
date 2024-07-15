@@ -24,10 +24,10 @@ export const up = async ({ context }: Params): Promise<void> => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    joined_at: {
-      type: DataTypes.DATEONLY,
+    created_at: {
+      type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: new Date(),
+      defaultValue: Date.now,
     },
   });
 };

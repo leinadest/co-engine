@@ -1,7 +1,7 @@
 {
   "name": "co-engine",
   "version": "1.0.0",
-  "main": "src/bin/www.ts",
+  "main": "src/app.ts",
   "scripts": {
     "start": "nodemon",
     "lint": "npx eslint ."
@@ -12,23 +12,35 @@
   "dependencies": {
     "@apollo/server": "^4.10.4",
     "@graphql-tools/schema": "^10.0.4",
+    "apollo-server-errors": "^3.3.1",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "debug": "^4.3.5",
     "dotenv": "^16.4.5",
     "graphql": "^16.9.0",
     "graphql-subscriptions": "^2.0.0",
+    "graphql-tag": "^2.12.6",
     "graphql-ws": "^5.16.0",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
     "luxon": "^3.4.4",
     "mongoose": "^8.5.1",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
     "pg": "^8.12.0",
     "sequelize": "^6.37.3",
     "umzug": "^3.8.1",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/debug": "^4.1.12",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/lodash": "^4.17.6",
     "@types/luxon": "^3.4.2",
+    "@types/passport-local": "^1.0.38",
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "eslint": "^8.57.0",

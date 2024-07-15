@@ -4,18 +4,14 @@ import { NODE_ENV } from '../src/utils/config';
 
 const testUsers = [
   {
-    id: 0,
     username: 'test username',
     email: 'test email',
     password_hash: 'test password hash',
-    joined_at: new Date(),
   },
   {
-    id: 1,
     username: 'test username 2',
     email: 'test email 2',
     password_hash: 'test password hash 2',
-    joined_at: new Date(),
   },
 ];
 

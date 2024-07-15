@@ -2,46 +2,37 @@ import { Model, DataTypes } from 'sequelize';
 
 import { sequelize } from '../../utils/sequelize';
 
-class User extends Model {
-  declare id: number;
-  declare created_at: Date;
-  declare username: string;
-  declare email: string;
-  declare password_hash: string;
-}
+class OAuth2User extends Model {}
 
-User.init(
+OAuth2User.init(
   {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
-    created_at: {
+    access_token: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    refresh_token: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    token_expiration: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: Date.now,
     },
     username: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING,
-      unique: true,
-      allowNull: false,
-    },
-    password_hash: {
       type: DataTypes.STRING,
       allowNull: false,
     },
   },
   {
     sequelize,
-    timestamps: false,
     underscored: true,
-    modelName: 'user',
+    modelName: 'oauth2_user',
   }
 );
 
-export default User;
+export default OAuth2User;
