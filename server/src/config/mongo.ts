@@ -1,7 +1,7 @@
 import mongoose, { type Connection } from 'mongoose';
 import { MongoDBStorage, Umzug, type UmzugOptions } from 'umzug';
 
-import { MONGO_URL } from './config';
+import { MONGO_URL } from '.';
 
 const seedsConf = (connection: Connection): UmzugOptions<object> => ({
   migrations: {

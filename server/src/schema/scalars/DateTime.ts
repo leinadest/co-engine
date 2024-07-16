@@ -7,8 +7,7 @@ const isValidDateTime = (value: any): boolean => {
     DateTime.fromJSDate(value as Date).isValid ||
     typeof value === 'string' ||
     typeof value === 'number';
-  const isValid = Date.now() - value > 0;
-  return isSerializable && isValid;
+  return isSerializable;
 };
 
 const config = {

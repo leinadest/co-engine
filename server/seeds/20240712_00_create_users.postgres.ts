@@ -1,6 +1,6 @@
 import { type QueryInterface } from 'sequelize';
 
-import { NODE_ENV } from '../src/utils/config';
+import { NODE_ENV } from '../src/config';
 
 const testUsers = [
   {

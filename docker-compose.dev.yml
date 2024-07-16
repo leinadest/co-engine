@@ -12,15 +12,22 @@ services:
       - POSTGRES_URL=postgresql://postgres:example@postgres:5432
       - MONGO_URL=mongodb://root:example@mongo:27017
       - JWT_SECRET=secret1211
+      - DISCORD_CLIENT_ID=1262427700925300780
+      - DISCORD_CLIENT_SECRET=OBkWRr8Rv8EyPE2CQ4tYK84o7BbfgUMv
+      - DISCORD_REDIRECT_URI=http://localhost:3000/api/auth/discord/redirect
     command: ['npm', 'start']
   postgres:
     image: postgres
     restart: always
+    ports:
+      - '5432:5432'
     environment:
       - POSTGRES_PASSWORD=example
   mongo:
     image: mongo
     restart: always
+    ports:
+      - '27017:27017'
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=example

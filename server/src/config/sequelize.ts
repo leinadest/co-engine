@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 import { Umzug, SequelizeStorage } from 'umzug';
-import { POSTGRES_URL } from './config';
+import { POSTGRES_URL } from '.';
 
 // const sequelize = new Sequelize(POSTGRES_URL, {
 //   dialectOptions: {

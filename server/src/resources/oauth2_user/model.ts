@@ -1,15 +1,24 @@
 import { Model, DataTypes } from 'sequelize';
 
-import { sequelize } from '../../utils/sequelize';
+import { sequelize } from '../../config/sequelize';
 
-class OAuth2User extends Model {}
+class OAuth2User extends Model {
+  public oauth2_user_id!: string;
+  public user_id!: number;
+  public access_token!: string;
+  public refresh_token!: string;
 
-OAuth2User.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
+  static schemaDetails = {
+    oauth2_user_id: {
+      type: DataTypes.STRING,
       primaryKey: true,
-      autoIncrement: true,
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
     },
     access_token: {
       type: DataTypes.STRING,
@@ -21,18 +30,15 @@ OAuth2User.init(
     },
     token_expiration: {
       type: DataTypes.DATE,
-      allowNull: false,
     },
-    username: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-  },
-  {
-    sequelize,
-    underscored: true,
-    modelName: 'oauth2_user',
-  }
-);
+  };
+}
+
+OAuth2User.init(OAuth2User.schemaDetails, {
+  sequelize,
+  timestamps: false,
+  underscored: true,
+  modelName: 'oauth2_user',
+});
 
 export default OAuth2User;

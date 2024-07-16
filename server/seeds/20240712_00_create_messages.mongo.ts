@@ -1,7 +1,7 @@
 import { type Connection } from 'mongoose';
 
-import { NODE_ENV } from '../src/utils/config';
-import Message from '../src/resources/messages/model';
+import { NODE_ENV } from '../src/config';
+import Message from '../src/resources/message/model';
 
 const testMessages = [
   {

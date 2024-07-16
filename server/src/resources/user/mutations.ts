@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql/error/GraphQLError';
 
 import User from './model';
-import type AuthService from '../../services/authService';
+import AuthService from '../../services/authService';
 
 export const typeDefs = gql`
   input CreateUserInput {
@@ -51,11 +51,10 @@ const createPasswordHash = async (password: string): Promise<string> =>
 
 export const resolvers = {
   Mutation: {
-    createUser: async (_parentValue: any, args: Omit<User, 'id'>) => {
-      const validatedArgs = await userSchema.validate(args, {
+    createUser: async (_parent: any, args: any) => {
+      const { username, email, password } = userSchema.validateSync(args, {
         stripUnknown: true,
-      });
-      const { username, email, password } = validatedArgs.user;
+      }).user;
 
       const existingEmail = await User.findOne({ where: { email } });
       if (existingEmail !== null) {
@@ -102,7 +101,7 @@ export const resolvers = {
 
       return {
         user,
-        ...authService.createAccessToken(user.id),
+        ...AuthService.createAccessToken(user.id),
       };
     },
   },
