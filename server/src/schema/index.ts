@@ -3,10 +3,8 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { merge } from 'lodash';
 
 import dateTime from './scalars/DateTime';
-import UserType from './types/User';
-import AuthenticatePayloadType from './types/AuthenticatePayload';
-import userQueries from '../resources/user/queries';
-import userMutations from '../resources/user/mutations';
+import userSchema from '../resources/user/schema';
+import userFriendRequestSchema from '../resources/user_friendship/schema';
 
 const rootTypeDefs = gql`
   type Query {
@@ -21,15 +19,13 @@ const rootTypeDefs = gql`
 export default makeExecutableSchema({
   typeDefs: [
     rootTypeDefs,
-    UserType,
-    AuthenticatePayloadType,
+    userSchema.typeDefs,
+    userFriendRequestSchema.typeDefs,
     dateTime.typeDefs,
-    userQueries.typeDefs,
-    userMutations.typeDefs,
   ],
   resolvers: merge(
-    dateTime.resolvers,
-    userQueries.resolvers,
-    userMutations.resolvers
+    userSchema.resolvers,
+    userFriendRequestSchema.resolvers,
+    dateTime.resolvers
   ),
 });

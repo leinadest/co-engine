@@ -9,7 +9,7 @@ interface Params {
 
 export const up = async ({ context }: Params): Promise<void> => {
   const { user_id, ...unassociated_attributes } = OAuth2User.schemaDetails;
-  await context.createTable('oauth2_users', { ...unassociated_attributes });
+  await context.createTable('oauth2_users', unassociated_attributes);
   await context.addColumn('oauth2_users', 'user_id', {
     ...user_id,
     onUpdate: 'CASCADE',

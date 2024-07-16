@@ -41,7 +41,6 @@ const seedsConf = {
   storage: new SequelizeStorage({ sequelize, modelName: 'seeds' }),
   context: sequelize.getQueryInterface(),
   logger: console,
-  debug: true,
 };
 
 const runSeeds = async (): Promise<void> => {
@@ -60,13 +59,13 @@ const rollbackMigration = async (): Promise<void> => {
 
 const connectToPostgres = async (): Promise<any> => {
   try {
+    import('../resources');
     await sequelize.authenticate();
     await runMigrations();
     await runSeeds();
     console.log('database connected');
   } catch (err: any) {
     console.log(`connecting database failed: ${err}`);
-    return process.exit(1);
   }
 
   return null;

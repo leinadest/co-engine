@@ -1,4 +1,4 @@
-import { Model, DataTypes } from 'sequelize';
+import { Model, DataTypes, Sequelize } from 'sequelize';
 
 import { sequelize } from '../../config/sequelize';
 
@@ -23,7 +23,7 @@ class User extends Model {
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: Date.now,
+      defaultValue: Sequelize.fn('NOW'),
     },
     username: {
       type: DataTypes.STRING,
@@ -31,6 +31,7 @@ class User extends Model {
     },
     discriminator: {
       type: DataTypes.STRING,
+      allowNull: false,
     },
     email: {
       type: DataTypes.STRING,
@@ -75,6 +76,21 @@ User.beforeCreate(async (user) => {
     where: { username: user.username },
   });
   user.discriminator = usernameCount.toString();
+});
+
+User.beforeBulkCreate(async (users) => {
+  const record: Record<string, undefined | number> = {};
+  for (const user of users) {
+    const incomingUsernameCount = record[`${user.username}`] ?? 0;
+    record[`${user.username}`] = incomingUsernameCount + 1;
+
+    const storedUsernameCount = await User.count({
+      where: { username: user.username },
+    });
+
+    const totalUsernameCount = storedUsernameCount + incomingUsernameCount;
+    user.discriminator = totalUsernameCount.toString();
+  }
 });
 
 export default User;

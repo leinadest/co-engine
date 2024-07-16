@@ -18,6 +18,12 @@ export const typeDefs = gql`
     password: String!
   }
 
+  type AuthenticatePayload {
+    user: User!
+    accessToken: String!
+    expiresAt: DateTime!
+  }
+
   extend type Mutation {
     """
     Creates a new user, if the provided email does not already exist.
@@ -30,6 +36,21 @@ export const typeDefs = gql`
     authenticate(credentials: AuthenticateInput): AuthenticatePayload
   }
 `;
+
+interface CreateUserInput {
+  user: {
+    username: string;
+    email: string;
+    password: string;
+  };
+}
+
+interface AuthenticateInput {
+  credentials: {
+    email: string;
+    password: string;
+  };
+}
 
 const userSchema = yup.object().shape({
   user: yup.object().shape({
@@ -51,10 +72,16 @@ const createPasswordHash = async (password: string): Promise<string> =>
 
 export const resolvers = {
   Mutation: {
-    createUser: async (_parent: any, args: any) => {
-      const { username, email, password } = userSchema.validateSync(args, {
-        stripUnknown: true,
-      }).user;
+    createUser: async (_parent: any, args: CreateUserInput) => {
+      let username, email, password;
+      try {
+        const user = await userSchema.validate(args, { stripUnknown: true });
+        ({ username, email, password } = user.user);
+      } catch (err: any) {
+        throw new GraphQLError(err.message as string, {
+          extensions: { code: 'BAD_USER_INPUT' },
+        });
+      }
 
       const existingEmail = await User.findOne({ where: { email } });
       if (existingEmail !== null) {
@@ -74,13 +101,18 @@ export const resolvers = {
     },
     authenticate: async (
       _parentValue: any,
-      args: Omit<User, 'username'>,
+      args: AuthenticateInput,
       { authService }: { authService: AuthService }
     ) => {
-      const validatedArgs = await credSchema.validate(args, {
-        stripUnknown: true,
-      });
-      const { email, password } = validatedArgs.credentials;
+      let email, password;
+      try {
+        const cred = await credSchema.validate(args, { stripUnknown: true });
+        ({ email, password } = cred.credentials);
+      } catch (err: any) {
+        throw new GraphQLError(err.message as string, {
+          extensions: { code: 'BAD_USER_INPUT' },
+        });
+      }
 
       const user = await User.findOne({ where: { email } });
       if (user === null) {

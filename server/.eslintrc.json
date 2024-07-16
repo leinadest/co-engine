@@ -16,6 +16,7 @@
     "no-underscore-dangle": "off",
     "consistent-return": "off",
     "no-param-reassign": "off",
-    "@typescript-eslint/non-nullable-type-assertion-style": "off"
+    "@typescript-eslint/non-nullable-type-assertion-style": "off",
+    "@typescript-eslint/ban-tslint-comment": "off"
   }
 }
