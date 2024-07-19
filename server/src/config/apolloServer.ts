@@ -7,7 +7,9 @@ import { useServer } from 'graphql-ws/lib/use/ws';
 import { expressMiddleware } from '@apollo/server/express4';
 
 import schema from '../schema';
+import { sequelize } from './sequelize';
 import AuthService from '../services/authService';
+import { type Sequelize } from 'sequelize';
 
 /**
  * Error formatter
@@ -48,15 +50,19 @@ const createApolloServer = (httpServer: Server): ApolloServer => {
   });
 };
 
+interface Context {
+  authService: AuthService;
+  sequelize: Sequelize;
+}
+
 const createExpressMiddleware = (apolloServer: ApolloServer): RequestHandler =>
   expressMiddleware(apolloServer, {
-    context: async ({ req, res }) => {
+    context: async ({ req }) => {
       const authorization = req.headers.authorization;
       const accessToken = authorization?.replace('Bearer ', '');
 
-      const context: any = {
-        req,
-        res,
+      const context: Context = {
+        sequelize,
         authService: new AuthService(accessToken ?? ''),
       };
 
@@ -64,4 +70,4 @@ const createExpressMiddleware = (apolloServer: ApolloServer): RequestHandler =>
     },
   });
 
-export { createApolloServer, createExpressMiddleware };
+export { createApolloServer, createExpressMiddleware, type Context };

@@ -1,38 +1,41 @@
 import { gql } from 'graphql-tag';
 import { GraphQLError } from 'graphql/error/GraphQLError';
-import { Op } from 'sequelize';
 
 import type AuthService from '../../services/authService';
-import UserFriendship from './model';
+import Chat from './model';
+import User from '../user/model';
 
 export const typeDefs = gql`
   extend type Query {
     """
-    Returns the friends of the authenticated user.
+    Returns all chats that the authenticated user is in.
     """
-    userFriendships: [UserFriendship!]
+    chats: [Chat!]
   }
 `;
 
 export const resolvers = {
   Query: {
-    userFriendships: async (
+    chats: async (
       _: any,
       __: any,
       { authService }: { authService: AuthService }
     ) => {
-      const userId = authService.getUserId();
-      if (userId === null) {
+      if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
       }
 
-      const friendships = await UserFriendship.findAll({
-        where: { [Op.or]: [{ sender_id: userId }, { receiver_id: userId }] },
+      const chats = await Chat.findAll({
+        include: [
+          {
+            model: User,
+            where: { id: authService.getUserId() },
+          },
+        ],
       });
-
-      return friendships;
+      return chats;
     },
   },
 };

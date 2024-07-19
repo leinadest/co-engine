@@ -7,15 +7,11 @@ import User from '../src/resources/user/model';
 const createPasswordHash = async (password: string): Promise<string> =>
   await bcrypt.hash(password, 10);
 
-const createUser = async ({
-  username,
-  email,
-  password,
-}: {
-  username: string;
-  email: string;
-  password: string;
-}): Promise<any> => {
+const createUser = async (
+  username: string,
+  email: string,
+  password: string
+): Promise<any> => {
   return {
     username,
     email,
@@ -23,30 +19,42 @@ const createUser = async ({
   };
 };
 
-const devUsersDetails = [
-  {
-    username: 'tester',
-    email: 'test@gmail.com',
-    password: 'test123',
-  },
-  {
-    username: 'tester2',
-    email: 'test2@gmail.com',
-    password: 'test123',
-  },
-];
+const devData: { users: Array<Record<string, string>>; usersIds: number[] } = {
+  users: [
+    {
+      username: 'tester',
+      email: 'test@gmail.com',
+      password: 'test123',
+    },
+    {
+      username: 'tester2',
+      email: 'test2@gmail.com',
+      password: 'test123',
+    },
+  ],
+  usersIds: [],
+};
 
-const prodUsersDetails = [{ username: '', email: '', password: '' }];
+const prodData: typeof devData = {
+  users: [{}],
+  usersIds: [],
+};
+
+const data = NODE_ENV === 'development' ? devData : prodData;
 
 export const up = async (): Promise<void> => {
   try {
-    const users = await Promise.all(
-      NODE_ENV === 'development'
-        ? devUsersDetails.map(async (details) => await createUser(details))
-        : prodUsersDetails.map(async (details) => await createUser(details))
-    );
     console.log('*** BULK INSERTING USERS... ***');
+
+    const users = await Promise.all(
+      data.users.map(
+        async (user) =>
+          await createUser(user.username, user.email, user.password)
+      )
+    );
     const result = await User.bulkCreate(users);
+    data.usersIds = result.map((user) => user.id);
+
     console.log(`*** BULK INSERTED USERS RESULT ***`);
     console.log(result);
   } catch (error: any) {
@@ -61,8 +69,8 @@ export const down = async (): Promise<void> => {
       console.log('*** BULK DELETING USERS... ***');
       const result = await User.destroy({
         where: {
-          username: {
-            [Op.in]: devUsersDetails.map(({ username }) => username),
+          id: {
+            [Op.in]: data.usersIds,
           },
         },
       });

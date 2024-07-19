@@ -2,9 +2,10 @@ import gql from 'graphql-tag';
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { merge } from 'lodash';
 
-import dateTime from './scalars/DateTime';
+import dateTimeScalar from './scalars/DateTime';
 import userSchema from '../resources/user/schema';
 import userFriendRequestSchema from '../resources/user_friendship/schema';
+import chatSchema from '../resources/chat/schema';
 
 const rootTypeDefs = gql`
   type Query {
@@ -19,13 +20,15 @@ const rootTypeDefs = gql`
 export default makeExecutableSchema({
   typeDefs: [
     rootTypeDefs,
+    dateTimeScalar.typeDefs,
     userSchema.typeDefs,
     userFriendRequestSchema.typeDefs,
-    dateTime.typeDefs,
+    chatSchema.typeDefs,
   ],
   resolvers: merge(
+    dateTimeScalar.resolvers,
     userSchema.resolvers,
     userFriendRequestSchema.resolvers,
-    dateTime.resolvers
+    chatSchema.resolvers
   ),
 });

@@ -21,7 +21,7 @@ export const typeDefs = gql`
     """
     Deletes a friendship with the specified user.
     """
-    rejectFriendship(userId: ID!): UserFriendship
+    deleteFriendship(userId: ID!): UserFriendship
   }
 `;
 
@@ -107,7 +107,7 @@ export const resolvers = {
       friendship.status = 'accepted';
       return await friendship.save();
     },
-    rejectFriendship: async (
+    deleteFriendship: async (
       _parent: any,
       args: { userId: string },
       { authService }: { authService: AuthService }
@@ -127,9 +127,13 @@ export const resolvers = {
       }
 
       const friendship = await UserFriendship.findOne({
-        where: { sender_id: userId, receiver_id: authService.getUserId() },
+        where: {
+          [Op.or]: [
+            { sender_id: userId, receiver_id: authService.getUserId() },
+            { sender_id: authService.getUserId(), receiver_id: userId },
+          ],
+        },
       });
-
       if (friendship === null) {
         throw new GraphQLError('Friend request not found', {
           extensions: { code: 'FRIEND_REQUEST_NOT_FOUND' },
@@ -137,6 +141,8 @@ export const resolvers = {
       }
 
       await friendship.destroy();
+
+      return friendship;
     },
   },
 };
