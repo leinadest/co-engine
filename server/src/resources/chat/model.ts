@@ -8,7 +8,7 @@ class Chat extends Model {
   declare name: string;
   declare picture: string;
   declare last_message_at: Date;
-  declare last_message_id: string;
+  declare last_message: string;
 
   static schemaDetails = {
     id: {

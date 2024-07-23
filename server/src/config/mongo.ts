@@ -1,7 +1,7 @@
 import mongoose, { type Connection } from 'mongoose';
 import { MongoDBStorage, Umzug, type UmzugOptions } from 'umzug';
 
-import { MONGO_URL } from '.';
+import { MONGO_URL, NODE_ENV } from '.';
 
 const seedsConf = (connection: Connection): UmzugOptions<object> => ({
   migrations: {
@@ -9,7 +9,7 @@ const seedsConf = (connection: Connection): UmzugOptions<object> => ({
   },
   storage: new MongoDBStorage({ connection }),
   context: connection,
-  logger: console,
+  logger: NODE_ENV === 'development' ? console : undefined,
 });
 
 const runSeeds = async (connection: Connection): Promise<void> => {

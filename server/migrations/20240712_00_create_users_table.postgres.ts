@@ -1,6 +1,6 @@
 import { type QueryInterface } from 'sequelize';
 
-import User from '../src/resources/user/model';
+import { User } from '../src/resources';
 
 interface Params {
   context: QueryInterface;

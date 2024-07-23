@@ -1,6 +1,7 @@
-import { Sequelize } from 'sequelize';
-import { Umzug, SequelizeStorage } from 'umzug';
-import { POSTGRES_URL } from '.';
+import { type QueryInterface, Sequelize } from 'sequelize';
+import { Umzug, SequelizeStorage, type UmzugOptions } from 'umzug';
+
+import { NODE_ENV, POSTGRES_URL } from '.';
 
 // const sequelize = new Sequelize(POSTGRES_URL, {
 //   dialectOptions: {
@@ -11,6 +12,7 @@ import { POSTGRES_URL } from '.';
 //   },
 // });
 
+// TODO: Configure ssl
 const sequelize = new Sequelize(POSTGRES_URL, {
   dialect: 'postgres',
   protocol: 'postgres',
@@ -23,15 +25,7 @@ const migrationConf = {
   },
   storage: new SequelizeStorage({ sequelize, modelName: 'migrations' }),
   context: sequelize.getQueryInterface(),
-  logger: console,
-};
-
-const runMigrations = async (): Promise<void> => {
-  const migrator = new Umzug(migrationConf);
-  const migrations = await migrator.up();
-  console.log('Migrations up to date', {
-    files: migrations.map((mig) => mig.name),
-  });
+  logger: NODE_ENV === 'development' ? console : undefined,
 };
 
 const seedsConf = {
@@ -40,35 +34,64 @@ const seedsConf = {
   },
   storage: new SequelizeStorage({ sequelize, modelName: 'seeds' }),
   context: sequelize.getQueryInterface(),
-  logger: console,
+  logger: NODE_ENV === 'development' ? console : undefined,
 };
 
-const runSeeds = async (): Promise<void> => {
+const runMigrations = async (
+  migrationConf: UmzugOptions<QueryInterface>
+): Promise<Umzug<QueryInterface>> => {
+  const migrator = new Umzug(migrationConf);
+  const migrations = await migrator.up();
+  console.log('Migrations up to date', {
+    files: migrations.map((mig) => mig.name),
+  });
+  return migrator;
+};
+
+const runSeeds = async (
+  seedsConf: UmzugOptions<QueryInterface>
+): Promise<Umzug<QueryInterface>> => {
   const seeder = new Umzug(seedsConf);
   const seeds = await seeder.up();
   console.log('Seeds up to date', {
     files: seeds.map((mig) => mig.name),
   });
+  return seeder;
 };
 
-const rollbackMigration = async (): Promise<void> => {
+const rollbackMigration = async (
+  migrationConf: UmzugOptions<QueryInterface>
+): Promise<void> => {
   await sequelize.authenticate();
   const migrator = new Umzug(migrationConf);
   await migrator.down();
 };
 
+const rollbackSeeds = async (
+  seedsConf: UmzugOptions<QueryInterface>
+): Promise<void> => {
+  await sequelize.authenticate();
+  const seeder = new Umzug(seedsConf);
+  await seeder.down();
+};
+
 const connectToPostgres = async (): Promise<any> => {
   try {
-    import('../resources');
     await sequelize.authenticate();
-    await runMigrations();
-    await runSeeds();
+    await runMigrations(migrationConf);
+    await runSeeds(seedsConf);
     console.log('database connected');
   } catch (err: any) {
     console.log(`connecting database failed: ${err}`);
   }
-
   return null;
 };
 
-export { sequelize, rollbackMigration, connectToPostgres };
+export {
+  sequelize,
+  runMigrations,
+  runSeeds,
+  rollbackMigration,
+  rollbackSeeds as rollBackSeeds,
+  connectToPostgres,
+};

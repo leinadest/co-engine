@@ -2,8 +2,7 @@ import { gql } from 'graphql-tag';
 import { GraphQLError } from 'graphql/error/GraphQLError';
 
 import type AuthService from '../../services/authService';
-import Chat from './model';
-import User from '../user/model';
+import { Chat, User } from '../';
 
 export const typeDefs = gql`
   extend type Query {

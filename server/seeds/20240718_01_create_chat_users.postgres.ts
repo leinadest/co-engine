@@ -2,7 +2,7 @@
 import { Op } from 'sequelize';
 
 import { NODE_ENV } from '../src/config';
-import ChatUser from '../src/resources/chat_user/model';
+import { ChatUser } from '../src/resources';
 
 const devData: { chatUsers: any[]; chatUsersIds: number[] } = {
   chatUsers: [

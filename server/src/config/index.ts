@@ -20,4 +20,6 @@ export const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI as string;
 
 export const FRONTEND_BASE_URL = process.env.FRONTEND_BASE_URL as string;
 
-console.log(module.exports);
+if (NODE_ENV !== 'production') {
+  console.log(module.exports);
+}

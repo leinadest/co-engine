@@ -27,13 +27,18 @@ import { type Sequelize } from 'sequelize';
 //   };
 // };
 
-const createApolloServer = (httpServer: Server): ApolloServer => {
+interface Context {
+  authService: AuthService;
+  sequelize: Sequelize;
+}
+
+const createApolloServer = (httpServer: Server): ApolloServer<Context> => {
   const wsServer = new WebSocketServer({
     server: httpServer,
     path: '/',
   });
 
-  return new ApolloServer({
+  return new ApolloServer<Context>({
     schema,
     // formatError: apolloErrorFormatter,
     plugins: [
@@ -49,11 +54,6 @@ const createApolloServer = (httpServer: Server): ApolloServer => {
     ],
   });
 };
-
-interface Context {
-  authService: AuthService;
-  sequelize: Sequelize;
-}
 
 const createExpressMiddleware = (apolloServer: ApolloServer): RequestHandler =>
   expressMiddleware(apolloServer, {

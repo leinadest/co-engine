@@ -3,6 +3,7 @@ import OAuth2User from './oauth2_user/model';
 import UserFriendship from './user_friendship/model';
 import Chat from './chat/model';
 import ChatUser from './chat_user/model';
+import Message from './message/model';
 
 User.hasOne(OAuth2User);
 OAuth2User.belongsTo(User);
@@ -25,3 +26,5 @@ Chat.belongsToMany(User, {
   foreignKey: 'chat_id',
   otherKey: 'user_id',
 });
+
+export { User, OAuth2User, UserFriendship, Chat, ChatUser, Message };

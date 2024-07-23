@@ -3,8 +3,7 @@ import { GraphQLError } from 'graphql/error/GraphQLError';
 import { Op } from 'sequelize';
 
 import type AuthService from '../../services/authService';
-import User from '../user/model';
-import UserFriendship from './model';
+import { User, UserFriendship } from '../';
 
 export const typeDefs = gql`
   extend type Mutation {
@@ -29,11 +28,9 @@ export const resolvers = {
   Mutation: {
     requestFriendship: async (
       _parent: any,
-      args: { userId: string },
+      { userId }: { userId: string },
       { authService }: { authService: AuthService }
     ) => {
-      const userId = parseInt(args.userId, 10);
-
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' },
@@ -76,11 +73,9 @@ export const resolvers = {
     },
     acceptFriendship: async (
       _parent: any,
-      args: { userId: string },
+      { userId }: { userId: string },
       { authService }: { authService: AuthService }
     ) => {
-      const userId = parseInt(args.userId, 10);
-
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' },
@@ -88,7 +83,7 @@ export const resolvers = {
       }
 
       if (authService.getUserId() === userId) {
-        throw new GraphQLError('Cannot send friend request to yourself', {
+        throw new GraphQLError('Cannot accept friend request from yourself', {
           extensions: { code: 'CANNOT_FRIEND_SELF' },
         });
       }
@@ -96,7 +91,6 @@ export const resolvers = {
       const friendship = await UserFriendship.findOne({
         where: { sender_id: userId, receiver_id: authService.getUserId() },
       });
-
       if (friendship === null) {
         throw new GraphQLError('Friend request not found', {
           extensions: { code: 'FRIEND_REQUEST_NOT_FOUND' },
@@ -109,11 +103,9 @@ export const resolvers = {
     },
     deleteFriendship: async (
       _parent: any,
-      args: { userId: string },
+      { userId }: { userId: string },
       { authService }: { authService: AuthService }
     ) => {
-      const userId = parseInt(args.userId, 10);
-
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' },
@@ -121,7 +113,7 @@ export const resolvers = {
       }
 
       if (authService.getUserId() === userId) {
-        throw new GraphQLError('Cannot send friend request to yourself', {
+        throw new GraphQLError('Cannot delete friend request from yourself', {
           extensions: { code: 'CANNOT_FRIEND_SELF' },
         });
       }

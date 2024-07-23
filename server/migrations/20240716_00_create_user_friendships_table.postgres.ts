@@ -2,7 +2,7 @@
 
 import { type QueryInterface } from 'sequelize';
 
-import UserFriendship from '../src/resources/user_friendship/model';
+import { UserFriendship } from '../src/resources';
 
 interface Params {
   context: QueryInterface;

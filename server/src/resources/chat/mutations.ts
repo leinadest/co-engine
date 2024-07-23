@@ -1,10 +1,9 @@
 import { gql } from 'graphql-tag';
 import { GraphQLError } from 'graphql/error/GraphQLError';
+import * as yup from 'yup';
 
-import Chat from './model';
-import ChatUser from '../chat_user/model';
 import { type Context } from '../../config/apolloServer';
-import User from '../user/model';
+import { Chat, ChatUser, User } from '../';
 
 export const typeDefs = gql`
   extend type Mutation {
@@ -30,6 +29,15 @@ export const typeDefs = gql`
   }
 `;
 
+const createChatSchema = yup.object().shape({
+  name: yup
+    .string()
+    .min(1, 'Chat name must be at least 1 character long')
+    .max(30, 'Chat name must be at most 30 characters long')
+    .required(),
+  picture: yup.string(),
+});
+
 export const resolvers = {
   Mutation: {
     createChat: async (
@@ -37,6 +45,14 @@ export const resolvers = {
       { name, picture }: { name: string; picture: string },
       { authService, sequelize }: Context
     ) => {
+      try {
+        await createChatSchema.validate({ name, picture });
+      } catch (err: any) {
+        throw new GraphQLError(err.message as string, {
+          extensions: { code: 'BAD_USER_INPUT' },
+        });
+      }
+
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' },
@@ -118,13 +134,6 @@ export const resolvers = {
         });
       }
 
-      const chat = await Chat.findByPk(chatId);
-      if (chat === null) {
-        throw new GraphQLError('Chat not found', {
-          extensions: { code: 'NOT_FOUND' },
-        });
-      }
-
       const user = await User.findByPk(userId);
       if (user === null) {
         throw new GraphQLError('User not found', {
@@ -132,14 +141,26 @@ export const resolvers = {
         });
       }
 
+      const chat = await Chat.findByPk(chatId);
+      if (chat === null) {
+        throw new GraphQLError('Chat not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
       // TODO: Implement blocked validation
 
-      return await ChatUser.findOrCreate({
-        where: {
-          chat_id: chatId,
-          user_id: userId,
-        },
+      const [chatUser, isCreated] = await ChatUser.findOrCreate({
+        where: { chat_id: chatId, user_id: userId },
+        defaults: { chat_id: chatId, user_id: userId, is_creator: false },
       });
+      if (!isCreated) {
+        throw new GraphQLError('User already in chat', {
+          extensions: { code: 'BAD_USER_INPUT' },
+        });
+      }
+
+      return chatUser;
     },
 
     removeUserFromChat: async (
@@ -172,14 +193,15 @@ export const resolvers = {
         );
       }
 
-      const chatUser = await ChatUser.destroy({
+      const chatUser = await ChatUser.findOne({
         where: { chat_id: chatId, user_id: userId },
       });
-      if (chatUser === 0) {
+      if (chatUser === null) {
         throw new GraphQLError('User not found in chat', {
           extensions: { code: 'NOT_FOUND' },
         });
       }
+      await chatUser.destroy();
       return chatUser;
     },
   },

@@ -1,6 +1,6 @@
 import { type QueryInterface } from 'sequelize';
 
-import ChatUser from '../src/resources/chat_user/model';
+import { ChatUser } from '../src/resources';
 
 interface Params {
   context: QueryInterface;

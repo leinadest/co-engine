@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { type QueryInterface } from 'sequelize';
 
-import OAuth2User from '../src/resources/oauth2_user/model';
+import { OAuth2User } from '../src/resources';
 
 interface Params {
   context: QueryInterface;

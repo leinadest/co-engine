@@ -31,7 +31,6 @@ class User extends Model {
     },
     discriminator: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
     email: {
       type: DataTypes.STRING,

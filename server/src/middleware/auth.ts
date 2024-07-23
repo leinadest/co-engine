@@ -2,7 +2,7 @@ import { type RequestHandler } from 'express';
 import passport from 'passport';
 
 import AuthService from '../services/authService';
-import type OAuth2User from '../resources/oauth2_user/model';
+import { type OAuth2User } from '../resources';
 import { FRONTEND_BASE_URL } from '../config';
 
 export const auth = (strategy: string): RequestHandler =>

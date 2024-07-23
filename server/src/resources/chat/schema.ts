@@ -11,7 +11,7 @@ const types = gql`
     name: String
     picture: String
     last_message_at: DateTime
-    last_message_id: String
+    last_message: String
   }
 
   type ChatUser {

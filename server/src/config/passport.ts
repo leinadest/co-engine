@@ -5,8 +5,7 @@ import {
   DISCORD_CLIENT_SECRET,
   DISCORD_REDIRECT_URI,
 } from './index';
-import OAuth2User from '../resources/oauth2_user/model';
-import User from '../resources/user/model';
+import { User, OAuth2User } from '../resources';
 
 const discordStrategy = new DiscordStrategy(
   {

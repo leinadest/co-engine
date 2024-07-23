@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql/error/GraphQLError';
 
-import User from './model';
+import { User } from '../';
 import AuthService from '../../services/authService';
 
 export const typeDefs = gql`
@@ -54,20 +54,47 @@ interface AuthenticateInput {
 
 const userSchema = yup.object().shape({
   user: yup.object().shape({
-    username: yup.string().min(1).max(30).lowercase().trim(),
-    email: yup.string().email().trim(),
-    password: yup.string().min(5).max(50).trim(),
+    username: yup
+      .string()
+      .required('Username is required')
+      .min(3, 'Username must be between 3 and 30 characters long')
+      .max(30, 'Username must be between 3 and 30 characters long')
+      .matches(
+        /^[a-zA-Z0-9]+$/,
+        'Username must contain only letters or numbers'
+      )
+      .lowercase(),
+    email: yup
+      .string()
+      .required('Email is required')
+      .matches(
+        /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
+        'Email must be a valid email'
+      ),
+    password: yup
+      .string()
+      .required('Password is required')
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        'Password must have at least eight characters, including one lowercase letter, one uppercase letter, one number, and one special character'
+      ),
   }),
 });
 
 const credSchema = yup.object().shape({
   credentials: yup.object().shape({
-    email: yup.string().email().trim(),
-    password: yup.string().min(5).max(50).trim(),
+    email: yup
+      .string()
+      .required('Email is required')
+      .matches(
+        /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
+        'Email must be a valid email'
+      ),
+    password: yup.string().trim().required('Password is required'),
   }),
 });
 
-const createPasswordHash = async (password: string): Promise<string> =>
+export const createPasswordHash = async (password: string): Promise<string> =>
   await bcrypt.hash(password, 10);
 
 export const resolvers = {
@@ -91,7 +118,7 @@ export const resolvers = {
         );
       }
 
-      const passwordHash = await createPasswordHash(password as string);
+      const passwordHash = await createPasswordHash(password);
 
       return await User.create({
         email,
@@ -99,11 +126,7 @@ export const resolvers = {
         password_hash: passwordHash,
       });
     },
-    authenticate: async (
-      _parentValue: any,
-      args: AuthenticateInput,
-      { authService }: { authService: AuthService }
-    ) => {
+    authenticate: async (_parentValue: any, args: AuthenticateInput) => {
       let email, password;
       try {
         const cred = await credSchema.validate(args, { stripUnknown: true });
@@ -122,8 +145,8 @@ export const resolvers = {
       }
 
       const passwordIsValid = await bcrypt.compare(
-        password as string,
-        user.getDataValue('password_hash') as string
+        password,
+        user.password_hash
       );
       if (!passwordIsValid) {
         throw new GraphQLError('Incorrect password', {

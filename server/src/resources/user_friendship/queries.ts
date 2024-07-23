@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql/error/GraphQLError';
 import { Op } from 'sequelize';
 
 import type AuthService from '../../services/authService';
-import UserFriendship from './model';
+import { UserFriendship } from '../';
 
 export const typeDefs = gql`
   extend type Query {

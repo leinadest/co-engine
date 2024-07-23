@@ -13,6 +13,7 @@ const types = gql`
     password_hash: String!
     created_at: DateTime!
     last_login_at: DateTime
+    is_online: Boolean!
     profile_pic: String
     bio: String
   }
