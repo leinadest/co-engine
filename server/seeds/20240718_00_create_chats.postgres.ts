@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Op } from 'sequelize';
 
-import { NODE_ENV } from '../src/config';
+import { NODE_ENV } from '../src/config/environment';
 import Chat from '../src/resources/chat/model';
 
 const devData: { chats: any[]; chatsIds: number[] } = {

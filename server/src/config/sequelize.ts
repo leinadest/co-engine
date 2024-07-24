@@ -1,7 +1,7 @@
 import { type QueryInterface, Sequelize } from 'sequelize';
 import { Umzug, SequelizeStorage, type UmzugOptions } from 'umzug';
 
-import { NODE_ENV, POSTGRES_URL } from '.';
+import { NODE_ENV, POSTGRES_URL } from './environment';
 
 // const sequelize = new Sequelize(POSTGRES_URL, {
 //   dialectOptions: {

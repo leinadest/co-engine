@@ -3,7 +3,7 @@ import passport from 'passport';
 
 import AuthService from '../services/authService';
 import { type OAuth2User } from '../resources';
-import { FRONTEND_BASE_URL } from '../config';
+import { FRONTEND_BASE_URL } from '../config/environment';
 
 export const auth = (strategy: string): RequestHandler =>
   passport.authenticate(strategy, {

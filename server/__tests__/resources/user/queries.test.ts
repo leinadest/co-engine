@@ -6,7 +6,10 @@ import schema from '../../../src/schema';
 import { User } from '../../../src/resources';
 import AuthService from '../../../src/services/authService';
 import { sequelize } from '../../../src/config/sequelize';
-import { JWT_SECRET, ACCESS_TOKEN_EXPIRATION_TIME } from '../../../src/config';
+import {
+  JWT_SECRET,
+  ACCESS_TOKEN_EXPIRATION_TIME,
+} from '../../../src/config/environment';
 import { type SingleGraphQLResponse } from '../types';
 
 describe('User Queries Integration Tests', () => {

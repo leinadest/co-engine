@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Op } from 'sequelize';
 
-import { NODE_ENV } from '../src/config';
+import { NODE_ENV } from '../src/config/environment';
 import { UserFriendship } from '../src/resources';
 
 const devData: { userFriendships: any[]; userFriendshipsIds: number[] } = {

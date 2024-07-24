@@ -6,7 +6,7 @@ import debug from 'debug';
 import passport from 'passport';
 import cors from 'cors';
 
-import { PORT } from './config';
+import { PORT } from './config/environment';
 import { connectToPostgres } from './config/sequelize';
 import { connectToMongo } from './config/mongo';
 import discordStrategy from './config/passport';

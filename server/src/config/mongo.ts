@@ -1,7 +1,7 @@
 import mongoose, { type Connection } from 'mongoose';
 import { MongoDBStorage, Umzug, type UmzugOptions } from 'umzug';
 
-import { MONGO_URL, NODE_ENV } from '.';
+import { MONGO_URL, NODE_ENV } from './environment';
 
 const seedsConf = (connection: Connection): UmzugOptions<object> => ({
   migrations: {
@@ -29,7 +29,9 @@ const connectToMongo = async (): Promise<void> => {
   try {
     await mongoose.connect(MONGO_URL);
     console.log('Connected to MongoDB');
-    await runSeeds(mongoose.connection);
+    if (NODE_ENV !== 'test') {
+      await runSeeds(mongoose.connection);
+    }
   } catch (error: any) {
     console.log('Error connection to MongoDB:', error);
   }

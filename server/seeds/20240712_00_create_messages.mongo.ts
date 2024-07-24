@@ -1,20 +1,20 @@
-import { NODE_ENV } from '../src/config';
+import { NODE_ENV } from '../src/config/environment';
 import Message from '../src/resources/message/model';
 
 const devData: { messages: any[]; messagesIds: string[] } = {
   messages: [
     {
-      contextType: 'chat',
-      contextId: 0,
-      creatorId: 1,
+      context_type: 'chat',
+      context_id: 0,
+      creator_id: 1,
       content: 'test content',
     },
     {
-      contextType: 'channel',
-      contextId: 0,
-      creatorId: 2,
+      context_type: 'channel',
+      context_id: 0,
+      creator_id: 2,
       content: 'test content 2',
-      reactions: [{ reactorId: 0, reaction: 'test reaction' }],
+      reactions: [{ reactor_id: 0, reaction: 'test reaction' }],
     },
   ],
   messagesIds: [],

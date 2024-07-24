@@ -403,9 +403,6 @@ describe('Chat Mutations Integration Tests', () => {
             );
             const error = result.errors[0];
 
-            const r1 = await sequelize.query('SELECT * FROM chats;');
-            const r2 = await sequelize.query('SELECT * FROM users;');
-
             // Assert
             expect(error.message).toEqual(expectedMessage);
             expect(error.extensions.code).toEqual(expectedCode);

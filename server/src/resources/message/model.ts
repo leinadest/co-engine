@@ -2,30 +2,53 @@ import mongoose from 'mongoose';
 import { DateTime } from 'luxon';
 
 const MessageSchema = new mongoose.Schema({
-  contextType: { type: String, required: true },
-  contextId: { type: Number, required: true },
-  creatorId: { type: Number, required: true },
-  createdAt: { type: Date, default: Date.now },
-  updatedAt: { type: Date, default: Date.now },
+  context_type: { type: String, required: true },
+  context_id: { type: Number, required: true },
+  creator_id: { type: Number, required: true },
+  created_at: { type: Date, default: Date.now },
+  edited_at: { type: Date, default: null },
   content: { type: String, required: true, maxLength: 10000 },
-  reactions: [{ reactorId: Number, reaction: String }],
+  reactions: { type: [{ reactor_id: Number, reaction: String }], default: [] },
 });
 
 MessageSchema.set('toJSON', {
   transform: (_document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
-    returnedObject.formattedCreatedAt = DateTime.fromJSDate(
-      returnedObject.createdAt as Date
-    ).toLocaleString(DateTime.DATETIME_MED);
-    returnedObject.formattedUpdatedAt = DateTime.fromJSDate(
-      returnedObject.updatedAt as Date
-    ).toLocaleString(DateTime.DATETIME_MED);
+
+    const formatDate = (obj: any, prop: string): void => {
+      if (obj[prop] === null) return;
+      obj[`formatted_${prop}`] = DateTime.fromJSDate(
+        obj[prop] as Date
+      ).toLocaleString(DateTime.DATETIME_MED);
+    };
+    formatDate(returnedObject, 'created_at');
+    formatDate(returnedObject, 'edited_at');
 
     delete returnedObject.__v;
     delete returnedObject._id;
-    delete returnedObject.createdAt;
-    delete returnedObject.updatedAt;
+    delete returnedObject.created_at;
+    delete returnedObject.edited_at;
   },
 });
 
-export default mongoose.model('Message', MessageSchema);
+export interface IMessage
+  extends mongoose.Document<unknown, Record<string, unknown>, IMessage> {
+  id: string;
+  context_type: string;
+  context_id: number;
+  creator_id: number;
+  created_at: Date;
+  edited_at: Date | null;
+  content: string;
+  reactions: Array<{ reactor_id: string; reaction: string }>;
+}
+
+export interface IMessageJSON
+  extends Omit<IMessage, 'created_at' | 'edited_at'> {
+  formatted_created_at: string;
+  formatted_edited_at: string | null;
+}
+
+const Message = mongoose.model<IMessage>('Message', MessageSchema);
+
+export default Message;

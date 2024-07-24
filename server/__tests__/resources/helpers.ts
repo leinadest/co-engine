@@ -1,3 +1,4 @@
+// import { type GraphQLFormattedError } from 'graphql';
 import { ApolloServer } from '@apollo/server';
 
 import AuthService from '../../src/services/authService';
@@ -6,6 +7,16 @@ import schema from '../../src/schema';
 import { sequelize } from '../../src/config/sequelize';
 import { type SingleGraphQLResponse } from './types';
 
+// const apolloErrorFormatter = (
+//   formattedError: GraphQLFormattedError,
+//   originalError: unknown
+// ): any => {
+//   return {
+//     formattedError,
+//     originalError,
+//   };
+// };
+
 export const executeOperation = async <ResponseData>(
   query: string,
   variables?: any,
@@ -13,7 +24,10 @@ export const executeOperation = async <ResponseData>(
 ): Promise<any> => {
   const authService = new AuthService(accessToken ?? '');
 
-  const server = new ApolloServer<Context>({ schema });
+  const server = new ApolloServer<Context>({
+    schema,
+    // formatError: apolloErrorFormatter,
+  });
   const response = (await server.executeOperation<ResponseData>(
     { query, variables },
     { contextValue: { authService, sequelize } }

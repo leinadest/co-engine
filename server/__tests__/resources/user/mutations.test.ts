@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { executeOperation } from '../helpers';
 import { sequelize } from '../../../src/config/sequelize';
 import { User } from '../../../src/resources';
-import { ACCESS_TOKEN_EXPIRATION_TIME } from '../../../src/config';
+import { ACCESS_TOKEN_EXPIRATION_TIME } from '../../../src/config/environment';
 
 describe('User Mutations Integration Tests', () => {
   const CREATE_USER = `

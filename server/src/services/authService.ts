@@ -1,6 +1,9 @@
 import jwt from 'jsonwebtoken';
 
-import { JWT_SECRET, ACCESS_TOKEN_EXPIRATION_TIME } from '../config';
+import {
+  JWT_SECRET,
+  ACCESS_TOKEN_EXPIRATION_TIME,
+} from '../config/environment';
 import { User } from '../resources';
 
 const subject = 'accessToken';

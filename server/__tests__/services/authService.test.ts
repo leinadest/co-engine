@@ -1,7 +1,10 @@
 import jwt from 'jsonwebtoken';
 
 import AuthService from '../../src/services/authService';
-import { JWT_SECRET, ACCESS_TOKEN_EXPIRATION_TIME } from '../../src/config';
+import {
+  JWT_SECRET,
+  ACCESS_TOKEN_EXPIRATION_TIME,
+} from '../../src/config/environment';
 import { User } from '../../src/resources';
 import { sequelize } from '../../src/config/sequelize';
 

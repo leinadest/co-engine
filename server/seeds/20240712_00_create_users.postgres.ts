@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 
-import { NODE_ENV } from '../src/config';
+import { NODE_ENV } from '../src/config/environment';
 import { User } from '../src/resources';
 
 const devData: { users: Array<Record<string, string>>; usersIds: number[] } = {

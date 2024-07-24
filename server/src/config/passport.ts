@@ -4,7 +4,7 @@ import {
   DISCORD_CLIENT_ID,
   DISCORD_CLIENT_SECRET,
   DISCORD_REDIRECT_URI,
-} from './index';
+} from './environment';
 import { User, OAuth2User } from '../resources';
 
 const discordStrategy = new DiscordStrategy(
