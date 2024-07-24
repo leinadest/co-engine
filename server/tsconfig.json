@@ -110,7 +110,8 @@
     "src/**/*.ts",
     "migrations/**/*.ts",
     "__tests__/**/*.ts",
-    "seeds/**/*.ts"
+    "seeds/**/*.ts",
+    "scripts/**/*.ts"
   ],
   "exclude": ["node_modules"]
 }

@@ -5,7 +5,10 @@
   "scripts": {
     "start": "nodemon",
     "lint": "npx eslint .",
-    "test": "NODE_ENV=test npx jest --silent --color --runInBand --logHeapUsage --detectOpenHandles --coverage"
+    "test": "NODE_ENV=test npx jest --silent --color --runInBand --logHeapUsage --detectOpenHandles --coverage",
+    "migrate:up": "ts-node scripts/migrate.ts up",
+    "migrate:down": "ts-node scripts/migrate.ts down",
+    "seed": "ts-node scripts/seed.ts up"
   },
   "author": "",
   "license": "ISC",
