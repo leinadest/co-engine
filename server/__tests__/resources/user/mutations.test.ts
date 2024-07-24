@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 import { executeOperation } from '../helpers';
-import { sequelize } from '../../../src/config/sequelize';
+import sequelize from '../../../src/config/sequelize';
 import { User } from '../../../src/resources';
 import { ACCESS_TOKEN_EXPIRATION_TIME } from '../../../src/config/environment';
 
@@ -94,7 +94,7 @@ describe('User Mutations Integration Tests', () => {
         // Assert
         errors.forEach((error, index) => {
           expect(error.message).toEqual(expectedMessages[index]);
-          expect(error.extensions.code).toEqual(expectedCode);
+          expect(error.code).toEqual(expectedCode);
         });
       });
     });
@@ -132,7 +132,7 @@ describe('User Mutations Integration Tests', () => {
         errors.forEach((error, index) => {
           expect(error).toBeTruthy();
           expect(error.message).toEqual(expectedMessages[index === 0 ? 0 : 1]);
-          expect(error.extensions.code).toEqual(expectedCode);
+          expect(error.code).toEqual(expectedCode);
         });
       });
     });
@@ -173,7 +173,7 @@ describe('User Mutations Integration Tests', () => {
         // Assert
         errors.forEach((error, index) => {
           expect(error.message).toEqual(expectedMessages[index === 0 ? 0 : 1]);
-          expect(error.extensions.code).toEqual(expectedCode);
+          expect(error.code).toEqual(expectedCode);
         });
       });
     });
@@ -205,7 +205,7 @@ describe('User Mutations Integration Tests', () => {
 
         // Assert
         expect(error.message).toEqual(expectedMessage);
-        expect(error.extensions.code).toEqual(expectedCode);
+        expect(error.code).toEqual(expectedCode);
       });
     });
 
@@ -302,9 +302,7 @@ describe('User Mutations Integration Tests', () => {
         errors.forEach((error, index) => {
           expect(error).toBeTruthy();
           expect(error.message).toEqual(invalidEmails[index].expectedMessage);
-          expect(error.extensions.code).toEqual(
-            invalidEmails[index].expectedCode
-          );
+          expect(error.code).toEqual(invalidEmails[index].expectedCode);
         });
       });
     });
@@ -345,9 +343,7 @@ describe('User Mutations Integration Tests', () => {
         errors.forEach((error, index) => {
           expect(error).toBeTruthy();
           expect(error.message).toEqual(expectedMessages[index === 0 ? 0 : 1]);
-          expect(error.extensions.code).toEqual(
-            expectedCodes[index === 0 ? 0 : 1]
-          );
+          expect(error.code).toEqual(expectedCodes[index === 0 ? 0 : 1]);
         });
       });
     });

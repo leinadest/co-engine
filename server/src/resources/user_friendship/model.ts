@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 
-import { sequelize } from '../../config/sequelize';
+import sequelize from '../../config/sequelize';
 
 class UserFriendship extends Model {
   public sender_id!: number;

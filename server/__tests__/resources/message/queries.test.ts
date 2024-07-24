@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
-import { sequelize } from '../../../src/config/sequelize';
-import { connectToMongo } from '../../../src/config/mongo';
+import sequelize from '../../../src/config/sequelize';
+import connectToMongo from '../../../src/config/mongo';
 import { Chat, ChatUser, Message, User } from '../../../src/resources/';
 import { executeOperation } from '../helpers';
 import AuthService from '../../../src/services/authService';
@@ -127,9 +127,7 @@ describe('Message Queries Integration Tests', () => {
         // Assert
         errors.forEach((error, index) => {
           expect(error.message).toEqual(invalidQueries[index].expectedMsg);
-          expect(error.extensions.code).toEqual(
-            invalidQueries[index].expectedCode
-          );
+          expect(error.code).toEqual(invalidQueries[index].expectedCode);
         });
       });
     });
@@ -153,7 +151,7 @@ describe('Message Queries Integration Tests', () => {
 
         // Assert
         expect(error.message).toEqual('Not authenticated');
-        expect(error.extensions.code).toEqual('UNAUTHENTICATED');
+        expect(error.code).toEqual('UNAUTHENTICATED');
       });
     });
 
@@ -178,7 +176,7 @@ describe('Message Queries Integration Tests', () => {
 
         // Assert
         expect(error.message).toEqual('User not found in context');
-        expect(error.extensions.code).toEqual('NOT_FOUND');
+        expect(error.code).toEqual('NOT_FOUND');
       });
     });
 
@@ -207,7 +205,7 @@ describe('Message Queries Integration Tests', () => {
 
         // Assert
         expect(error.message).toEqual(expectedMessage);
-        expect(error.extensions.code).toEqual(expectedCode);
+        expect(error.code).toEqual(expectedCode);
       });
     });
 

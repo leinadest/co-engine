@@ -18,14 +18,4 @@ const sequelize = new Sequelize(POSTGRES_URL, {
   dialectOptions: {},
 });
 
-const connectToPostgres = async (): Promise<any> => {
-  try {
-    await sequelize.authenticate();
-    console.log('database connected');
-  } catch (err: any) {
-    console.log(`connecting database failed: ${err}`);
-  }
-  return null;
-};
-
-export { sequelize, connectToPostgres };
+export default sequelize;

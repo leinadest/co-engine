@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { Chat, ChatUser, User } from '../../../src/resources';
-import { sequelize } from '../../../src/config/sequelize';
+import sequelize from '../../../src/config/sequelize';
 import AuthService from '../../../src/services/authService';
 import { executeOperation } from '../helpers';
 
@@ -90,7 +90,7 @@ describe('Chat Mutations Integration Tests', () => {
 
           // Assert
           expect(error.message).toEqual(expectedMessage);
-          expect(error.extensions.code).toEqual(expectedCode);
+          expect(error.code).toEqual(expectedCode);
         });
       });
 
@@ -110,7 +110,7 @@ describe('Chat Mutations Integration Tests', () => {
 
           // Assert
           expect(error.message).toEqual(expectedMessage);
-          expect(error.extensions.code).toEqual(expectedCode);
+          expect(error.code).toEqual(expectedCode);
         });
       });
     });
@@ -128,7 +128,7 @@ describe('Chat Mutations Integration Tests', () => {
 
           // Assert
           expect(error.message).toEqual(expectedMessage);
-          expect(error.extensions.code).toEqual(expectedCode);
+          expect(error.code).toEqual(expectedCode);
         });
       });
 
@@ -161,7 +161,7 @@ describe('Chat Mutations Integration Tests', () => {
 
             // Assert
             expect(error.message).toEqual(expectedMessage);
-            expect(error.extensions.code).toEqual(expectedCode);
+            expect(error.code).toEqual(expectedCode);
           });
         });
 
@@ -208,7 +208,7 @@ describe('Chat Mutations Integration Tests', () => {
 
         // Assert
         expect(error.message).toEqual(expectedMessage);
-        expect(error.extensions.code).toEqual(expectedCode);
+        expect(error.code).toEqual(expectedCode);
       });
     });
 
@@ -236,7 +236,7 @@ describe('Chat Mutations Integration Tests', () => {
 
           // Assert
           expect(error.message).toEqual(expectedMessage);
-          expect(error.extensions.code).toEqual(expectedCode);
+          expect(error.code).toEqual(expectedCode);
         });
       });
 
@@ -263,7 +263,7 @@ describe('Chat Mutations Integration Tests', () => {
 
             // Assert
             expect(error.message).toEqual(expectedMessage);
-            expect(error.extensions.code).toEqual(expectedCode);
+            expect(error.code).toEqual(expectedCode);
           });
         });
 
@@ -299,7 +299,7 @@ describe('Chat Mutations Integration Tests', () => {
 
               // Assert
               expect(error.message).toEqual(expectedMessage);
-              expect(error.extensions.code).toEqual(expectedCode);
+              expect(error.code).toEqual(expectedCode);
             });
           });
 
@@ -350,7 +350,7 @@ describe('Chat Mutations Integration Tests', () => {
 
         // Assert
         expect(error.message).toEqual(expectedMessage);
-        expect(error.extensions.code).toEqual(expectedCode);
+        expect(error.code).toEqual(expectedCode);
       });
     });
 
@@ -378,7 +378,7 @@ describe('Chat Mutations Integration Tests', () => {
 
           // Assert
           expect(error.message).toEqual(expectedMessage);
-          expect(error.extensions.code).toEqual(expectedCode);
+          expect(error.code).toEqual(expectedCode);
         });
       });
 
@@ -405,7 +405,7 @@ describe('Chat Mutations Integration Tests', () => {
 
             // Assert
             expect(error.message).toEqual(expectedMessage);
-            expect(error.extensions.code).toEqual(expectedCode);
+            expect(error.code).toEqual(expectedCode);
           });
         });
 
@@ -440,7 +440,7 @@ describe('Chat Mutations Integration Tests', () => {
 
               // Assert
               expect(error.message).toEqual(expectedMessage);
-              expect(error.extensions.code).toEqual(expectedCode);
+              expect(error.code).toEqual(expectedCode);
             });
           });
 
@@ -485,7 +485,7 @@ describe('Chat Mutations Integration Tests', () => {
 
         // Assert
         expect(error.message).toEqual(expectedMessage);
-        expect(error.extensions.code).toEqual(expectedCode);
+        expect(error.code).toEqual(expectedCode);
       });
     });
 
@@ -513,7 +513,7 @@ describe('Chat Mutations Integration Tests', () => {
 
           // Assert
           expect(error.message).toEqual(expectedMessage);
-          expect(error.extensions.code).toEqual(expectedCode);
+          expect(error.code).toEqual(expectedCode);
         });
       });
 
@@ -541,7 +541,7 @@ describe('Chat Mutations Integration Tests', () => {
 
             // Assert
             expect(error.message).toEqual(expectedMessage);
-            expect(error.extensions.code).toEqual(expectedCode);
+            expect(error.code).toEqual(expectedCode);
           });
         });
 
@@ -570,7 +570,7 @@ describe('Chat Mutations Integration Tests', () => {
 
               // Assert
               expect(error.message).toEqual(expectedMessage);
-              expect(error.extensions.code).toEqual(expectedCode);
+              expect(error.code).toEqual(expectedCode);
             });
           });
 

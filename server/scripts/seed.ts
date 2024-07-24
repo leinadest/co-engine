@@ -1,7 +1,7 @@
 import { type QueryInterface } from 'sequelize';
 import { Umzug, SequelizeStorage, type UmzugOptions } from 'umzug';
 
-import { sequelize } from '../src/config/sequelize';
+import sequelize from '../src/config/sequelize';
 import connectToMongo from '../src/config/mongo';
 import { NODE_ENV } from '../src/config/environment';
 import mongoose from 'mongoose';

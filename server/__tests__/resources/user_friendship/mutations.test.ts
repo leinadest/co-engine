@@ -1,6 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 
-import { sequelize } from '../../../src/config/sequelize';
+import sequelize from '../../../src/config/sequelize';
 import { UserFriendship, User } from '../../../src/resources';
 import { type Context } from '../../../src/config/apolloServer';
 import schema from '../../../src/schema';

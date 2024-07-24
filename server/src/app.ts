@@ -5,24 +5,26 @@ import express from 'express';
 import debug from 'debug';
 import passport from 'passport';
 import cors from 'cors';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/dist/esm/express4';
 
 import { PORT } from './config/environment';
-import { connectToPostgres } from './config/sequelize';
-import { connectToMongo } from './config/mongo';
+import sequelize from './config/sequelize';
+import connectToMongo from './config/mongo';
 import discordStrategy from './config/passport';
 import {
-  createApolloServer,
-  createExpressMiddleware,
+  createApolloServerConfig,
+  expressMiddlewareOptions,
+  type Context,
 } from './config/apolloServer';
 import { auth, redirectAuth } from './middleware/auth';
 
 // App setup
 const app = express();
-app.set('port', PORT);
 
 // Servers setup
 const httpServer = http.createServer(app);
-const apolloServer = createApolloServer(httpServer);
+const apolloServer = new ApolloServer(createApolloServerConfig(httpServer));
 
 // Auth setup
 passport.use(discordStrategy);
@@ -31,14 +33,6 @@ passport.use(discordStrategy);
 app.use(cors(), express.json());
 app.use('/api/auth/discord', auth('discord'));
 app.use('/api/auth/discord/redirect', redirectAuth);
-apolloServer
-  .start()
-  .then(() => {
-    app.use('/api/graphql', createExpressMiddleware(apolloServer));
-  })
-  .catch((err) => {
-    console.log(err);
-  });
 
 /**
  * Starts the HTTP server and handles any errors that occur during the process.
@@ -80,9 +74,19 @@ const startHttpServer = async (): Promise<void> => {
   httpServer.on('listening', onListening);
 };
 
-// Start the server
-Promise.all([connectToPostgres(), connectToMongo(), startHttpServer()]).catch(
-  (error: Error) => {
+// Start the servers, database connections, and graphql route
+Promise.all([
+  sequelize.authenticate(),
+  connectToMongo(),
+  startHttpServer(),
+  apolloServer.start(),
+])
+  .then(() => {
+    app.use(
+      '/api/graphql',
+      expressMiddleware<Context>(apolloServer, expressMiddlewareOptions)
+    );
+  })
+  .catch((error: Error) => {
     console.log(error);
-  }
-);
+  });

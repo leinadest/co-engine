@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
-import { connectToMongo } from '../../../src/config/mongo';
-import { sequelize } from '../../../src/config/sequelize';
+import connectToMongo from '../../../src/config/mongo';
+import sequelize from '../../../src/config/sequelize';
 import { Chat, ChatUser, Message, User } from '../../../src/resources';
 import { executeOperation } from '../helpers';
 import AuthService from '../../../src/services/authService';
@@ -173,9 +173,7 @@ describe('Message Mutations Integration Tests', () => {
         errors.forEach((error, index) => {
           expect(error).toBeTruthy();
           expect(error.message).toEqual(invalidCases[index].expectedError[0]);
-          expect(error.extensions.code).toEqual(
-            invalidCases[index].expectedError[1]
-          );
+          expect(error.code).toEqual(invalidCases[index].expectedError[1]);
         });
       });
     });
@@ -201,7 +199,7 @@ describe('Message Mutations Integration Tests', () => {
         // Assert
         expect(error).toBeTruthy();
         expect(error.message).toEqual('Not authenticated');
-        expect(error.extensions.code).toEqual('UNAUTHENTICATED');
+        expect(error.code).toEqual('UNAUTHENTICATED');
       });
     });
 
@@ -228,7 +226,7 @@ describe('Message Mutations Integration Tests', () => {
         // Assert
         expect(error).toBeTruthy();
         expect(error.message).toEqual('User not found in context');
-        expect(error.extensions.code).toEqual('NOT_FOUND');
+        expect(error.code).toEqual('NOT_FOUND');
       });
     });
 
@@ -255,7 +253,7 @@ describe('Message Mutations Integration Tests', () => {
         // Assert
         expect(error).toBeTruthy();
         expect(error.message).toEqual('User not found in context');
-        expect(error.extensions.code).toEqual('NOT_FOUND');
+        expect(error.code).toEqual('NOT_FOUND');
       });
     });
 
@@ -363,9 +361,7 @@ describe('Message Mutations Integration Tests', () => {
         errors.forEach((error, index) => {
           expect(error).toBeTruthy();
           expect(error.message).toEqual(invalidCases[index].expectedError[0]);
-          expect(error.extensions.code).toEqual(
-            invalidCases[index].expectedError[1]
-          );
+          expect(error.code).toEqual(invalidCases[index].expectedError[1]);
         });
       });
     });
@@ -388,7 +384,7 @@ describe('Message Mutations Integration Tests', () => {
         // Assert
         expect(error).toBeTruthy();
         expect(error.message).toEqual('Not authenticated');
-        expect(error.extensions.code).toEqual('UNAUTHENTICATED');
+        expect(error.code).toEqual('UNAUTHENTICATED');
       });
     });
 
@@ -412,7 +408,7 @@ describe('Message Mutations Integration Tests', () => {
         // Assert
         expect(error).toBeTruthy();
         expect(error.message).toEqual('Message not found');
-        expect(error.extensions.code).toEqual('NOT_FOUND');
+        expect(error.code).toEqual('NOT_FOUND');
       });
     });
 
@@ -437,7 +433,7 @@ describe('Message Mutations Integration Tests', () => {
 
         // Assert
         expect(error.message).toEqual('Not authorized');
-        expect(error.extensions.code).toEqual('FORBIDDEN');
+        expect(error.code).toEqual('FORBIDDEN');
       });
     });
 
@@ -461,7 +457,7 @@ describe('Message Mutations Integration Tests', () => {
         // Assert
         expect(error).toBeTruthy();
         expect(error.message).toEqual('User not found in context');
-        expect(error.extensions.code).toEqual('NOT_FOUND');
+        expect(error.code).toEqual('NOT_FOUND');
       });
     });
 
@@ -485,7 +481,7 @@ describe('Message Mutations Integration Tests', () => {
         // Assert
         expect(error).toBeTruthy();
         expect(error.message).toEqual('User not found in context');
-        expect(error.extensions.code).toEqual('NOT_FOUND');
+        expect(error.code).toEqual('NOT_FOUND');
       });
     });
 

@@ -5,7 +5,7 @@ import { type Context } from '../../../src/config/apolloServer';
 import schema from '../../../src/schema';
 import { User } from '../../../src/resources';
 import AuthService from '../../../src/services/authService';
-import { sequelize } from '../../../src/config/sequelize';
+import sequelize from '../../../src/config/sequelize';
 import {
   JWT_SECRET,
   ACCESS_TOKEN_EXPIRATION_TIME,

@@ -4,7 +4,7 @@ import { ApolloServer } from '@apollo/server';
 import { type Context } from '../../../src/config/apolloServer';
 import schema from '../../../src/schema';
 import { Chat, ChatUser, User } from '../../../src/resources';
-import { sequelize } from '../../../src/config/sequelize';
+import sequelize from '../../../src/config/sequelize';
 import { type SingleGraphQLResponse } from '../types';
 import AuthService from '../../../src/services/authService';
 

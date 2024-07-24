@@ -2,20 +2,13 @@
 import { ApolloServer } from '@apollo/server';
 
 import AuthService from '../../src/services/authService';
-import { type Context } from '../../src/config/apolloServer';
+import {
+  apolloErrorFormatter,
+  type Context,
+} from '../../src/config/apolloServer';
 import schema from '../../src/schema';
-import { sequelize } from '../../src/config/sequelize';
+import sequelize from '../../src/config/sequelize';
 import { type SingleGraphQLResponse } from './types';
-
-// const apolloErrorFormatter = (
-//   formattedError: GraphQLFormattedError,
-//   originalError: unknown
-// ): any => {
-//   return {
-//     formattedError,
-//     originalError,
-//   };
-// };
 
 export const executeOperation = async <ResponseData>(
   query: string,
@@ -26,7 +19,7 @@ export const executeOperation = async <ResponseData>(
 
   const server = new ApolloServer<Context>({
     schema,
-    // formatError: apolloErrorFormatter,
+    formatError: apolloErrorFormatter,
   });
   const response = (await server.executeOperation<ResponseData>(
     { query, variables },

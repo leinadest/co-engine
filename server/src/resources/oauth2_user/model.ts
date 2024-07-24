@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 
-import { sequelize } from '../../config/sequelize';
+import sequelize from '../../config/sequelize';
 
 class OAuth2User extends Model {
   public oauth2_user_id!: string;
