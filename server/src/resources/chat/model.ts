@@ -4,6 +4,7 @@ import sequelize from '../../config/sequelize';
 
 class Chat extends Model {
   declare id: number;
+  declare creator_id: number;
   declare created_at: Date;
   declare name: string;
   declare picture: string;
@@ -15,6 +16,14 @@ class Chat extends Model {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+    },
+    creator_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
     },
     created_at: {
       type: DataTypes.DATE,

@@ -9,6 +9,7 @@ describe('Chat Mutations Integration Tests', () => {
 		mutation($name: String!, $picture: String) {
 			createChat(name: $name, picture: $picture) {
 				id
+        creator_id
 				created_at
 				name
 				picture
@@ -21,6 +22,7 @@ describe('Chat Mutations Integration Tests', () => {
 		mutation($chatId: ID!) {
 			deleteChat(chatId: $chatId) {
 				id
+        creator_id
 				created_at
 				name
 				picture
@@ -34,7 +36,6 @@ describe('Chat Mutations Integration Tests', () => {
 			addUserToChat(chatId: $chatId, userId: $userId) {
 				chat_id
 				user_id
-				is_creator
 			}
     }`;
 
@@ -43,12 +44,12 @@ describe('Chat Mutations Integration Tests', () => {
 			removeUserFromChat(chatId: $chatId, userId: $userId) {
 				chat_id
 				user_id
-				is_creator
 			}
 		}`;
 
   const chatData = {
     name: 'test_name',
+    creator_id: 1,
     picture: 'test_picture',
   };
 
@@ -62,11 +63,7 @@ describe('Chat Mutations Integration Tests', () => {
   });
 
   beforeEach(async () => {
-    try {
-      await sequelize.truncate({ cascade: true, restartIdentity: true });
-    } catch (e) {
-      console.log(e);
-    }
+    await sequelize.truncate({ cascade: true, restartIdentity: true });
   });
 
   afterAll(async () => {
@@ -171,6 +168,7 @@ describe('Chat Mutations Integration Tests', () => {
             const expectedResult = {
               ...chatData,
               id: '1',
+              creator_id: user.id.toString(),
               created_at: expect.any(String),
               last_message_at: null,
               last_message: null,
@@ -188,7 +186,7 @@ describe('Chat Mutations Integration Tests', () => {
 
             // Assert
             expect(result.data.createChat).toEqual(expectedResult);
-            expect(chatUser?.is_creator).toBe(true);
+            expect(chatUser).not.toBeNull();
           });
         });
       });
@@ -272,7 +270,6 @@ describe('Chat Mutations Integration Tests', () => {
             await ChatUser.create({
               chat_id: chat.id,
               user_id: user.id,
-              is_creator: true,
             });
           });
 
@@ -309,6 +306,7 @@ describe('Chat Mutations Integration Tests', () => {
               const expectedResult = {
                 ...chat.get({ plain: true }),
                 id: chat.id.toString(),
+                creator_id: user.id.toString(),
                 created_at: chat.created_at.toISOString(),
                 last_message_at: null,
                 last_message: null,
@@ -421,7 +419,6 @@ describe('Chat Mutations Integration Tests', () => {
               await ChatUser.create({
                 chat_id: chat.id,
                 user_id: otherUser.id,
-                is_creator: false,
               });
             });
 
@@ -450,7 +447,6 @@ describe('Chat Mutations Integration Tests', () => {
               const expectedResult = {
                 chat_id: chat.id.toString(),
                 user_id: otherUser.id.toString(),
-                is_creator: false,
               };
 
               // Execute mutation and get results
@@ -525,6 +521,14 @@ describe('Chat Mutations Integration Tests', () => {
         });
 
         describe('and the user is not the creator', () => {
+          let invalidAccessToken: string;
+
+          beforeEach(async () => {
+            invalidAccessToken = AuthService.createAccessToken(
+              user.id + 1
+            ).accessToken;
+          });
+
           it('should throw an error', async () => {
             // Define expected error
             const expectedMessage =
@@ -534,8 +538,11 @@ describe('Chat Mutations Integration Tests', () => {
             // Execute mutation and get results
             const result = await executeOperation(
               REMOVE_USER_FROM_CHAT,
-              { chatId: '1', userId: '2' },
-              accessToken
+              {
+                chatId: '1',
+                userId: '2',
+              },
+              invalidAccessToken
             );
             const error = result.errors[0];
 
@@ -550,7 +557,6 @@ describe('Chat Mutations Integration Tests', () => {
             await ChatUser.create({
               chat_id: chat.id,
               user_id: user.id,
-              is_creator: true,
             });
           });
 
@@ -590,7 +596,6 @@ describe('Chat Mutations Integration Tests', () => {
               const expectedResult = {
                 chat_id: chat.id.toString(),
                 user_id: otherUser.id.toString(),
-                is_creator: false,
               };
 
               // Execute mutation and get results

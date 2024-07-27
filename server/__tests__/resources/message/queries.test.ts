@@ -2,7 +2,14 @@ import mongoose from 'mongoose';
 
 import sequelize from '../../../src/config/sequelize';
 import connectToMongo from '../../../src/config/mongo';
-import { Chat, ChatUser, Message, User } from '../../../src/resources/';
+import {
+  Chat,
+  ChatUser,
+  Message,
+  User,
+  UserBlock,
+} from '../../../src/resources/';
+import { type IMessage } from '../../../src/resources/message/model';
 import { executeOperation } from '../helpers';
 import AuthService from '../../../src/services/authService';
 
@@ -10,6 +17,7 @@ describe('Message Queries Integration Tests', () => {
   const GET_MESSAGES = `
     query($query: MessagesInput!) {
       messages(query: $query) {
+        id
         context_type
         context_id
         creator_id
@@ -45,13 +53,13 @@ describe('Message Queries Integration Tests', () => {
   describe('getMessages', () => {
     let validUser: User;
     let validContext: Chat;
+    let validMessage: IMessage;
     let validContextUser: ChatUser;
     let validAccessToken: string;
 
     beforeEach(async () => {
-      [validUser, validContext] = await Promise.all([
+      [validUser, validMessage] = await Promise.all([
         User.create({ username: 'test' }),
-        Chat.create({ name: 'test' }),
         Message.create({
           context_type: 'chat',
           context_id: 1,
@@ -60,6 +68,7 @@ describe('Message Queries Integration Tests', () => {
         }),
       ]);
 
+      validContext = await Chat.create({ creator_id: validUser.id });
       validContextUser = await ChatUser.create({
         chat_id: 1,
         user_id: 1,
@@ -213,6 +222,7 @@ describe('Message Queries Integration Tests', () => {
       it('should return a list of messages', async () => {
         // Define expected query result
         const expectedMessage = {
+          id: validMessage.id,
           context_type: 'chat',
           context_id: validContext.id.toString(),
           creator_id: validUser.id.toString(),
@@ -236,6 +246,59 @@ describe('Message Queries Integration Tests', () => {
 
         // Assert
         expect(result.data.messages).toContainEqual(expectedMessage);
+      });
+    });
+
+    describe('and if there are messages from a blocked user', () => {
+      let blockedUser: User;
+      let blockedUserUnblockedMessage: IMessage;
+      let blockedUserBlockedMessage: IMessage;
+
+      beforeEach(async () => {
+        blockedUser = await User.create({ username: 'blocked' });
+        await ChatUser.create({
+          chat_id: validContext.id,
+          user_id: blockedUser.id,
+        });
+        blockedUserUnblockedMessage = await Message.create({
+          context_type: 'chat',
+          context_id: validContext.id,
+          creator_id: blockedUser.id,
+          content: 'message not blocked yet',
+        });
+        await UserBlock.create({
+          user_id: validUser.id,
+          blocked_user_id: blockedUser.id,
+        });
+        blockedUserBlockedMessage = await Message.create({
+          context_type: 'chat',
+          context_id: validContext.id,
+          creator_id: blockedUser.id,
+          content: 'message now blocked',
+        });
+      });
+
+      it('should not return messages made after the creator is blocked', async () => {
+        // Define expected and unexpected messages
+        const expectedMessage = blockedUserUnblockedMessage.toJSON();
+        const unexpectedMessage = blockedUserBlockedMessage.toJSON();
+
+        // Execute query and get results
+        const result = await executeOperation(
+          GET_MESSAGES,
+          {
+            query: {
+              contextType: 'chat',
+              contextId: validContext.id.toString(),
+            },
+          },
+          validAccessToken
+        );
+        const messages = result.data.messages;
+
+        // Assert
+        expect(messages).toContainEqual(expectedMessage);
+        expect(messages).not.toContainEqual(unexpectedMessage);
       });
     });
   });

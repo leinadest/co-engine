@@ -7,6 +7,7 @@ import userSchema from '../resources/user/schema';
 import userFriendRequestSchema from '../resources/user_friendship/schema';
 import chatSchema from '../resources/chat/schema';
 import messageSchema from '../resources/message/schema';
+import userBlockSchema from '../resources/user_block/schema';
 
 const rootTypeDefs = gql`
   type Query {
@@ -26,12 +27,14 @@ export default makeExecutableSchema({
     userFriendRequestSchema.typeDefs,
     chatSchema.typeDefs,
     messageSchema.typeDefs,
+    userBlockSchema.typeDefs,
   ],
   resolvers: merge(
     dateTimeScalar.resolvers,
     userSchema.resolvers,
     userFriendRequestSchema.resolvers,
     chatSchema.resolvers,
-    messageSchema.resolvers
+    messageSchema.resolvers,
+    userBlockSchema.resolvers
   ),
 });

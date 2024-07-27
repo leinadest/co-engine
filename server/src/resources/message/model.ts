@@ -14,12 +14,16 @@ const MessageSchema = new mongoose.Schema({
 MessageSchema.set('toJSON', {
   transform: (_document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
+    returnedObject.context_id = returnedObject.context_id.toString();
+    returnedObject.creator_id = returnedObject.creator_id.toString();
 
     const formatDate = (obj: any, prop: string): void => {
-      if (obj[prop] === null) return;
-      obj[`formatted_${prop}`] = DateTime.fromJSDate(
-        obj[prop] as Date
-      ).toLocaleString(DateTime.DATETIME_MED);
+      obj[`formatted_${prop}`] =
+        obj[prop] === null
+          ? null
+          : DateTime.fromJSDate(obj[prop] as Date).toLocaleString(
+              DateTime.DATETIME_MED
+            );
     };
     formatDate(returnedObject, 'created_at');
     formatDate(returnedObject, 'edited_at');

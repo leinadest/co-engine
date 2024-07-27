@@ -63,11 +63,10 @@ describe('Message Mutations Integration Tests', () => {
     ]);
 
     let rawValidMessage;
-    [validUser, validContext, rawValidMessage] = await Promise.all([
+    [validUser, rawValidMessage] = await Promise.all([
       User.create({
         username: 'test',
       }),
-      Chat.create({}),
       Message.create({
         context_type: 'chat',
         context_id: 1,
@@ -76,6 +75,7 @@ describe('Message Mutations Integration Tests', () => {
       }),
     ]);
 
+    validContext = await Chat.create({ creator_id: validUser.id });
     validMessage = rawValidMessage.toJSON<IMessageJSON>();
     validChatUser = await ChatUser.create({
       chat_id: validContext.id,

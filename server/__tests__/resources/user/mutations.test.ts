@@ -1,46 +1,34 @@
+import gql from 'graphql-tag';
 import bcrypt from 'bcrypt';
 
 import { executeOperation } from '../helpers';
 import sequelize from '../../../src/config/sequelize';
 import { User } from '../../../src/resources';
+import { UserFields } from '../../../src/resources/user/schema';
 import { ACCESS_TOKEN_EXPIRATION_TIME } from '../../../src/config/environment';
 
 describe('User Mutations Integration Tests', () => {
-  const CREATE_USER = `
-    mutation($user: CreateUserInput!) {
-        createUser(user: $user) {
-            id
-            email
-            username
-            discriminator
-            password_hash
-            created_at
-            last_login_at
-            is_online
-            profile_pic
-            bio
-        }
-    }`;
+  const CREATE_USER = gql`
+    ${UserFields}
+    mutation ($user: CreateUserInput!) {
+      createUser(user: $user) {
+        ...UserFields
+      }
+    }
+  `;
 
-  const AUTHENTICATE = `
-    mutation($credentials: AuthenticateInput!) {
-        authenticate(credentials: $credentials) {
-            user {
-                id
-                email
-                username
-                discriminator
-                password_hash
-                created_at
-                last_login_at
-                is_online
-                profile_pic
-                bio
-            }
-            accessToken
-            expiresAt
+  const AUTHENTICATE = gql`
+    ${UserFields}
+    mutation ($credentials: AuthenticateInput!) {
+      authenticate(credentials: $credentials) {
+        user {
+          ...UserFields
         }
-    }`;
+        accessToken
+        expiresAt
+      }
+    }
+  `;
 
   beforeAll(async () => {
     await sequelize.authenticate();
@@ -217,7 +205,6 @@ describe('User Mutations Integration Tests', () => {
           email: validUser.email,
           username: validUser.username,
           discriminator: '0',
-          password_hash: expect.any(String),
           created_at: expect.any(String),
           last_login_at: null,
           is_online: false,
@@ -356,6 +343,8 @@ describe('User Mutations Integration Tests', () => {
             ...validUser.get({ plain: true }),
             id: validUser.id.toString(),
             created_at: validUser.created_at.toISOString(),
+            last_login_at: validUser.last_login_at?.toISOString() ?? null,
+            password_hash: undefined,
           },
           accessToken: expect.any(String),
           expiresAt: expect.any(String),

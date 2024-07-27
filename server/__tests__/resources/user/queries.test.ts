@@ -1,48 +1,61 @@
-import { ApolloServer } from '@apollo/server';
-import jwt from 'jsonwebtoken';
-
-import { type Context } from '../../../src/config/apolloServer';
-import schema from '../../../src/schema';
-import { User } from '../../../src/resources';
+import { executeOperation } from '../helpers';
+import { User, UserBlock, UserFriendship } from '../../../src/resources';
+import {
+  PublicUserFields,
+  UserFields,
+} from '../../../src/resources/user/schema';
 import AuthService from '../../../src/services/authService';
 import sequelize from '../../../src/config/sequelize';
-import {
-  JWT_SECRET,
-  ACCESS_TOKEN_EXPIRATION_TIME,
-} from '../../../src/config/environment';
-import { type SingleGraphQLResponse } from '../types';
+import gql from 'graphql-tag';
 
 describe('User Queries Integration Tests', () => {
-  const GET_USERS = `query { users { id username discriminator } }`;
-
-  const GET_USER = `
-    query($id: ID!) {
-      user(id: $id) {
-        id
-        username
-        discriminator
-        created_at
-        is_online
-        last_login_at
-        profile_pic
-        bio
+  const GET_USERS = gql`
+    ${PublicUserFields}
+    query {
+      users {
+        ...PublicUserFields
       }
-    }`;
+    }
+  `;
 
-  const GET_ME = `
+  const GET_USER = gql`
+    ${PublicUserFields}
+    query ($id: ID!) {
+      user(id: $id) {
+        ...PublicUserFields
+      }
+    }
+  `;
+
+  const GET_ME = gql`
+    ${UserFields}
     query {
       me {
-        id
-        email
-        username
-        discriminator
-        created_at
-        is_online
-        last_login_at
-        profile_pic
-        bio
+        ...UserFields
       }
-    }`;
+    }
+  `;
+
+  const GET_FRIENDS = gql`
+    ${PublicUserFields}
+    query {
+      friends {
+        ...PublicUserFields
+      }
+    }
+  `;
+
+  const GET_BLOCKED_USERS = gql`
+    ${PublicUserFields}
+    query {
+      blocked {
+        ...PublicUserFields
+      }
+    }
+  `;
+
+  let validUser: User;
+  let validAccessToken: string;
 
   beforeAll(async () => {
     await sequelize.authenticate();
@@ -51,122 +64,253 @@ describe('User Queries Integration Tests', () => {
 
   beforeEach(async () => {
     await User.truncate({ cascade: true, restartIdentity: true });
+
+    validUser = await User.create({ username: 'test' });
+    validAccessToken = AuthService.createAccessToken(validUser.id).accessToken;
   });
 
   afterAll(async () => {
     await sequelize.close();
   });
 
-  it('should return all users', async () => {
-    // Set up users and server
-    const users = await User.bulkCreate([
-      {
-        username: 'test1',
-        email: 'test1',
-        password: 'test1',
-      },
-      {
-        username: 'test2',
-        email: 'test2',
-        password: 'test2',
-      },
-    ]);
-    const server = new ApolloServer<Context>({ schema });
+  describe('users', () => {
+    it('should return all users', async () => {
+      // Define expected user
+      const expectedUser = {
+        ...validUser.get({ plain: true }),
+        id: validUser.id.toString(),
+        created_at: validUser.created_at.toISOString(),
+        email: undefined,
+        password_hash: undefined,
+      };
+      // Execute query and get results
+      const result = await executeOperation(GET_USERS);
+      const users = result.data.users;
 
-    // Define expectation
-    const expectedResult = users.map((user) => ({
-      id: user.id.toString(),
-      username: user.username,
-      discriminator: user.discriminator,
-    }));
-
-    // Execute query
-    interface ResponseData {
-      users: typeof expectedResult;
-    }
-    const response = (await server.executeOperation<ResponseData>({
-      query: GET_USERS,
-    })) as SingleGraphQLResponse<ResponseData>;
-
-    // Get result
-    const result = response.body.singleResult.data.users;
-
-    // Assert
-    expect(result.length).toEqual(2);
-    expect(result[0]).toEqual(expectedResult[0]);
-    expect(result[1]).toEqual(expectedResult[1]);
+      // Assert
+      expect(users).toContainEqual(expectedUser);
+    });
   });
 
-  it('should return the user with the specified id', async () => {
-    // Set up user and server
-    const user = await User.create({
-      username: 'test',
-      email: 'test',
-      password: 'test',
+  describe('user', () => {
+    describe('if the specified user ID is not of type ID', () => {
+      it('should throw an error', async () => {
+        // Define expected error
+        const expectedError = {
+          message: 'Variable "$id" of non-null type "ID!" must not be null.',
+          code: 'BAD_USER_INPUT',
+          stack: expect.any(String),
+        };
+
+        // Execute query and get results
+        const result = await executeOperation(GET_USER, { id: null });
+        const error = '0' in result.errors && result.errors[0];
+
+        // Assert
+        expect(error).toEqual(expectedError);
+      });
     });
-    const server = new ApolloServer<Context>({ schema });
 
-    // Define expectation
-    const expectedResult = {
-      ...user.toJSON(),
-      id: user.id.toString(),
-      created_at: user.created_at.toISOString(),
-    };
-    delete expectedResult.email;
-    delete expectedResult.password_hash;
+    describe('else if the user is not found', () => {
+      const invalidUserId = 0;
 
-    // Execute query
-    interface ResponseData {
-      user: typeof user;
-    }
-    const response = (await server.executeOperation<ResponseData>({
-      query: GET_USER,
-      variables: { id: user.id.toString() },
-    })) as SingleGraphQLResponse<ResponseData>;
+      it('should throw an error', async () => {
+        // Define expected error
+        const expectedError = {
+          message: 'User not found',
+          code: 'NOT_FOUND',
+          stack: expect.any(String),
+        };
 
-    // Get result
-    const result = response.body.singleResult.data.user;
+        // Execute query and get results
+        const result = await executeOperation(GET_USER, { id: invalidUserId });
+        const error = result.errors !== undefined && result.errors[0];
 
-    // Assert
-    expect(result).toEqual(expectedResult);
+        // Assert
+        expect(error).toEqual(expectedError);
+      });
+    });
+
+    describe('else', () => {
+      it('should return the specified user', async () => {
+        // Define expected user
+        const expectedUser = {
+          ...validUser.get({ plain: true }),
+          id: validUser.id.toString(),
+          created_at: validUser.created_at.toISOString(),
+          email: undefined,
+          password_hash: undefined,
+        };
+
+        // Execute query and get results
+        const result = await executeOperation(
+          GET_USER,
+          { id: validUser.id },
+          validAccessToken
+        );
+        const user = result.data.user;
+
+        // Assert
+        expect(user).toEqual(expectedUser);
+      });
+    });
   });
 
-  it('should return the authenticated user', async () => {
-    // Set up data and server
-    const user = await User.create({
-      username: 'test',
-      discriminator: '1234',
-      email: 'test',
-      password: 'test',
+  describe('me', () => {
+    describe('if the user is not authenticated', () => {
+      const invalidAccessToken = '';
+
+      it('should throw an error', async () => {
+        // Define expected error
+        const expectedError = {
+          message: 'Not authenticated',
+          code: 'UNAUTHENTICATED',
+          stack: expect.any(String),
+        };
+
+        // Execute query and get results
+        const result = await executeOperation(GET_ME, {}, invalidAccessToken);
+        const error = result.errors !== undefined && result.errors[0];
+
+        // Assert
+        expect(error).toEqual(expectedError);
+      });
     });
-    const accessToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
-      expiresIn: ACCESS_TOKEN_EXPIRATION_TIME,
-      subject: 'accessToken',
+
+    describe('else', () => {
+      it('should return the authenticated user', async () => {
+        // Define expected user
+        const expectedUser = {
+          ...validUser.get({ plain: true }),
+          id: validUser.id.toString(),
+          created_at: validUser.created_at.toISOString(),
+          last_login_at: validUser.last_login_at?.toISOString() ?? null,
+          password_hash: undefined,
+        };
+
+        // Execute query and get results
+        const result = await executeOperation(GET_ME, {}, validAccessToken);
+        const user = result.data.me;
+
+        // Assert
+        expect(user).toEqual(expectedUser);
+      });
     });
-    const authService = new AuthService(accessToken);
-    const server = new ApolloServer<Omit<Context, 'sequelize'>>({ schema });
+  });
 
-    // Define expectation
-    const expectedResult = {
-      ...user.toJSON(),
-      id: user.id.toString(),
-      created_at: user.created_at.toISOString(),
-    };
-    delete expectedResult.password_hash;
+  describe('friends', () => {
+    let validFriendUser: User;
 
-    // Execute query
-    interface ResponseData {
-      me: typeof expectedResult;
-    }
-    const response = (await server.executeOperation<ResponseData>(
-      { query: GET_ME },
-      { contextValue: { authService } }
-    )) as SingleGraphQLResponse<ResponseData>;
+    beforeEach(async () => {
+      validFriendUser = await User.create({ username: 'friend' });
+      await UserFriendship.create({
+        sender_id: validUser.id,
+        receiver_id: validFriendUser.id,
+      });
+    });
 
-    // Get result
-    const result = response.body.singleResult.data.me;
+    describe('if the user is not authenticated', () => {
+      it('should throw an error', async () => {
+        // Define expected error
+        const expectedError = {
+          message: 'Not authenticated',
+          code: 'UNAUTHENTICATED',
+          stack: expect.any(String),
+        };
 
-    // Assert
-    expect(result).toEqual(response.body.singleResult.data.me);
+        // Execute query and get results
+        const result = await executeOperation(GET_FRIENDS);
+        const error = result.errors !== undefined && result.errors[0];
+
+        // Assert
+        expect(error).toEqual(expectedError);
+      });
+    });
+
+    describe('else', () => {
+      it('should return all friends', async () => {
+        // Define expected friend
+        const expectedFriend = {
+          ...validFriendUser.get({ plain: true }),
+          id: validFriendUser.id.toString(),
+          created_at: validFriendUser.created_at.toISOString(),
+          last_login_at: validFriendUser.last_login_at?.toISOString() ?? null,
+          email: undefined,
+          password_hash: undefined,
+        };
+
+        // Execute query and get results
+        const result = await executeOperation(
+          GET_FRIENDS,
+          {},
+          validAccessToken
+        );
+        const friends = result.data.friends;
+
+        // Assert
+        expect(friends).toContainEqual(expectedFriend);
+      });
+    });
+  });
+
+  describe('blockedUsers', () => {
+    let validBlockedUser: User;
+
+    beforeEach(async () => {
+      validBlockedUser = await User.create({ username: 'blocked' });
+      await UserBlock.create({
+        user_id: validUser.id,
+        blocked_user_id: validBlockedUser.id,
+      });
+    });
+
+    describe('if the user is not authenticated', () => {
+      let invalidAccessToken: '';
+
+      it('should throw an error', async () => {
+        // Define expected error
+        const expectedError = {
+          message: 'Not authenticated',
+          code: 'UNAUTHENTICATED',
+          stack: expect.any(String),
+        };
+
+        // Execute query and get results
+        const result = await executeOperation(
+          GET_BLOCKED_USERS,
+          {},
+          invalidAccessToken
+        );
+        const error = result.errors !== undefined && result.errors[0];
+
+        // Assert
+        expect(error).toEqual(expectedError);
+      });
+    });
+
+    describe('else', () => {
+      it('should return all blocked users', async () => {
+        // Define expected blocked user
+        const expectedBlockedUser = {
+          ...validBlockedUser.get({ plain: true }),
+          id: validBlockedUser.id.toString(),
+          created_at: validBlockedUser.created_at.toISOString(),
+          last_login_at: validBlockedUser.last_login_at?.toISOString() ?? null,
+          email: undefined,
+          password_hash: undefined,
+        };
+
+        // Execute query and get results
+        const result = await executeOperation(
+          GET_BLOCKED_USERS,
+          {},
+          validAccessToken
+        );
+        const blockedUsers = result.data.blocked;
+
+        // Assert
+        expect(blockedUsers).toContainEqual(expectedBlockedUser);
+      });
+    });
   });
 });

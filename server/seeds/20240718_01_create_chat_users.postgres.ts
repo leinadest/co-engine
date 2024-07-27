@@ -7,8 +7,8 @@ import { ChatUser } from '../src/resources';
 const devData: { chatUsers: any[]; chatUsersIds: number[] } = {
   chatUsers: [
     { user_id: 1, chat_id: 1 },
-    { user_id: 1, chat_id: 2, is_creator: true },
-    { user_id: 2, chat_id: 1, is_creator: true },
+    { user_id: 1, chat_id: 2 },
+    { user_id: 2, chat_id: 1 },
   ],
   chatUsersIds: [],
 };
@@ -25,7 +25,7 @@ export const up = async (): Promise<void> => {
     console.log('*** BULK INSERTING CHAT USERS... ***');
 
     const result = await ChatUser.bulkCreate(data.chatUsers);
-    data.chatUsersIds = result.map((chatUser) => chatUser.id);
+    data.chatUsersIds = result.map((chatUser) => chatUser.user_id);
 
     console.log(`*** BULK INSERTED CHAT USERS RESULT ***`);
     console.log(result);
@@ -41,7 +41,7 @@ export const down = async (): Promise<void> => {
 
     const result = await ChatUser.destroy({
       where: {
-        id: {
+        user_id: {
           [Op.in]: data.chatUsersIds,
         },
       },

@@ -61,13 +61,12 @@ export const resolvers = {
 
       try {
         return await sequelize.transaction(async (transaction) => {
-          const chat = await Chat.create({ name, picture }, { transaction });
+          const chat = await Chat.create(
+            { name, picture, creator_id: authService.getUserId() },
+            { transaction }
+          );
           await ChatUser.create(
-            {
-              chat_id: chat.id,
-              user_id: authService.getUserId(),
-              is_creator: true,
-            },
+            { chat_id: chat.id, user_id: authService.getUserId() },
             { transaction }
           );
           return chat;
@@ -101,7 +100,6 @@ export const resolvers = {
         where: {
           chat_id: chatId,
           user_id: authService.getUserId(),
-          is_creator: true,
         },
       });
       if (creator === null) {
@@ -152,7 +150,7 @@ export const resolvers = {
 
       const [chatUser, isCreated] = await ChatUser.findOrCreate({
         where: { chat_id: chatId, user_id: userId },
-        defaults: { chat_id: chatId, user_id: userId, is_creator: false },
+        defaults: { chat_id: chatId, user_id: userId },
       });
       if (!isCreated) {
         throw new GraphQLError('User already in chat', {
@@ -181,10 +179,7 @@ export const resolvers = {
         });
       }
 
-      const self = await ChatUser.findOne({
-        where: { chat_id: chatId, user_id: authService.getUserId() },
-      });
-      if (self === null || !self.is_creator) {
+      if (chat.creator_id.toString() !== authService.getUserId()) {
         throw new GraphQLError(
           'Only the creator can remove users from the chat',
           {

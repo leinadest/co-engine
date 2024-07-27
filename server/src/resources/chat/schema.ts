@@ -7,6 +7,7 @@ import mutations from './mutations';
 const types = gql`
   type Chat {
     id: ID!
+    creator_id: ID!
     created_at: DateTime!
     name: String
     picture: String
@@ -17,7 +18,6 @@ const types = gql`
   type ChatUser {
     chat_id: ID!
     user_id: ID!
-    is_creator: Boolean!
   }
 `;
 

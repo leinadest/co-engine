@@ -9,9 +9,10 @@ import {
 import schema from '../../src/schema';
 import sequelize from '../../src/config/sequelize';
 import { type SingleGraphQLResponse } from './types';
+import { type DocumentNode } from 'graphql';
 
 export const executeOperation = async <ResponseData>(
-  query: string,
+  query: string | DocumentNode,
   variables?: any,
   accessToken?: string
 ): Promise<any> => {

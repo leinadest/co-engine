@@ -9,40 +9,37 @@ import AuthService from '../../../src/services/authService';
 
 describe('User Friendship Mutations Integration Tests', () => {
   const REQUEST_FRIENDSHIP = `
-        mutation($userId: ID!) {
-            requestFriendship(userId: $userId) {
-                sender_id
-                receiver_id
-                created_at
-                accepted_at
-                status
-            }
-        }
-    `;
+    mutation($userId: ID!) {
+      requestFriendship(userId: $userId) {
+        sender_id
+        receiver_id
+        created_at
+        accepted_at
+        status
+      }
+    }`;
 
   const ACCEPT_FRIENDSHIP = `
-        mutation($userId: ID!) {
-            acceptFriendship(userId: $userId) {
-                sender_id
-                receiver_id
-                created_at
-                accepted_at
-                status
-            }
-        }
-    `;
+    mutation($userId: ID!) {
+      acceptFriendship(userId: $userId) {
+        sender_id
+        receiver_id
+        created_at
+        accepted_at
+        status
+      }
+    }`;
 
   const DELETE_FRIENDSHIP = `
-        mutation($userId: ID!) {
-            deleteFriendship(userId: $userId) {
-                sender_id
-                receiver_id
-                created_at
-                accepted_at
-                status
-            }
-        }
-    `;
+    mutation($userId: ID!) {
+      deleteFriendship(userId: $userId) {
+        sender_id
+        receiver_id
+        created_at
+        accepted_at
+        status
+      }
+    }`;
 
   beforeAll(async () => {
     await sequelize.authenticate();
