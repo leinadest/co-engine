@@ -20,6 +20,16 @@ const types = gql`
     content: String!
     reactions: [Reaction]!
   }
+
+  type MessageEdge {
+    cursor: String!
+    node: Message!
+  }
+
+  type MessageConnection {
+    edges: [MessageEdge!]!
+    pageInfo: PageInfo!
+  }
 `;
 
 export default {

@@ -1,11 +1,7 @@
-import { ApolloServer } from '@apollo/server';
-
 import sequelize from '../../../src/config/sequelize';
 import { UserFriendship, User } from '../../../src/resources';
-import { type Context } from '../../../src/config/apolloServer';
-import schema from '../../../src/schema';
-import { type SingleGraphQLResponse } from '../types';
 import AuthService from '../../../src/services/authService';
+import { executeOperation } from '../helpers';
 
 describe('User Friendship Queries Integration Tests', () => {
   const GET_FRIENDSHIPS = `
@@ -52,7 +48,6 @@ describe('User Friendship Queries Integration Tests', () => {
       receiver_id: users[1].id,
     });
     const accessToken = AuthService.createAccessToken(users[0].id).accessToken;
-    const authService = new AuthService(accessToken);
 
     // Define expectation
     const expectedResult = [
@@ -65,20 +60,11 @@ describe('User Friendship Queries Integration Tests', () => {
       },
     ];
 
-    // Execute query
-    const server = new ApolloServer<Omit<Context, 'sequelize'>>({ schema });
-    interface ResponseData {
-      userFriendships: typeof expectedResult;
-    }
-    const response = (await server.executeOperation<ResponseData>(
-      { query: GET_FRIENDSHIPS },
-      { contextValue: { authService } }
-    )) as SingleGraphQLResponse<ResponseData>;
-
-    // Get result
-    const result = response.body.singleResult.data.userFriendships;
+    // Execute query and get results
+    const result = await executeOperation(GET_FRIENDSHIPS, {}, accessToken);
+    const friendships = result.data.userFriendships;
 
     // Assert
-    expect(result).toEqual(expectedResult);
+    expect(friendships).toEqual(expectedResult);
   });
 });

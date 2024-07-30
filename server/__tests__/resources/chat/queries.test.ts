@@ -1,11 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { ApolloServer } from '@apollo/server';
-
-import { type Context } from '../../../src/config/apolloServer';
-import schema from '../../../src/schema';
 import { Chat, ChatUser, User, UserBlock } from '../../../src/resources';
 import sequelize from '../../../src/config/sequelize';
-import { type SingleGraphQLResponse } from '../types';
 import AuthService from '../../../src/services/authService';
 import { executeOperation } from '../helpers';
 
@@ -62,7 +57,6 @@ describe('Chat Queries Integration Tests', () => {
         { chat_id: chats[0].id, user_id: validUser.id },
         { chat_id: chats[1].id, user_id: validUser.id },
       ]);
-      const authService = new AuthService(validAccessToken);
 
       // Define expectation
       const expectedResult = chats.map((chat) => ({
@@ -73,21 +67,11 @@ describe('Chat Queries Integration Tests', () => {
         last_message_at: chat.last_message_at?.toISOString() ?? null,
       }));
 
-      // Execute query
-      const server = new ApolloServer<Omit<Context, 'sequelize'>>({ schema });
-      interface ResponseData {
-        chats: typeof expectedResult;
-      }
-      const response = (await server.executeOperation<ResponseData>(
-        { query: GET_CHATS },
-        { contextValue: { authService } }
-      )) as SingleGraphQLResponse<ResponseData>;
-
-      // Get result
-      const result = response.body.singleResult.data.chats;
+      // Execute query and get results
+      const result = await executeOperation(GET_CHATS, {}, validAccessToken);
 
       // Assert
-      expect(result).toEqual(expectedResult);
+      expect(result.data.chats).toEqual(expectedResult);
     });
 
     describe('and if there are chats from a blocked user', () => {

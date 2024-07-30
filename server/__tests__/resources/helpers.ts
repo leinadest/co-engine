@@ -10,21 +10,35 @@ import schema from '../../src/schema';
 import sequelize from '../../src/config/sequelize';
 import { type SingleGraphQLResponse } from './types';
 import { type DocumentNode } from 'graphql';
+import UsersDataSource from '../../src/resources/user/dataSource';
+import MessagesDataSource from '../../src/resources/message/dataSource';
 
 export const executeOperation = async <ResponseData>(
   query: string | DocumentNode,
   variables?: any,
   accessToken?: string
 ): Promise<any> => {
-  const authService = new AuthService(accessToken ?? '');
-
   const server = new ApolloServer<Context>({
     schema,
     formatError: apolloErrorFormatter,
   });
+
+  const authService = new AuthService(accessToken ?? '');
+  const usersDB = new UsersDataSource(authService);
+  const messagesDB = new MessagesDataSource(usersDB);
+
+  const contextValue = {
+    sequelize,
+    authService,
+    dataSources: {
+      usersDB,
+      messagesDB,
+    },
+  };
+
   const response = (await server.executeOperation<ResponseData>(
     { query, variables },
-    { contextValue: { authService, sequelize } }
+    { contextValue }
   )) as SingleGraphQLResponse<ResponseData>;
 
   return response.body.singleResult;

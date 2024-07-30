@@ -19,9 +19,19 @@ const rootTypeDefs = gql`
   }
 `;
 
+const rootPaginationTypeDefs = gql`
+  type PageInfo {
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String
+    endCursor: String
+  }
+`;
+
 export default makeExecutableSchema({
   typeDefs: [
     rootTypeDefs,
+    rootPaginationTypeDefs,
     dateTimeScalar.typeDefs,
     userSchema.typeDefs,
     userFriendRequestSchema.typeDefs,

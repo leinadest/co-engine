@@ -17,16 +17,27 @@ describe('Message Queries Integration Tests', () => {
   const GET_MESSAGES = `
     query($query: MessagesInput!) {
       messages(query: $query) {
-        id
-        context_type
-        context_id
-        creator_id
-        formatted_created_at
-        formatted_edited_at
-        content
-        reactions {
-          reactor_id
-          reaction
+        edges {
+          cursor
+          node {
+            id
+            context_type
+            context_id
+            creator_id
+            formatted_created_at
+            formatted_edited_at
+            content
+            reactions {
+              reactor_id
+              reaction
+            }
+          }
+        }
+        pageInfo {
+          startCursor
+          endCursor
+          hasNextPage
+          hasPreviousPage
         }
       }
     }`;
@@ -53,25 +64,32 @@ describe('Message Queries Integration Tests', () => {
   describe('getMessages', () => {
     let validUser: User;
     let validContext: Chat;
-    let validMessage: IMessage;
+    let validMessages: IMessage[];
     let validContextUser: ChatUser;
     let validAccessToken: string;
 
     beforeEach(async () => {
-      [validUser, validMessage] = await Promise.all([
-        User.create({ username: 'test' }),
-        Message.create({
+      const validUserData = { username: 'test' };
+      const validMessagesData = [];
+      for (let i = 0; i < 20; i += 1) {
+        validMessagesData[i] = {
           context_type: 'chat',
           context_id: 1,
           creator_id: 1,
-          content: 'test content',
-        }),
+          content: `test content ${i}`,
+          created_at: new Date(Math.random() * 1000000000000),
+        };
+      }
+
+      [validUser, validMessages] = await Promise.all([
+        User.create(validUserData),
+        Message.insertMany(validMessagesData),
       ]);
 
       validContext = await Chat.create({ creator_id: validUser.id });
       validContextUser = await ChatUser.create({
-        chat_id: 1,
-        user_id: 1,
+        chat_id: validContext.id,
+        user_id: validUser.id,
       });
       validAccessToken = AuthService.createAccessToken(
         validUser.id
@@ -218,18 +236,23 @@ describe('Message Queries Integration Tests', () => {
       });
     });
 
-    describe('else', () => {
-      it('should return a list of messages', async () => {
+    describe('else if the user queries messages from the context', () => {
+      it('should return the first 10 messages ordered by descending date', async () => {
         // Define expected query result
-        const expectedMessage = {
-          id: validMessage.id,
-          context_type: 'chat',
-          context_id: validContext.id.toString(),
-          creator_id: validUser.id.toString(),
-          formatted_created_at: expect.any(String),
-          formatted_edited_at: null,
-          content: 'test content',
-          reactions: [],
+        const expectedMessageConnection = {
+          edges: validMessages
+            .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+            .map((message) => ({
+              cursor: expect.any(String),
+              node: message.toJSON(),
+            }))
+            .slice(0, 10),
+          pageInfo: {
+            hasNextPage: true,
+            hasPreviousPage: false,
+            startCursor: expect.any(String),
+            endCursor: expect.any(String),
+          },
         };
 
         // Execute query and get results
@@ -243,9 +266,10 @@ describe('Message Queries Integration Tests', () => {
           },
           validAccessToken
         );
+        const messageConnection = result.data.messages;
 
         // Assert
-        expect(result.data.messages).toContainEqual(expectedMessage);
+        expect(messageConnection).toEqual(expectedMessageConnection);
       });
     });
 
@@ -280,8 +304,22 @@ describe('Message Queries Integration Tests', () => {
 
       it('should not return messages made after the creator is blocked', async () => {
         // Define expected and unexpected messages
-        const expectedMessage = blockedUserUnblockedMessage.toJSON();
-        const unexpectedMessage = blockedUserBlockedMessage.toJSON();
+        const expectedEdges = [...validMessages, blockedUserUnblockedMessage]
+          .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+          .map((message) => ({
+            cursor: expect.any(String),
+            node: message.toJSON(),
+          }));
+        const unexpectedEdge = {
+          cursor: expect.any(String),
+          node: blockedUserBlockedMessage.toJSON(),
+        };
+        const expectedPageInfo = {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: expect.any(String),
+          endCursor: expect.any(String),
+        };
 
         // Execute query and get results
         const result = await executeOperation(
@@ -290,15 +328,208 @@ describe('Message Queries Integration Tests', () => {
             query: {
               contextType: 'chat',
               contextId: validContext.id.toString(),
+              first: 100,
             },
           },
           validAccessToken
         );
-        const messages = result.data.messages;
+        const messageConnection = result.data.messages;
 
         // Assert
-        expect(messages).toContainEqual(expectedMessage);
-        expect(messages).not.toContainEqual(unexpectedMessage);
+        expectedEdges.forEach((edge) => {
+          expect(messageConnection.edges).toContainEqual(edge);
+        });
+        expect(messageConnection.edges).not.toContainEqual(unexpectedEdge);
+        expect(messageConnection.pageInfo).toEqual(expectedPageInfo);
+      });
+    });
+
+    describe('else if the user queries by ascending date', () => {
+      it('should return the first 10 messages ordered by ascending date', async () => {
+        // Define expected query result
+        const expectedMessageConnection = {
+          edges: validMessages
+            .sort((a, b) => a.created_at.getTime() - b.created_at.getTime())
+            .map((message) => ({
+              cursor: expect.any(String),
+              node: message.toJSON(),
+            }))
+            .slice(0, 10),
+          pageInfo: {
+            hasNextPage: true,
+            hasPreviousPage: false,
+            startCursor: expect.any(String),
+            endCursor: expect.any(String),
+          },
+        };
+
+        // Execute query and get results
+        const result = await executeOperation(
+          GET_MESSAGES,
+          {
+            query: {
+              contextType: 'chat',
+              contextId: validContext.id.toString(),
+              orderDirection: 'ASC',
+            },
+          },
+          validAccessToken
+        );
+        const messageConnection = result.data.messages;
+
+        // Assert
+        expect(messageConnection).toEqual(expectedMessageConnection);
+      });
+    });
+
+    describe('else if the user queries the first 5 messages by desc date', () => {
+      it('should return the first 5 messages', async () => {
+        // Define expected query result
+        const expectedMessageConnection = {
+          edges: validMessages
+            .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+            .map((message) => ({
+              cursor: expect.any(String),
+              node: message.toJSON(),
+            }))
+            .slice(0, 5),
+          pageInfo: {
+            hasNextPage: true,
+            hasPreviousPage: false,
+            startCursor: expect.any(String),
+            endCursor: expect.any(String),
+          },
+        };
+
+        // Execute query and get results
+        const result = await executeOperation(
+          GET_MESSAGES,
+          {
+            query: {
+              contextType: 'chat',
+              contextId: validContext.id.toString(),
+              first: 5,
+            },
+          },
+          validAccessToken
+        );
+        const messageConnection = result.data.messages;
+
+        // Assert
+        expect(messageConnection).toEqual(expectedMessageConnection);
+      });
+    });
+
+    describe('else if the user queries the next 5 messages after the first 10 by desc date', () => {
+      let cursor: string;
+
+      beforeEach(async () => {
+        const messageConnection = await executeOperation(
+          GET_MESSAGES,
+          {
+            query: {
+              contextType: 'chat',
+              contextId: validContext.id.toString(),
+              first: 10,
+            },
+          },
+          validAccessToken
+        );
+        cursor = messageConnection.data.messages.pageInfo.endCursor;
+      });
+
+      it('should return the next 5 messages', async () => {
+        // Define expected message connection
+        const expectedMessageConnection = {
+          edges: validMessages
+            .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+            .slice(10, 15)
+            .map((message) => ({
+              cursor: expect.any(String),
+              node: message.toJSON(),
+            })),
+          pageInfo: {
+            hasNextPage: true,
+            hasPreviousPage: true,
+            startCursor: expect.any(String),
+            endCursor: expect.any(String),
+          },
+        };
+
+        // Execute query and get results
+        const result = await executeOperation(
+          GET_MESSAGES,
+          {
+            query: {
+              contextType: 'chat',
+              contextId: validContext.id.toString(),
+              first: 5,
+              after: cursor,
+            },
+          },
+          validAccessToken
+        );
+        const messageConnection = result.data.messages;
+
+        // Assert
+        expect(messageConnection).toEqual(expectedMessageConnection);
+      });
+    });
+
+    describe('else if the user queries the previous 5 messages before the first 10 by desc date', () => {
+      let cursor: string;
+
+      beforeEach(async () => {
+        const messageConnection = await executeOperation(
+          GET_MESSAGES,
+          {
+            query: {
+              contextType: 'chat',
+              contextId: validContext.id.toString(),
+              first: 10,
+            },
+          },
+          validAccessToken
+        );
+        cursor = messageConnection.data.messages.pageInfo.endCursor;
+      });
+
+      it('should return the previous 5 messages', async () => {
+        // Define expected message connection
+        const expectedMessageConnection = {
+          edges: validMessages
+            .sort((a, b) => a.created_at.getTime() - b.created_at.getTime())
+            .slice(-9, -4)
+            .map((message) => ({
+              cursor: expect.any(String),
+              node: message.toJSON(),
+            })),
+          pageInfo: {
+            hasNextPage: true,
+            hasPreviousPage: true,
+            startCursor: expect.any(String),
+            endCursor: expect.any(String),
+          },
+        };
+
+        // Execute query and get results
+        const result = await executeOperation(
+          GET_MESSAGES,
+          {
+            query: {
+              contextType: 'chat',
+              contextId: validContext.id.toString(),
+              orderDirection: 'ASC',
+              first: 5,
+              after: cursor,
+            },
+          },
+          validAccessToken
+        );
+        const messageConnection = result.data.messages;
+
+        // Assert
+        expect(messageConnection).toEqual(expectedMessageConnection);
       });
     });
   });

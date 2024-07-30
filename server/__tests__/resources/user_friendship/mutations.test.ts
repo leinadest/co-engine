@@ -81,7 +81,9 @@ describe('User Friendship Mutations Integration Tests', () => {
     };
 
     // Execute query
-    const server = new ApolloServer<Omit<Context, 'sequelize'>>({ schema });
+    const server = new ApolloServer<Omit<Context, 'sequelize' | 'dataSources'>>(
+      { schema }
+    );
     interface ResponseData {
       requestFriendship: typeof expectedResult;
     }
@@ -132,7 +134,9 @@ describe('User Friendship Mutations Integration Tests', () => {
     };
 
     // Execute query
-    const server = new ApolloServer<Omit<Context, 'sequelize'>>({ schema });
+    const server = new ApolloServer<Omit<Context, 'sequelize' | 'dataSources'>>(
+      { schema }
+    );
     interface ResponseData {
       acceptFriendship: typeof expectedResult;
     }
@@ -187,7 +191,9 @@ describe('User Friendship Mutations Integration Tests', () => {
     };
 
     // Execute query
-    const server = new ApolloServer<Omit<Context, 'sequelize'>>({ schema });
+    const server = new ApolloServer<Omit<Context, 'sequelize' | 'dataSources'>>(
+      { schema }
+    );
     interface ResponseData {
       deleteFriendship: typeof expectedResult;
     }
@@ -219,7 +225,9 @@ describe('User Friendship Mutations Integration Tests', () => {
     const expectedCode = 'UNAUTHENTICATED';
 
     // Execute query
-    const server = new ApolloServer<Omit<Context, 'sequelize'>>({ schema });
+    const server = new ApolloServer<Omit<Context, 'sequelize' | 'dataSources'>>(
+      { schema }
+    );
     const responses = (await Promise.all([
       server.executeOperation(
         {
@@ -273,7 +281,9 @@ describe('User Friendship Mutations Integration Tests', () => {
     const expectedCodes = ['USER_NOT_FOUND'];
 
     // Execute query
-    const server = new ApolloServer<Omit<Context, 'sequelize'>>({ schema });
+    const server = new ApolloServer<Omit<Context, 'sequelize' | 'dataSources'>>(
+      { schema }
+    );
     const response = (await server.executeOperation<any>(
       {
         query: REQUEST_FRIENDSHIP,
@@ -316,7 +326,9 @@ describe('User Friendship Mutations Integration Tests', () => {
     const expectedCode = 'FRIENDSHIP_ALREADY_EXISTS';
 
     // Execute query
-    const server = new ApolloServer<Omit<Context, 'sequelize'>>({ schema });
+    const server = new ApolloServer<Omit<Context, 'sequelize' | 'dataSources'>>(
+      { schema }
+    );
     const response = (await server.executeOperation<any>(
       {
         query: REQUEST_FRIENDSHIP,
@@ -358,7 +370,9 @@ describe('User Friendship Mutations Integration Tests', () => {
     ];
 
     // Execute query
-    const server = new ApolloServer<Omit<Context, 'sequelize'>>({ schema });
+    const server = new ApolloServer<Omit<Context, 'sequelize' | 'dataSources'>>(
+      { schema }
+    );
     const [requestResponse, acceptResponse, deleteResponse] =
       (await Promise.all([
         server.executeOperation<any>(
@@ -422,7 +436,9 @@ describe('User Friendship Mutations Integration Tests', () => {
     const expectedCode = 'FRIEND_REQUEST_NOT_FOUND';
 
     // Execute query
-    const server = new ApolloServer<Omit<Context, 'sequelize'>>({ schema });
+    const server = new ApolloServer<Omit<Context, 'sequelize' | 'dataSources'>>(
+      { schema }
+    );
     const responses = (await Promise.all([
       server.executeOperation<any>(
         {

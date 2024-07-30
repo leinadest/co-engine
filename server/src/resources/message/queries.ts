@@ -2,22 +2,37 @@ import { gql } from 'graphql-tag';
 import * as yup from 'yup';
 import { GraphQLError } from 'graphql/error/GraphQLError';
 
-import { Chat, Message, User } from '../';
-import type AuthService from '../../services/authService';
+import { type Context } from '../../config/apolloServer';
+import Chat from '../chat/model';
+import { User } from '..';
 
 export const typeDefs = gql`
   input MessagesInput {
     contextType: String!
     contextId: String!
+    orderDirection: String
+    orderBy: String
+    after: String
+    first: Int
   }
 
   extend type Query {
     """
     Returns messages from the specified context
     """
-    messages(query: MessagesInput!): [Message]!
+    messages(query: MessagesInput!): MessageConnection
   }
 `;
+
+interface MessagesInput {
+  contextType: string;
+  contextId: string;
+  by?: '_id' | 'created_at';
+  after?: string;
+  before?: string;
+  first?: number;
+  last?: number;
+}
 
 const messagesInputSchema = yup.object().shape({
   contextType: yup
@@ -33,8 +48,8 @@ export const resolvers = {
     // TODO: Implement channel context and permission checks
     messages: async (
       _parent: any,
-      { query }: { query: { contextType: string; contextId: string } },
-      { authService }: { authService: AuthService }
+      { query }: { query: MessagesInput },
+      { authService, dataSources }: Context
     ) => {
       try {
         await messagesInputSchema.validate(query);
@@ -50,66 +65,20 @@ export const resolvers = {
         });
       }
 
-      const contextModel = query.contextType === 'chat' ? Chat : Chat;
-      const contextUser = await User.findOne({
-        include: {
-          model: contextModel,
-          where: { id: query.contextId },
-        },
+      const context = query.contextType === 'chat' ? Chat : Chat;
+      const user = (await User.findOne({
+        include: { model: context, where: { id: query.contextId } },
         where: { id: authService.getUserId() },
-      });
-      if (contextUser === null) {
+      })) as unknown as (User & Record<string, any>) | null;
+
+      if (user === null) {
         throw new GraphQLError('User not found in context', {
           extensions: { code: 'NOT_FOUND' },
         });
       }
 
-      const blockedContextUsers = (await User.findAll({
-        include: [
-          {
-            model: User,
-            as: 'blockers',
-            where: { id: authService.getUserId() },
-            attributes: ['id'],
-            through: { attributes: ['created_at'] },
-          },
-          {
-            model: contextModel,
-            where: { id: query.contextId },
-            attributes: [],
-          },
-        ],
-        attributes: ['id'],
-      })) as unknown as Array<{
-        id: string;
-        blockers: [{ user_block: { created_at: Date } }];
-      }>;
-
-      const blockedUserIds = blockedContextUsers.map((user) => user.id);
-      const blockedUserDates = blockedContextUsers.reduce<Record<string, Date>>(
-        (acc, user) => {
-          acc[user.id] = user.blockers[0].user_block.created_at;
-          return acc;
-        },
-        {}
-      );
-
-      const unblockedMessages = await Message.find({
-        context_type: query.contextType,
-        context_id: query.contextId,
-        $or: [
-          {
-            creator_id: { $nin: blockedUserIds },
-          },
-          ...blockedUserIds.map((userId) => ({
-            creator_id: userId,
-            created_at: { $lt: blockedUserDates[userId] },
-          })),
-        ],
-      });
-
-      const jsonMessages = unblockedMessages.map((message) => message.toJSON());
-      return jsonMessages;
+      const messages = await dataSources.messagesDB.getMessages(query);
+      return messages;
     },
   },
 };

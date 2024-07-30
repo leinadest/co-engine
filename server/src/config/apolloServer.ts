@@ -12,6 +12,8 @@ import schema from '../schema';
 import sequelize from './sequelize';
 import AuthService from '../services/authService';
 import { NODE_ENV } from './environment';
+import UsersDataSource from '../resources/user/dataSource';
+import MessagesDataSource from '../resources/message/dataSource';
 
 export const apolloErrorFormatter = (
   formattedError: GraphQLFormattedError,
@@ -31,8 +33,12 @@ export const apolloErrorFormatter = (
 };
 
 export interface Context {
-  authService: AuthService;
   sequelize: Sequelize;
+  authService: AuthService;
+  dataSources: {
+    usersDB: UsersDataSource;
+    messagesDB: MessagesDataSource;
+  };
 }
 
 export const createApolloServerConfig = (
@@ -69,11 +75,17 @@ export const expressMiddlewareOptions: WithRequired<
     const authorization = req.headers.authorization;
     const accessToken = authorization?.replace('Bearer ', '');
 
-    const context: Context = {
-      sequelize,
-      authService: new AuthService(accessToken ?? ''),
-    };
+    const authService = new AuthService(accessToken ?? '');
+    const usersDB = new UsersDataSource(authService);
+    const messagesDB = new MessagesDataSource(usersDB);
 
-    return context;
+    return {
+      sequelize,
+      authService,
+      dataSources: {
+        usersDB,
+        messagesDB,
+      },
+    };
   },
 };
