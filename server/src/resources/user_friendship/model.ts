@@ -3,14 +3,12 @@ import { Model, DataTypes } from 'sequelize';
 import sequelize from '../../config/sequelize';
 
 class UserFriendship extends Model {
-  public sender_id!: number;
-  public receiver_id!: number;
-  public created_at!: Date;
-  public accepted_at!: Date;
-  public status!: string;
+  [key: string]: any;
+  declare user_id: number;
+  declare friend_id: number;
 
   static schemaDetails = {
-    sender_id: {
+    user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
@@ -19,7 +17,7 @@ class UserFriendship extends Model {
         key: 'id',
       },
     },
-    receiver_id: {
+    friend_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
@@ -27,19 +25,6 @@ class UserFriendship extends Model {
         model: 'users',
         key: 'id',
       },
-    },
-    created_at: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: Date.now,
-    },
-    accepted_at: {
-      type: DataTypes.DATE,
-    },
-    status: {
-      type: DataTypes.ENUM('pending', 'accepted'),
-      allowNull: false,
-      defaultValue: 'pending',
     },
   };
 }

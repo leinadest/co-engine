@@ -15,6 +15,11 @@ const devData: { users: Array<Record<string, string>>; usersIds: number[] } = {
       email: 'test2@gmail.com',
       password_hash: 'test123',
     },
+    {
+      username: 'tester3',
+      email: 'test3@gmail.com',
+      password_hash: 'test123',
+    },
   ],
   usersIds: [],
 };

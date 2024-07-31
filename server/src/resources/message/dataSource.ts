@@ -13,7 +13,7 @@ class MessagesDataSource {
 
   async getUnblockedMessagesQuery(): Promise<Record<string, any>> {
     const { blockedUserIds, blockedUserDates } =
-      await this.usersDB.getBlockedUsers();
+      await this.usersDB.getBlockedInfo();
 
     return {
       $or: [

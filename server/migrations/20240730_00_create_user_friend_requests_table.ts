@@ -2,7 +2,7 @@
 
 import { type QueryInterface } from 'sequelize';
 
-import { UserFriendship } from '../src/resources';
+import { UserFriendRequest } from '../src/resources';
 
 interface Params {
   context: QueryInterface;
@@ -10,7 +10,7 @@ interface Params {
 
 export const up = async ({ context }: Params): Promise<void> => {
   const { sender_id, receiver_id, ...unassociated_attributes } =
-    UserFriendship.schemaDetails;
+    UserFriendRequest.schemaDetails;
   await context.createTable('user_friendships', unassociated_attributes);
   await context.addColumn('user_friendships', 'sender_id', {
     ...sender_id,

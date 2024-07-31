@@ -1,5 +1,6 @@
 import User from './user/model';
 import OAuth2User from './oauth2_user/model';
+import UserFriendRequest from './user_friend_request/model';
 import UserFriendship from './user_friendship/model';
 import Chat from './chat/model';
 import ChatUser from './chat_user/model';
@@ -9,11 +10,13 @@ import UserBlock from './user_block/model';
 User.hasOne(OAuth2User);
 OAuth2User.belongsTo(User);
 
-User.belongsToMany(User, {
-  as: 'friends',
-  through: UserFriendship,
+UserFriendRequest.belongsTo(User, {
+  as: 'sender',
   foreignKey: 'sender_id',
-  otherKey: 'receiver_id',
+});
+UserFriendRequest.belongsTo(User, {
+  as: 'receiver',
+  foreignKey: 'receiver_id',
 });
 
 User.belongsToMany(User, {
@@ -36,4 +39,13 @@ Chat.belongsToMany(User, {
   foreignKey: 'chat_id',
 });
 
-export { User, OAuth2User, UserFriendship, UserBlock, Chat, ChatUser, Message };
+export {
+  User,
+  OAuth2User,
+  UserFriendRequest,
+  UserFriendship,
+  UserBlock,
+  Chat,
+  ChatUser,
+  Message,
+};

@@ -7,8 +7,8 @@ import { UserFriendship } from '../src/resources';
 const devData: { userFriendships: any[]; userFriendshipsIds: number[] } = {
   userFriendships: [
     {
-      sender_id: 1,
-      receiver_id: 2,
+      user_id: 1,
+      friend_id: 3,
     },
   ],
   userFriendshipsIds: [],

@@ -4,7 +4,8 @@ import { merge } from 'lodash';
 
 import dateTimeScalar from './scalars/DateTime';
 import userSchema from '../resources/user/schema';
-import userFriendRequestSchema from '../resources/user_friendship/schema';
+import userFriendRequestSchema from '../resources/user_friend_request/schema';
+import userFriendshipSchema from '../resources/user_friendship/schema';
 import chatSchema from '../resources/chat/schema';
 import messageSchema from '../resources/message/schema';
 import userBlockSchema from '../resources/user_block/schema';
@@ -35,6 +36,7 @@ export default makeExecutableSchema({
     dateTimeScalar.typeDefs,
     userSchema.typeDefs,
     userFriendRequestSchema.typeDefs,
+    userFriendshipSchema.typeDefs,
     chatSchema.typeDefs,
     messageSchema.typeDefs,
     userBlockSchema.typeDefs,
@@ -43,6 +45,7 @@ export default makeExecutableSchema({
     dateTimeScalar.resolvers,
     userSchema.resolvers,
     userFriendRequestSchema.resolvers,
+    userFriendshipSchema.resolvers,
     chatSchema.resolvers,
     messageSchema.resolvers,
     userBlockSchema.resolvers

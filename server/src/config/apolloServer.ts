@@ -14,6 +14,8 @@ import AuthService from '../services/authService';
 import { NODE_ENV } from './environment';
 import UsersDataSource from '../resources/user/dataSource';
 import MessagesDataSource from '../resources/message/dataSource';
+import { ValidationError } from 'yup';
+import UserFriendRequestsDataSource from '../resources/user_friend_request/dataSource';
 
 export const apolloErrorFormatter = (
   formattedError: GraphQLFormattedError,
@@ -21,9 +23,16 @@ export const apolloErrorFormatter = (
 ): any => {
   const errorResponse: { message: string; code: string; stack?: any } = {
     message: formattedError.message,
-    code:
-      (formattedError.extensions?.code as string) ?? 'INTERNAL_SERVER_ERROR',
+    code: formattedError.extensions?.code as string,
   };
+
+  if (originalError instanceof ValidationError) {
+    errorResponse.code = 'BAD_USER_INPUT';
+  }
+
+  if (errorResponse.code === undefined) {
+    errorResponse.code = 'INTERNAL_SERVER_ERROR';
+  }
 
   if (NODE_ENV !== 'production') {
     errorResponse.stack = originalError.stack;
@@ -38,6 +47,7 @@ export interface Context {
   dataSources: {
     usersDB: UsersDataSource;
     messagesDB: MessagesDataSource;
+    friendRequestsDB: UserFriendRequestsDataSource;
   };
 }
 
@@ -78,6 +88,10 @@ export const expressMiddlewareOptions: WithRequired<
     const authService = new AuthService(accessToken ?? '');
     const usersDB = new UsersDataSource(authService);
     const messagesDB = new MessagesDataSource(usersDB);
+    const friendRequestsDB = new UserFriendRequestsDataSource(
+      usersDB,
+      authService
+    );
 
     return {
       sequelize,
@@ -85,6 +99,7 @@ export const expressMiddlewareOptions: WithRequired<
       dataSources: {
         usersDB,
         messagesDB,
+        friendRequestsDB,
       },
     };
   },

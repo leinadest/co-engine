@@ -3,6 +3,7 @@ import { Model, DataTypes, Sequelize } from 'sequelize';
 import sequelize from '../../config/sequelize';
 
 class User extends Model {
+  [key: string]: any;
   declare id: number;
   declare created_at: Date;
   declare username: string;

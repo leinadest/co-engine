@@ -12,6 +12,7 @@ import { type SingleGraphQLResponse } from './types';
 import { type DocumentNode } from 'graphql';
 import UsersDataSource from '../../src/resources/user/dataSource';
 import MessagesDataSource from '../../src/resources/message/dataSource';
+import UserFriendRequestsDataSource from '../../src/resources/user_friend_request/dataSource';
 
 export const executeOperation = async <ResponseData>(
   query: string | DocumentNode,
@@ -26,6 +27,10 @@ export const executeOperation = async <ResponseData>(
   const authService = new AuthService(accessToken ?? '');
   const usersDB = new UsersDataSource(authService);
   const messagesDB = new MessagesDataSource(usersDB);
+  const friendRequestsDB = new UserFriendRequestsDataSource(
+    usersDB,
+    authService
+  );
 
   const contextValue = {
     sequelize,
@@ -33,6 +38,7 @@ export const executeOperation = async <ResponseData>(
     dataSources: {
       usersDB,
       messagesDB,
+      friendRequestsDB,
     },
   };
 
