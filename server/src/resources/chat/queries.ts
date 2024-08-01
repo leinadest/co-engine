@@ -1,84 +1,89 @@
 import { gql } from 'graphql-tag';
 import { GraphQLError } from 'graphql/error/GraphQLError';
+import * as yup from 'yup';
 
-import type AuthService from '../../services/authService';
-import { Chat, User } from '../';
-import { Op } from 'sequelize';
+import { type Context } from '../../config/apolloServer';
+import { type Chat } from '..';
 
 const typeDefs = gql`
+  input ChatsInput {
+    search: String
+    orderBy: String
+    orderDirection: String
+    after: String
+    first: Int
+  }
+
   extend type Query {
     """
     Returns all chats that the authenticated user is in.
     """
-    chats: [Chat]!
+    chats(query: ChatsInput): ChatConnection!
+
+    """
+    Returns a single chat.
+    """
+    chat(id: ID!): Chat
   }
 `;
+
+interface ChatsInput {
+  search?: string;
+  orderBy?: string;
+  orderDirection?: string;
+  after?: string;
+  first?: number;
+}
+
+const chatsInputSchema = yup
+  .object()
+  .optional()
+  .shape({
+    search: yup.string().trim(),
+    orderBy: yup
+      .string()
+      .trim()
+      .oneOf(
+        ['last_message_at', 'name', 'created_at'],
+        'orderBy must be last_message_at, name, or created_at'
+      ),
+    orderDirection: yup
+      .string()
+      .oneOf(['ASC', 'DESC'], 'orderDirection must be ASC or DESC'),
+    after: yup.string(),
+    first: yup.number().min(1, 'first must be greater than or equal to 1'),
+  });
 
 const resolvers = {
   Query: {
     chats: async (
       _: any,
-      __: any,
-      { authService }: { authService: AuthService }
+      { query }: { query: ChatsInput },
+      { authService, dataSources }: Context
     ) => {
+      await chatsInputSchema.validate(query);
+
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
       }
 
-      try {
-        const blockedUsers = (await User.findAll({
-          include: [
-            {
-              model: User,
-              as: 'blockers',
-              where: { id: authService.getUserId() },
-              attributes: ['id'],
-              through: { attributes: ['created_at'] },
-            },
-          ],
-          attributes: ['id'],
-        })) as unknown as Array<{
-          id: number;
-          blockers: [{ user_block: { created_at: Date } }];
-        }>;
+      return await dataSources.chatsDB.getChats(query ?? {});
+    },
 
-        const blockedUserIds = blockedUsers.map((user) => user.id);
-        const blockedUserDates = blockedUsers.reduce<Record<string, Date>>(
-          (acc, user) => {
-            acc[user.id] = user.blockers[0].user_block.created_at;
-            return acc;
-          },
-          {}
-        );
-
-        const unblockedChats = await Chat.findAll({
-          // Requires chat to have the authenticated user as a member
-          include: {
-            model: User,
-            where: { id: authService.getUserId() },
-            attributes: [],
-          },
-          // Requires the chat's creator to either not be blocked or blocked
-          // after the chat's creation
-          where:
-            blockedUsers.length === 0
-              ? {}
-              : {
-                  [Op.or]: [
-                    { creator_id: { [Op.notIn]: blockedUserIds } },
-                    ...blockedUserIds.map((userId) => ({
-                      creator_id: userId,
-                      created_at: { [Op.lt]: blockedUserDates[userId] },
-                    })),
-                  ],
-                },
+    chat: async (
+      _: any,
+      { id }: { id: string },
+      { authService, dataSources }: Context
+    ): Promise<Chat | null> => {
+      if (authService.getUserId() === null) {
+        throw new GraphQLError('Not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' },
         });
-        return unblockedChats;
-      } catch (e) {
-        console.log(e);
       }
+
+      return await dataSources.chatsDB.getChat(id);
     },
   },
 };

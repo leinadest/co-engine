@@ -14,8 +14,8 @@ import AuthService from '../services/authService';
 import { NODE_ENV } from './environment';
 import UsersDataSource from '../resources/user/dataSource';
 import MessagesDataSource from '../resources/message/dataSource';
-import { ValidationError } from 'yup';
 import UserFriendRequestsDataSource from '../resources/user_friend_request/dataSource';
+import ChatsDataSource from '../resources/chat/dataSource';
 
 export const apolloErrorFormatter = (
   formattedError: GraphQLFormattedError,
@@ -26,7 +26,7 @@ export const apolloErrorFormatter = (
     code: formattedError.extensions?.code as string,
   };
 
-  if (originalError instanceof ValidationError) {
+  if ((originalError.stack as string)?.includes('ValidationError')) {
     errorResponse.code = 'BAD_USER_INPUT';
   }
 
@@ -48,6 +48,7 @@ export interface Context {
     usersDB: UsersDataSource;
     messagesDB: MessagesDataSource;
     friendRequestsDB: UserFriendRequestsDataSource;
+    chatsDB: ChatsDataSource;
   };
 }
 
@@ -92,6 +93,7 @@ export const expressMiddlewareOptions: WithRequired<
       usersDB,
       authService
     );
+    const chatsDB = new ChatsDataSource(authService, usersDB);
 
     return {
       sequelize,
@@ -100,6 +102,7 @@ export const expressMiddlewareOptions: WithRequired<
         usersDB,
         messagesDB,
         friendRequestsDB,
+        chatsDB,
       },
     };
   },

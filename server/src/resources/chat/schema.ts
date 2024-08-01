@@ -5,6 +5,13 @@ import queries from './queries';
 import mutations from './mutations';
 
 const types = gql`
+  type UserInfo {
+    id: ID!
+    username: String
+    discriminator: String
+    profile_pic: String
+  }
+
   type Chat {
     id: ID!
     creator_id: ID!
@@ -13,6 +20,25 @@ const types = gql`
     picture: String
     last_message_at: DateTime
     last_message: String
+    users: [UserInfo!]!
+  }
+
+  type ChatInfo {
+    id: ID!
+    name: String
+    picture: String
+    last_message_at: DateTime
+    last_message: String
+  }
+
+  type ChatEdge {
+    cursor: String!
+    node: ChatInfo!
+  }
+
+  type ChatConnection {
+    edges: [ChatEdge!]!
+    pageInfo: PageInfo!
   }
 
   type ChatUser {

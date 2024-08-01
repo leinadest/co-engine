@@ -23,9 +23,9 @@ const rootTypeDefs = gql`
 const rootPaginationTypeDefs = gql`
   type PageInfo {
     hasNextPage: Boolean!
-    hasPreviousPage: Boolean!
+    endCursor: String!
+    hasPreviousPage: Boolean
     startCursor: String
-    endCursor: String
   }
 `;
 

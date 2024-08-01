@@ -42,7 +42,7 @@ User.belongsToMany(User, {
 });
 
 UserBlock.belongsTo(User, {
-  as: 'user',
+  as: 'users',
   foreignKey: 'user_id',
 });
 UserBlock.belongsTo(User, {
@@ -51,10 +51,12 @@ UserBlock.belongsTo(User, {
 });
 
 User.belongsToMany(Chat, {
+  as: 'chats',
   through: ChatUser,
   foreignKey: 'user_id',
 });
 Chat.belongsToMany(User, {
+  as: 'users',
   through: ChatUser,
   foreignKey: 'chat_id',
 });

@@ -3,6 +3,7 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 import sequelize from '../../config/sequelize';
 
 class Chat extends Model {
+  [key: string]: any;
   declare id: number;
   declare creator_id: number;
   declare created_at: Date;

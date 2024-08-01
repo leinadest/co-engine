@@ -13,6 +13,7 @@ import { type DocumentNode } from 'graphql';
 import UsersDataSource from '../../src/resources/user/dataSource';
 import MessagesDataSource from '../../src/resources/message/dataSource';
 import UserFriendRequestsDataSource from '../../src/resources/user_friend_request/dataSource';
+import ChatsDataSource from '../../src/resources/chat/dataSource';
 
 export const executeOperation = async <ResponseData>(
   query: string | DocumentNode,
@@ -31,6 +32,7 @@ export const executeOperation = async <ResponseData>(
     usersDB,
     authService
   );
+  const chatsDB = new ChatsDataSource(authService, usersDB);
 
   const contextValue = {
     sequelize,
@@ -39,6 +41,7 @@ export const executeOperation = async <ResponseData>(
       usersDB,
       messagesDB,
       friendRequestsDB,
+      chatsDB,
     },
   };
 
