@@ -66,8 +66,14 @@ export const resolvers = {
       }
 
       const context = query.contextType === 'chat' ? Chat : Chat;
+      const contextAlias = query.contextType === 'chat' ? 'chats' : 'chats';
+
       const user = (await User.findOne({
-        include: { model: context, where: { id: query.contextId } },
+        include: {
+          model: context,
+          as: contextAlias,
+          where: { id: query.contextId },
+        },
         where: { id: authService.getUserId() },
       })) as unknown as (User & Record<string, any>) | null;
 

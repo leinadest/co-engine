@@ -23,7 +23,9 @@ describe('Message Queries Integration Tests', () => {
             id
             context_type
             context_id
-            creator_id
+            creator {
+              id
+            }
             formatted_created_at
             formatted_edited_at
             content
@@ -244,7 +246,11 @@ describe('Message Queries Integration Tests', () => {
             .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
             .map((message) => ({
               cursor: expect.any(String),
-              node: message.toJSON(),
+              node: {
+                ...message.toJSON(),
+                creator: { id: message.creator_id.toString() },
+                creator_id: undefined,
+              },
             }))
             .slice(0, 10),
           pageInfo: {
@@ -308,11 +314,19 @@ describe('Message Queries Integration Tests', () => {
           .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
           .map((message) => ({
             cursor: expect.any(String),
-            node: message.toJSON(),
+            node: {
+              ...message.toJSON(),
+              creator: { id: message.creator_id.toString() },
+              creator_id: undefined,
+            },
           }));
         const unexpectedEdge = {
           cursor: expect.any(String),
-          node: blockedUserBlockedMessage.toJSON(),
+          node: {
+            ...blockedUserBlockedMessage.toJSON(),
+            creator: { id: blockedUserBlockedMessage.creator_id.toString() },
+            creator_id: undefined,
+          },
         };
         const expectedPageInfo = {
           hasNextPage: false,
@@ -352,7 +366,11 @@ describe('Message Queries Integration Tests', () => {
             .sort((a, b) => a.created_at.getTime() - b.created_at.getTime())
             .map((message) => ({
               cursor: expect.any(String),
-              node: message.toJSON(),
+              node: {
+                ...message.toJSON(),
+                creator: { id: message.creator_id.toString() },
+                creator_id: undefined,
+              },
             }))
             .slice(0, 10),
           pageInfo: {
@@ -390,7 +408,11 @@ describe('Message Queries Integration Tests', () => {
             .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
             .map((message) => ({
               cursor: expect.any(String),
-              node: message.toJSON(),
+              node: {
+                ...message.toJSON(),
+                creator: { id: message.creator_id.toString() },
+                creator_id: undefined,
+              },
             }))
             .slice(0, 5),
           pageInfo: {
@@ -446,7 +468,11 @@ describe('Message Queries Integration Tests', () => {
             .slice(10, 15)
             .map((message) => ({
               cursor: expect.any(String),
-              node: message.toJSON(),
+              node: {
+                ...message.toJSON(),
+                creator: { id: message.creator_id.toString() },
+                creator_id: undefined,
+              },
             })),
           pageInfo: {
             hasNextPage: true,
@@ -502,7 +528,11 @@ describe('Message Queries Integration Tests', () => {
             .slice(-9, -4)
             .map((message) => ({
               cursor: expect.any(String),
-              node: message.toJSON(),
+              node: {
+                ...message.toJSON(),
+                creator: { id: message.creator_id.toString() },
+                creator_id: undefined,
+              },
             })),
           pageInfo: {
             hasNextPage: true,

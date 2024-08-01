@@ -4,7 +4,7 @@ import { merge } from 'lodash';
 
 import queries from './queries';
 import mutations from './mutations';
-import { User } from '..';
+import { type Context } from '../../config/apolloServer';
 
 const typeDefs = gql`
   type UserFriendRequest {
@@ -16,8 +16,12 @@ const typeDefs = gql`
 
 const resolvers = {
   UserFriendRequest: {
-    sender: async ({ sender_id }: { sender_id: number }, _: any) => {
-      const user = await User.findByPk(sender_id);
+    sender: async (
+      { sender_id }: { sender_id: number },
+      _: any,
+      { dataSources }: Context
+    ) => {
+      const user = await dataSources.usersDB.getPublicUser(sender_id);
 
       if (user === null) {
         throw new GraphQLError('User not found', {
@@ -25,13 +29,14 @@ const resolvers = {
         });
       }
 
-      const resolvedUser = user.toJSON();
-      delete resolvedUser.email;
-      delete resolvedUser.password_hash;
-      return resolvedUser;
+      return user;
     },
-    receiver: async ({ receiver_id }: { receiver_id: number }, _: any) => {
-      const user = await User.findByPk(receiver_id);
+    receiver: async (
+      { receiver_id }: { receiver_id: number },
+      _: any,
+      { dataSources }: Context
+    ) => {
+      const user = await dataSources.usersDB.getPublicUser(receiver_id);
 
       if (user === null) {
         throw new GraphQLError('User not found', {
@@ -39,10 +44,7 @@ const resolvers = {
         });
       }
 
-      const resolvedUser = user.toJSON();
-      delete resolvedUser.email;
-      delete resolvedUser.password_hash;
-      return resolvedUser;
+      return user;
     },
   },
 };

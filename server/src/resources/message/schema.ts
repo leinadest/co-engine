@@ -3,8 +3,10 @@ import { merge } from 'lodash';
 
 import queries from './queries';
 import mutations from './mutations';
+import { type IMessage } from '../message/model';
+import { type Context } from '../../config/apolloServer';
 
-const types = gql`
+const typeDefs = gql`
   type Reaction {
     reactor_id: ID!
     reaction: String!
@@ -14,7 +16,7 @@ const types = gql`
     id: ID!
     context_type: String!
     context_id: String!
-    creator_id: ID!
+    creator: User!
     formatted_created_at: String!
     formatted_edited_at: String
     content: String!
@@ -32,7 +34,15 @@ const types = gql`
   }
 `;
 
+const resolvers = {
+  Message: {
+    creator: async (message: IMessage, _: any, { dataSources }: Context) => {
+      return await dataSources.usersDB.getPublicUser(message.creator_id);
+    },
+  },
+};
+
 export default {
-  typeDefs: [types, queries.typeDefs, mutations.typeDefs],
-  resolvers: merge(queries.resolvers, mutations.resolvers),
+  typeDefs: [typeDefs, queries.typeDefs, mutations.typeDefs],
+  resolvers: merge(resolvers, queries.resolvers, mutations.resolvers),
 };

@@ -93,6 +93,15 @@ class UsersDataSource {
     return { edges, pageInfo };
   }
 
+  async getPublicUser(id: number): Promise<User | null> {
+    const user = await User.findByPk(id);
+
+    const publicUser = user?.toJSON();
+    delete publicUser.email;
+    delete publicUser.password_hash;
+    return publicUser;
+  }
+
   async getFriends({
     search,
     orderBy = 'username',
