@@ -3,6 +3,7 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 import sequelize from '../../config/sequelize';
 
 class UserBlock extends Model {
+  [key: string]: any;
   declare user_id: number;
   declare blocked_user_id: number;
   declare created_at: Date;

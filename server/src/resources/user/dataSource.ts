@@ -1,9 +1,9 @@
 import { GraphQLError } from 'graphql';
-import { Op } from 'sequelize';
+import { type FindOptions, Op } from 'sequelize';
 
 import type AuthService from '../../services/authService';
-import { User } from '..';
-import { type RelayConnection } from '../../utils/types';
+import { User, UserBlock } from '..';
+import { type Edge, type RelayConnection } from '../../utils/types';
 import { decodeCursor, encodeCursor } from '../../utils/pagination';
 
 class UsersDataSource {
@@ -63,7 +63,7 @@ class UsersDataSource {
 
     let where = {};
     if (search !== undefined) {
-      where = { username: { [op]: search } };
+      where = { username: { [Op.substring]: search } };
     }
     if (after !== undefined) {
       where = { ...where, [orderBy]: { [op]: decodeCursor(after) } };
@@ -94,14 +94,12 @@ class UsersDataSource {
   }
 
   async getFriends({
-    status = 'accepted',
     search,
     orderBy = 'username',
     orderDirection = 'ASC',
     after,
     first = 10,
   }: {
-    status?: 'pending' | 'accepted';
     search?: string;
     orderBy?: string;
     orderDirection?: string;
@@ -121,29 +119,25 @@ class UsersDataSource {
 
     let where = {};
     if (search !== undefined) {
-      where = { username: { [op]: search } };
+      where = { username: { [Op.substring]: search } };
     }
     if (after !== undefined) {
       where = { ...where, [orderBy]: { [op]: decodeCursor(after) } };
     }
 
     // Execute query
-    const userWithFriends = await User.findByPk(
-      this.authService.getUserId() as string,
-      {
-        include: {
-          model: User,
-          as: 'friends',
-          where,
-          through: { where: { status } },
-          attributes: { exclude: ['password_hash', 'email'] },
-          order: [[orderBy, orderDirection]],
-          limit: first,
-        },
-      }
-    );
-    const friends: User[] =
-      userWithFriends === null ? [] : userWithFriends.friends;
+    const friends = await User.findAll({
+      include: {
+        model: User,
+        as: 'usersOfFriend',
+        where: { id: this.authService.getUserId() },
+      },
+      where,
+      attributes: { exclude: ['password_hash', 'email'] },
+      order: [[orderBy, orderDirection]],
+      limit: first,
+      subQuery: false,
+    });
 
     // Generate edges and page info
     const edges = friends.map((friend) => ({
@@ -163,7 +157,7 @@ class UsersDataSource {
 
   async getBlocked({
     search,
-    orderBy = 'created_at',
+    orderBy = 'blocked_at',
     orderDirection = 'DESC',
     after,
     first = 10,
@@ -175,40 +169,74 @@ class UsersDataSource {
     first?: number;
   }): Promise<RelayConnection<User>> {
     // Initialize query for the next messages to paginate after the cursor
+    const queryByBlocks = orderBy === 'blocked_at';
+    const trueOrderBy = queryByBlocks ? 'created_at' : orderBy;
     const op = orderDirection === 'DESC' ? Op.lt : Op.gt;
 
-    let where = {};
-    if (search !== undefined) {
-      where = { username: { [op]: search } };
+    let blocksWithBlockedUser: Array<UserBlock & { blocked: User }> = [];
+    let blockedUsers: User[] = [];
+    let edges: Array<Edge<User>> = [];
+
+    if (!queryByBlocks) {
+      const query: FindOptions<any> = {
+        include: {
+          model: User,
+          as: 'blockers',
+          where: { id: this.authService.getUserId() },
+          attributes: [],
+        },
+        where: {
+          ...(search !== undefined && { username: { [Op.substring]: search } }),
+          ...(after !== undefined && {
+            [orderBy]: { [op]: decodeCursor(after) },
+          }),
+        },
+        attributes: { exclude: ['password_hash', 'email'] },
+        order: [[orderBy, orderDirection]],
+        limit: first,
+        subQuery: false,
+      };
+
+      blockedUsers = (await User.findAll(query)) as unknown as User[];
+
+      edges = blockedUsers.map((user) => ({
+        cursor: encodeCursor(user[trueOrderBy]),
+        node: user.toJSON(),
+      }));
     }
-    if (after !== undefined) {
-      where = { ...where, [orderBy]: { [op]: decodeCursor(after) } };
+
+    if (queryByBlocks) {
+      const query: FindOptions<any> = {
+        include: {
+          model: User,
+          as: 'blocked',
+          attributes: { exclude: ['password_hash', 'email'] },
+        },
+        where:
+          after !== undefined
+            ? { created_at: { [op]: decodeCursor(after) } }
+            : undefined,
+        order: [['created_at', orderDirection]],
+        limit: first,
+        subQuery: false,
+      };
+
+      blocksWithBlockedUser = (await UserBlock.findAll(
+        query
+      )) as unknown as Array<UserBlock & { blocked: User }>;
+      blockedUsers = blocksWithBlockedUser.map((block) => block.blocked);
+
+      edges = blocksWithBlockedUser.map((block) => ({
+        cursor: encodeCursor(block[trueOrderBy]),
+        node: block.blocked.toJSON(),
+      }));
     }
 
-    // Execute query
-    const users = await User.findAll({
-      include: {
-        model: User,
-        as: 'blockers',
-        where: { id: this.authService.getUserId() },
-        attributes: [],
-      },
-      where,
-      attributes: { exclude: ['password_hash', 'email'] },
-      order: [[orderBy, orderDirection]],
-      limit: first,
-    });
-
-    // Generate edges and page info
-    const edges = users.map((user) => ({
-      cursor: encodeCursor(user[orderBy]),
-      node: user.toJSON(),
-    }));
-
+    // Generate page info
     const pageInfo = {
       startCursor: edges[0]?.cursor,
       endCursor: edges[edges.length - 1]?.cursor,
-      hasNextPage: users.length === first,
+      hasNextPage: blockedUsers.length === first,
       hasPreviousPage: Boolean(after),
     };
 

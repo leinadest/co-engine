@@ -16,6 +16,16 @@ const types = gql`
     bio: String
   }
 
+  type PublicUserEdge {
+    cursor: String!
+    node: PublicUser!
+  }
+
+  type PublicUserConnection {
+    edges: [PublicUserEdge!]!
+    pageInfo: PageInfo!
+  }
+
   type User {
     id: ID!
     email: String
@@ -26,6 +36,16 @@ const types = gql`
     is_online: Boolean!
     profile_pic: String
     bio: String
+  }
+
+  type UserEdge {
+    cursor: String!
+    node: User!
+  }
+
+  type UserConnection {
+    edges: [UserEdge!]!
+    pageInfo: PageInfo!
   }
 `;
 
@@ -39,6 +59,30 @@ export const PublicUserFields = gql`
     is_online
     profile_pic
     bio
+  }
+`;
+
+export const PublicUserConnectionFields = gql`
+  fragment PublicUserConnectionFields on PublicUserConnection {
+    edges {
+      cursor
+      node {
+        id
+        username
+        discriminator
+        created_at
+        last_login_at
+        is_online
+        profile_pic
+        bio
+      }
+    }
+    pageInfo {
+      startCursor
+      endCursor
+      hasNextPage
+      hasPreviousPage
+    }
   }
 `;
 

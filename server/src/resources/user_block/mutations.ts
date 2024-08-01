@@ -36,20 +36,22 @@ const resolvers = {
 
       try {
         return await sequelize.transaction(async (transaction) => {
-          await UserFriendship.destroy({
-            where: {
-              [Op.or]: [
-                { sender_id: authService.getUserId(), receiver_id: userId },
-                { sender_id: userId, receiver_id: authService.getUserId() },
-              ],
-            },
-            transaction,
-          });
-
-          return await UserBlock.create(
-            { user_id: authService.getUserId(), blocked_user_id: userId },
-            { transaction }
-          );
+          const [createdUserBlock] = await Promise.all([
+            UserBlock.create(
+              { user_id: authService.getUserId(), blocked_user_id: userId },
+              { transaction }
+            ),
+            UserFriendship.destroy({
+              where: {
+                [Op.or]: [
+                  { user_id: authService.getUserId(), friend_id: userId },
+                  { friend_id: userId, user_id: authService.getUserId() },
+                ],
+              },
+              transaction,
+            }),
+          ]);
+          return createdUserBlock;
         });
       } catch (e: any) {
         const err = new GraphQLError('User could not be blocked');

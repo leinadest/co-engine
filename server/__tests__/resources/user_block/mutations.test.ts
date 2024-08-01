@@ -145,7 +145,14 @@ describe('User Block Mutations Integration Tests', () => {
     });
 
     describe('else', () => {
-      it('should block the other user', async () => {
+      beforeEach(async () => {
+        await UserFriendship.create({
+          user_id: validUser.id,
+          friend_id: otherUser.id,
+        });
+      });
+
+      it('should block the other user and destroy any friendships', async () => {
         // Define expected user_block data
         const expectedUserBlock = {
           user_id: validUser.id.toString(),
@@ -160,36 +167,15 @@ describe('User Block Mutations Integration Tests', () => {
           validAccessToken
         );
         const userBlock = result.data.blockUser;
-
-        // Assert
-        expect(userBlock).toEqual(expectedUserBlock);
-      });
-    });
-
-    describe('and if other user is a friend of user', () => {
-      beforeEach(async () => {
-        await UserFriendship.create({
-          sender_id: validUser.id,
-          receiver_id: otherUser.id,
-          status: 'accepted',
-        });
-      });
-
-      it('should delete friendship', async () => {
-        // Execute mutation and get results
-        await executeOperation(
-          BLOCK_USER,
-          { userId: otherUser.id },
-          validAccessToken
-        );
         const friendship = await UserFriendship.findOne({
           where: {
-            sender_id: validUser.id,
-            receiver_id: otherUser.id,
+            user_id: validUser.id,
+            friend_id: otherUser.id,
           },
         });
 
         // Assert
+        expect(userBlock).toEqual(expectedUserBlock);
         expect(friendship).toBeNull();
       });
     });

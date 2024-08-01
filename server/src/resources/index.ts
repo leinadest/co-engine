@@ -20,6 +20,17 @@ UserFriendRequest.belongsTo(User, {
 });
 
 User.belongsToMany(User, {
+  as: 'friendsOfUser',
+  through: UserFriendship,
+  foreignKey: 'user_id',
+});
+User.belongsToMany(User, {
+  as: 'usersOfFriend',
+  through: UserFriendship,
+  foreignKey: 'friend_id',
+});
+
+User.belongsToMany(User, {
   as: 'blocked',
   through: UserBlock,
   foreignKey: 'user_id',
@@ -27,6 +38,15 @@ User.belongsToMany(User, {
 User.belongsToMany(User, {
   as: 'blockers',
   through: UserBlock,
+  foreignKey: 'blocked_user_id',
+});
+
+UserBlock.belongsTo(User, {
+  as: 'user',
+  foreignKey: 'user_id',
+});
+UserBlock.belongsTo(User, {
+  as: 'blocked',
   foreignKey: 'blocked_user_id',
 });
 
