@@ -179,11 +179,14 @@ export const resolvers = {
         });
       }
 
-      if (chat.creator_id.toString() !== authService.getUserId()) {
+      const userIsCreator =
+        chat.creator_id.toString() === authService.getUserId();
+      const userIsRemovingOtherUser = userId !== authService.getUserId();
+      if (!userIsCreator && userIsRemovingOtherUser) {
         throw new GraphQLError(
-          'Only the creator can remove users from the chat',
+          'Only the creator can remove other users from the chat',
           {
-            extensions: { code: 'BAD_USER_INPUT' },
+            extensions: { code: 'UNAUTHORIZED' },
           }
         );
       }

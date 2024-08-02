@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql/error/GraphQLError';
 import { escape } from 'lodash';
 
-import { Chat, Message, User } from '../';
+import { ChatUser, Message } from '../';
 import type AuthService from '../../services/authService';
 
 export const typeDefs = gql`
@@ -90,15 +90,17 @@ export const resolvers = {
         });
       }
 
-      const contextUserQuery = {
-        where: { id: authService.getUserId() },
-        include: {
-          model: Chat,
-          where: { id: message.contextId },
-        },
-      };
-      const userIsInContext = (await User.findOne(contextUserQuery)) !== null;
-      if (!userIsInContext) {
+      let contextUser: ChatUser | null = null;
+      if (message.contextType === 'chat') {
+        contextUser = await ChatUser.findOne({
+          where: {
+            chat_id: message.contextId,
+            user_id: authService.getUserId(),
+          },
+        });
+      }
+
+      if (contextUser === null) {
         throw new GraphQLError('User not found in context', {
           extensions: { code: 'NOT_FOUND' },
         });
@@ -148,15 +150,16 @@ export const resolvers = {
         });
       }
 
-      const contextModel = message.context_type === 'chat' ? Chat : Chat;
-      const contextUserQuery = {
-        include: {
-          model: contextModel,
-          where: { id: message.context_id },
-        },
-        where: { id: authService.getUserId() },
-      };
-      const contextUser = await User.findOne(contextUserQuery);
+      let contextUser: ChatUser | null = null;
+      if (message.context_type === 'chat') {
+        contextUser = await ChatUser.findOne({
+          where: {
+            chat_id: message.context_id,
+            user_id: authService.getUserId(),
+          },
+        });
+      }
+
       if (contextUser === null) {
         throw new GraphQLError('User not found in context', {
           extensions: { code: 'NOT_FOUND' },

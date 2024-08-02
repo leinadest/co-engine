@@ -14,7 +14,9 @@ describe('Message Mutations Integration Tests', () => {
 				id
 				context_type
 				context_id
-				creator_id
+				creator {
+          id
+        }
 				formatted_created_at
 				formatted_edited_at
 				content
@@ -31,7 +33,9 @@ describe('Message Mutations Integration Tests', () => {
 				id
 				context_type
 				context_id
-				creator_id
+				creator {
+          id
+        }
 				formatted_created_at
 				formatted_edited_at
 				content
@@ -264,7 +268,7 @@ describe('Message Mutations Integration Tests', () => {
           id: expect.any(String),
           context_type: validMessage.context_type,
           context_id: validContext.id.toString(),
-          creator_id: validUser.id.toString(),
+          creator: { id: validUser.id.toString() },
           formatted_created_at: expect.any(String),
           formatted_edited_at: null,
           content: validMessage.content,
@@ -492,7 +496,7 @@ describe('Message Mutations Integration Tests', () => {
           id: validMessage.id.toString(),
           context_type: validMessage.context_type,
           context_id: validMessage.context_id.toString(),
-          creator_id: validMessage.creator_id.toString(),
+          creator: { id: validUser.id.toString() },
           formatted_created_at: validMessage.formatted_created_at,
           formatted_edited_at: expect.any(String),
           content: 'new content',

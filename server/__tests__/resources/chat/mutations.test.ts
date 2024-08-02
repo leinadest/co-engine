@@ -521,34 +521,65 @@ describe('Chat Mutations Integration Tests', () => {
         });
 
         describe('and the user is not the creator', () => {
-          let invalidAccessToken: string;
+          let joinedUser: User;
+          let joinedUserAccessToken: string;
 
           beforeEach(async () => {
-            invalidAccessToken = AuthService.createAccessToken(
-              user.id + 1
+            joinedUser = await User.create({ username: 'joined_user' });
+            joinedUserAccessToken = AuthService.createAccessToken(
+              joinedUser.id
             ).accessToken;
+            await ChatUser.create({ chat_id: chat.id, user_id: joinedUser.id });
           });
 
-          it('should throw an error', async () => {
-            // Define expected error
-            const expectedMessage =
-              'Only the creator can remove users from the chat';
-            const expectedCode = 'BAD_USER_INPUT';
+          describe('and the user is removing another user', () => {
+            it('should throw an error', async () => {
+              // Define expected error
+              const expectedError = {
+                message:
+                  'Only the creator can remove other users from the chat',
+                code: 'UNAUTHORIZED',
+                stack: expect.any(String),
+              };
 
-            // Execute mutation and get results
-            const result = await executeOperation(
-              REMOVE_USER_FROM_CHAT,
-              {
-                chatId: '1',
-                userId: '2',
-              },
-              invalidAccessToken
-            );
-            const error = result.errors[0];
+              // Execute mutation and get results
+              const result = await executeOperation(
+                REMOVE_USER_FROM_CHAT,
+                {
+                  chatId: chat.id,
+                  userId: '0',
+                },
+                joinedUserAccessToken
+              );
+              const error = result.errors[0];
 
-            // Assert
-            expect(error.message).toEqual(expectedMessage);
-            expect(error.code).toEqual(expectedCode);
+              // Assert
+              expect(error).toEqual(expectedError);
+            });
+          });
+
+          describe('and the user is removing themselves', () => {
+            it('should remove themselves from the chat', async () => {
+              // Define expected chatUser
+              const expectedChatUser = {
+                user_id: joinedUser.id.toString(),
+                chat_id: chat.id.toString(),
+              };
+
+              // Execute mutation and get results
+              const result = await executeOperation(
+                REMOVE_USER_FROM_CHAT,
+                {
+                  chatId: chat.id,
+                  userId: joinedUser.id,
+                },
+                joinedUserAccessToken
+              );
+              const chatUser = result.data.removeUserFromChat;
+
+              // Assert
+              expect(chatUser).toEqual(expectedChatUser);
+            });
           });
         });
 
