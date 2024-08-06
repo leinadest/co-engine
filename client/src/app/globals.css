@@ -2,32 +2,118 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    @apply w-screen h-screen;
+  }
+
+  body {
+    @apply font-sans bg-backgroundPrimary text-textPrimary m-0 p-0;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold;
+  }
+
+  h1 {
+    @apply text-4xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
+
+  h4 {
+    @apply text-lg;
+  }
+
+  h5 {
+    @apply text-base;
+  }
+
+  h6 {
+    @apply text-sm;
+  }
+
+  p {
+    @apply text-textSecondary;
+  }
+
+  a {
+    @apply text-primary;
+
+    &:focus {
+      @apply outline-none underline;
+    }
+
+    &:hover {
+      @apply underline text-primaryLight;
+    }
+  }
+
+  button {
+    @apply cursor-pointer;
+
+    &:focus {
+      @apply outline-none ring-2 ring-black;
+    }
+  }
+
+  input,
+  textarea,
+  select,
+  option {
+    @apply outline-none;
+  }
+
+  img {
+    @apply m-0 p-0;
+  }
+
+  ul,
+  li {
+    @apply list-none;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@layer components {
+  .btn {
+    @apply bg-primary text-white px-4 py-2 rounded-md;
+
+    &:hover {
+      @apply bg-primaryLight;
+    }
+  }
+
+  .container {
+    @apply mx-auto p-8 max-w-6xl;
+  }
+
+  .small-container {
+    @apply mx-auto p-8 max-w-xl;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  .shadow-outline {
+    @apply rounded-xl;
+    box-shadow: 0 0 24px rgb(220, 220, 220);
+  }
+
+  .flex-col-center {
+    @apply flex flex-col items-center;
   }
 }
