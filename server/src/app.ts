@@ -6,7 +6,7 @@ import debug from 'debug';
 import passport from 'passport';
 import cors from 'cors';
 import { ApolloServer } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/dist/esm/express4';
+import { expressMiddleware } from '@apollo/server/express4';
 
 import { PORT } from './config/environment';
 import sequelize from './config/sequelize';
