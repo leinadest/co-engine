@@ -75,6 +75,12 @@
     @apply outline-none;
   }
 
+  input[type='text'],
+  [type='email'],
+  [type='password'] {
+    @apply px-2 py-1 rounded-md;
+  }
+
   img {
     @apply m-0 p-0;
   }
@@ -82,6 +88,10 @@
   ul,
   li {
     @apply list-none;
+  }
+
+  hr {
+    @apply my-4;
   }
 }
 
@@ -100,6 +110,14 @@
 
   .small-container {
     @apply mx-auto p-8 max-w-xl;
+  }
+
+  .form-group {
+    @apply flex flex-col gap-2 mb-4;
+  }
+
+  .error {
+    @apply mt-[-5px] text-xs text-error;
   }
 }
 
