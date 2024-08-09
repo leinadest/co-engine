@@ -1,5 +1,7 @@
 import { gql, useMutation } from '@apollo/client';
 
+import AuthStorage from '../stores/authStorage';
+
 const SIGN_UP = gql`
   mutation SignUp($user: CreateUserInput) {
     createUser(user: $user) {
@@ -54,6 +56,9 @@ export default function useAuth() {
           password: formData.password,
         },
       },
+    }).then((res) => {
+      const accessToken = res.data.authenticate.accessToken;
+      AuthStorage.setAccessToken(accessToken);
     });
   }
 

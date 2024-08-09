@@ -14,7 +14,7 @@ import { setContext } from '@apollo/client/link/context';
 
 import authStorage from '../features/auth/stores/authStorage';
 
-const errorLink = onError(({ networkError, graphQLErrors }) => {
+export const errorLink = onError(({ networkError, graphQLErrors }) => {
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) =>
       console.log(`GraphQL Error: ${message}`)
@@ -25,46 +25,42 @@ const errorLink = onError(({ networkError, graphQLErrors }) => {
   }
 });
 
-const authLink = setContext(async (_, { headers }) => {
-  try {
-    const accessToken = await authStorage.getAccessToken();
-    return {
-      headers: {
-        ...headers,
-        authorization: accessToken !== null ? `Bearer ${accessToken}` : '',
+export const cache = new InMemoryCache({
+  typePolicies: {
+    Query: {
+      fields: {
+        blocked: relayStylePagination(),
+        chats: relayStylePagination(),
+        friends: relayStylePagination(),
+        messages: relayStylePagination(),
+        userFriendRequests: offsetLimitPagination(),
+        users: relayStylePagination(),
       },
-    };
-  } catch (e) {
-    console.log(e);
-    return { headers };
-  }
-});
-
-const httpLink = createHttpLink({
-  uri: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
+    },
+  },
 });
 
 export function createApolloClient() {
-  const link = ApolloLink.from([errorLink, authLink, httpLink]);
-
-  const cache = new InMemoryCache({
-    typePolicies: {
-      Query: {
-        fields: {
-          blocked: relayStylePagination(),
-          chats: relayStylePagination(),
-          friends: relayStylePagination(),
-          messages: relayStylePagination(),
-          userFriendRequests: offsetLimitPagination(),
-          users: relayStylePagination(),
-        },
-      },
-    },
+  const authLink = setContext(async (_, { headers }) => {
+    try {
+      const accessToken = authStorage.getAccessToken();
+      const authorization = accessToken !== null ? `Bearer ${accessToken}` : '';
+      return { headers: { ...headers, authorization } };
+    } catch (e) {
+      console.log(e);
+      return { headers };
+    }
   });
 
-  return new ApolloClient({ link, cache });
-}
+  const httpLink = createHttpLink({
+    uri: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
+  });
 
+  return new ApolloClient({
+    link: ApolloLink.from([errorLink, authLink, httpLink]),
+    cache,
+  });
+}
 export async function waitForServer(retryInterval = 5000, maxRetries = 12) {
   const client = createApolloClient();
   let attempts = 0;
