@@ -5,7 +5,7 @@ import { NODE_ENV } from '../src/config/environment';
 import Chat from '../src/resources/chat/model';
 
 const devData: { chats: any[]; chatsIds: number[] } = {
-  chats: [{}, { name: 'test' }],
+  chats: [{ creator_id: 1 }, { name: 'test', creator_id: 2 }],
   chatsIds: [],
 };
 

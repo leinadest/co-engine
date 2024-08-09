@@ -37,7 +37,7 @@ const typeDefs = gql`
 const resolvers = {
   Message: {
     creator: async (message: IMessage, _: any, { dataSources }: Context) => {
-      return await dataSources.usersDB.getPublicUser(message.creator_id);
+      return await dataSources.usersDB.getUserById(message.creator_id);
     },
   },
 };

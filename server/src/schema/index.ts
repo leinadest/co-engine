@@ -23,7 +23,7 @@ const rootTypeDefs = gql`
 const rootPaginationTypeDefs = gql`
   type PageInfo {
     hasNextPage: Boolean!
-    endCursor: String!
+    endCursor: String
     hasPreviousPage: Boolean
     startCursor: String
   }

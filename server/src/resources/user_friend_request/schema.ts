@@ -21,7 +21,7 @@ const resolvers = {
       _: any,
       { dataSources }: Context
     ) => {
-      const user = await dataSources.usersDB.getPublicUser(sender_id);
+      const user = await dataSources.usersDB.getUserById(sender_id);
 
       if (user === null) {
         throw new GraphQLError('User not found', {
@@ -36,7 +36,7 @@ const resolvers = {
       _: any,
       { dataSources }: Context
     ) => {
-      const user = await dataSources.usersDB.getPublicUser(receiver_id);
+      const user = await dataSources.usersDB.getUserById(receiver_id);
 
       if (user === null) {
         throw new GraphQLError('User not found', {

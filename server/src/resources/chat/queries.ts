@@ -27,7 +27,7 @@ const typeDefs = gql`
   }
 `;
 
-interface ChatsInput {
+export interface ChatsInput {
   search?: string;
   orderBy?: string;
   orderDirection?: string;

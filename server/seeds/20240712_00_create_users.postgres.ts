@@ -2,23 +2,27 @@ import { Op } from 'sequelize';
 
 import { NODE_ENV } from '../src/config/environment';
 import { User } from '../src/resources';
+import bcrypt from 'bcrypt';
 
-const devData: { users: Array<Record<string, string>>; usersIds: number[] } = {
+const devData: {
+  users: Array<Record<string, string>>;
+  usersIds: number[];
+} = {
   users: [
     {
       username: 'tester',
       email: 'test@gmail.com',
-      password_hash: 'test123',
+      password_hash: bcrypt.hashSync('test123', 10),
     },
     {
       username: 'tester2',
       email: 'test2@gmail.com',
-      password_hash: 'test123',
+      password_hash: bcrypt.hashSync('test123', 10),
     },
     {
       username: 'tester3',
       email: 'test3@gmail.com',
-      password_hash: 'test123',
+      password_hash: bcrypt.hashSync('test123', 10),
     },
   ],
   usersIds: [],
@@ -35,7 +39,7 @@ export const up = async (): Promise<void> => {
   try {
     console.log('*** BULK INSERTING USERS... ***');
 
-    const result = await User.bulkCreate(devData.users);
+    const result = await User.bulkCreate(data.users);
     data.usersIds = result.map((user) => user.id);
 
     console.log(`*** BULK INSERTED USERS RESULT ***`);

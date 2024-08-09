@@ -86,8 +86,8 @@ class ChatsDataSource {
     const pageInfo = {
       hasNextPage: edges.length === first,
       hasPreviousPage: after !== undefined,
-      endCursor: edges[edges.length - 1].cursor,
-      startCursor: edges[0].cursor,
+      endCursor: edges[edges.length - 1]?.cursor,
+      startCursor: edges[0]?.cursor,
     };
 
     return { edges, pageInfo };

@@ -11,7 +11,7 @@ const runMigrations = async (
   await sequelize.authenticate();
 
   const defaultConfig: UmzugOptions<QueryInterface> = {
-    migrations: { glob: 'migrations/*.postgres.ts' },
+    migrations: { glob: 'migrations/*.ts' },
     context: sequelize.getQueryInterface(),
     storage: new SequelizeStorage({ sequelize, modelName: 'migrations' }),
     logger: console,

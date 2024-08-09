@@ -11,13 +11,13 @@ interface Params {
 export const up = async ({ context }: Params): Promise<void> => {
   const { sender_id, receiver_id, ...unassociated_attributes } =
     UserFriendRequest.schemaDetails;
-  await context.createTable('user_friendships', unassociated_attributes);
-  await context.addColumn('user_friendships', 'sender_id', {
+  await context.createTable('user_friend_requests', unassociated_attributes);
+  await context.addColumn('user_friend_requests', 'sender_id', {
     ...sender_id,
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   });
-  await context.addColumn('user_friendships', 'receiver_id', {
+  await context.addColumn('user_friend_requests', 'receiver_id', {
     ...receiver_id,
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
@@ -25,5 +25,5 @@ export const up = async ({ context }: Params): Promise<void> => {
 };
 
 export const down = async ({ context }: Params): Promise<void> => {
-  await context.dropTable('user_friendships');
+  await context.dropTable('user_friend_requests');
 };

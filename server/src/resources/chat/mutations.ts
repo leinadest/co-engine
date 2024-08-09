@@ -29,14 +29,16 @@ export const typeDefs = gql`
   }
 `;
 
-const createChatSchema = yup.object().shape({
-  name: yup
-    .string()
-    .min(1, 'Chat name must be at least 1 character long')
-    .max(30, 'Chat name must be at most 30 characters long')
-    .required(),
-  picture: yup.string(),
-});
+const createChatSchema = yup
+  .object()
+  .optional()
+  .shape({
+    name: yup
+      .string()
+      .min(1, 'Chat name must be at least 1 character long')
+      .max(30, 'Chat name must be at most 30 characters long'),
+    picture: yup.string(),
+  });
 
 export const resolvers = {
   Mutation: {
@@ -45,13 +47,7 @@ export const resolvers = {
       { name, picture }: { name: string; picture: string },
       { authService, sequelize }: Context
     ) => {
-      try {
-        await createChatSchema.validate({ name, picture });
-      } catch (err: any) {
-        throw new GraphQLError(err.message as string, {
-          extensions: { code: 'BAD_USER_INPUT' },
-        });
-      }
+      await createChatSchema.validate({ name, picture });
 
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {

@@ -3,8 +3,11 @@ import { merge } from 'lodash';
 
 import queries from './queries';
 import mutations from './mutations';
+import { type Context } from '../../config/apolloServer';
+import { type ChatsInput } from '../chat/queries';
+import type User from './model';
 
-const types = gql`
+const typeDefs = gql`
   type PublicUser {
     id: ID!
     username: String!
@@ -36,6 +39,7 @@ const types = gql`
     is_online: Boolean!
     profile_pic: String
     bio: String
+    chats(query: ChatsInput): ChatConnection!
   }
 
   type UserEdge {
@@ -100,7 +104,15 @@ export const UserFields = gql`
   }
 `;
 
+const resolvers = {
+  User: {
+    chats: async (_: User, args: ChatsInput, { dataSources }: Context) => {
+      return await dataSources.chatsDB.getChats(args);
+    },
+  },
+};
+
 export default {
-  typeDefs: [types, queries.typeDefs, mutations.typeDefs],
-  resolvers: merge(queries.resolvers, mutations.resolvers),
+  typeDefs: [typeDefs, queries.typeDefs, mutations.typeDefs],
+  resolvers: merge(resolvers, queries.resolvers, mutations.resolvers),
 };

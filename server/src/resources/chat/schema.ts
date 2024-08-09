@@ -3,6 +3,8 @@ import { merge } from 'lodash';
 
 import queries from './queries';
 import mutations from './mutations';
+import { type Context } from '../../config/apolloServer';
+import type Chat from './model';
 
 const types = gql`
   type UserInfo {
@@ -47,7 +49,15 @@ const types = gql`
   }
 `;
 
+const resolvers = {
+  Chat: {
+    users: async (chat: Chat, _: any, { dataSources }: Context) => {
+      return await dataSources.usersDB.getUsersByChat(chat.id);
+    },
+  },
+};
+
 export default {
   typeDefs: [types, queries.typeDefs, mutations.typeDefs],
-  resolvers: merge(queries.resolvers, mutations.resolvers),
+  resolvers: merge(resolvers, queries.resolvers, mutations.resolvers),
 };

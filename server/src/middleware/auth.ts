@@ -16,6 +16,6 @@ export const redirectAuth: RequestHandler = (req, res) => {
     (req.user as OAuth2User).user_id
   );
   res.redirect(
-    `${FRONTEND_BASE_URL}/login?accessToken=${accessToken}&expiresAt=${expiresAt.toISOString()}`
+    `${FRONTEND_BASE_URL}/oauth2?accessToken=${accessToken}&expiresAt=${expiresAt.toISOString()}`
   );
 };

@@ -2,7 +2,7 @@ import { GraphQLError } from 'graphql';
 import { type FindOptions, Op } from 'sequelize';
 
 import type AuthService from '../../services/authService';
-import { User, UserBlock } from '..';
+import { Chat, User, UserBlock } from '..';
 import { type Edge, type RelayConnection } from '../../utils/types';
 import { decodeCursor, encodeCursor } from '../../utils/pagination';
 
@@ -93,7 +93,19 @@ class UsersDataSource {
     return { edges, pageInfo };
   }
 
-  async getPublicUser(id: number): Promise<User | null> {
+  async getUsersByChat(chatId: number): Promise<User[]> {
+    const usersOfChat = await User.findAll({
+      include: {
+        model: Chat,
+        as: 'chats',
+        where: { id: chatId },
+      },
+      attributes: ['id', 'username', 'discriminator', 'profile_pic'],
+    });
+    return usersOfChat;
+  }
+
+  async getUserById(id: number): Promise<User | null> {
     const user = await User.findByPk(id);
 
     const publicUser = user?.toJSON();
@@ -182,12 +194,11 @@ class UsersDataSource {
     const trueOrderBy = queryByBlocks ? 'created_at' : orderBy;
     const op = orderDirection === 'DESC' ? Op.lt : Op.gt;
 
-    let blocksWithBlockedUser: Array<UserBlock & { blocked: User }> = [];
-    let blockedUsers: User[] = [];
     let edges: Array<Edge<User>> = [];
+    let blockedUsers: User[] = [];
 
     if (!queryByBlocks) {
-      const query: FindOptions<any> = {
+      const blockedUsersQuery: FindOptions<any> = {
         include: {
           model: User,
           as: 'blockers',
@@ -206,7 +217,7 @@ class UsersDataSource {
         subQuery: false,
       };
 
-      blockedUsers = (await User.findAll(query)) as unknown as User[];
+      blockedUsers = await User.findAll(blockedUsersQuery);
 
       edges = blockedUsers.map((user) => ({
         cursor: encodeCursor(user[trueOrderBy]),
@@ -215,7 +226,7 @@ class UsersDataSource {
     }
 
     if (queryByBlocks) {
-      const query: FindOptions<any> = {
+      const blocksQuery: FindOptions<any> = {
         include: {
           model: User,
           as: 'blocked',
@@ -230,12 +241,13 @@ class UsersDataSource {
         subQuery: false,
       };
 
-      blocksWithBlockedUser = (await UserBlock.findAll(
-        query
+      const blocksWithBlockedUsers = (await UserBlock.findAll(
+        blocksQuery
       )) as unknown as Array<UserBlock & { blocked: User }>;
-      blockedUsers = blocksWithBlockedUser.map((block) => block.blocked);
 
-      edges = blocksWithBlockedUser.map((block) => ({
+      blockedUsers = blocksWithBlockedUsers.map((block) => block.blocked);
+
+      edges = blocksWithBlockedUsers.map((block) => ({
         cursor: encodeCursor(block[trueOrderBy]),
         node: block.blocked.toJSON(),
       }));
