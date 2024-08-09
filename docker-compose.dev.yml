@@ -1,4 +1,17 @@
 services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./client/:/usr/src/app
+    ports:
+      - '3000:3000'
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:4000/api
+    command: ['npm', 'run', 'dev']
+    depends_on:
+      - server
   server:
     build:
       context: ./server
@@ -6,16 +19,20 @@ services:
     volumes:
       - ./server/:/usr/src/app
     ports:
-      - '3000:3000'
+      - '4000:4000'
     environment:
-      - PORT=3000
+      - PORT=4000
       - POSTGRES_URL=postgresql://postgres:example@postgres:5432
       - MONGO_URL=mongodb://root:example@mongo:27017
       - JWT_SECRET=secret1211
       - DISCORD_CLIENT_ID=1262427700925300780
       - DISCORD_CLIENT_SECRET=OBkWRr8Rv8EyPE2CQ4tYK84o7BbfgUMv
-      - DISCORD_REDIRECT_URI=http://localhost:3000/api/auth/discord/redirect
-    command: ['npm', 'start']
+      - DISCORD_REDIRECT_URI=http://localhost:4000/api/auth/discord/redirect
+      - FRONTEND_BASE_URL=http://localhost:3000
+    command: sh -c 'npm run migrate:up && npm run seed && npm run start'
+    depends_on:
+      - postgres
+      - mongo
   postgres:
     image: postgres
     restart: always

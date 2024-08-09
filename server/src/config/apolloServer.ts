@@ -69,7 +69,7 @@ export const createApolloServerConfig = (
     }),
   };
 
-  const createdConfig = {
+  const createdConfig: ApolloServerOptions<Context> = {
     schema,
     formatError: apolloErrorFormatter,
     plugins: [httpServerDrainPlugin, apolloServerDrainPlugin],

@@ -117,7 +117,7 @@
   }
 
   .error {
-    @apply mt-[-5px] text-xs text-error;
+    @apply my-[-5px] text-xs text-error;
   }
 }
 
