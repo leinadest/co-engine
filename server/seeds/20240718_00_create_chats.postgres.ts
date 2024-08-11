@@ -5,7 +5,15 @@ import { NODE_ENV } from '../src/config/environment';
 import Chat from '../src/resources/chat/model';
 
 const devData: { chats: any[]; chatsIds: number[] } = {
-  chats: [{ creator_id: 1 }, { name: 'test', creator_id: 2 }],
+  chats: [
+    ...Array.from({ length: 10 }, (_, i) => ({
+      name: `test${i}`,
+      creator_id: i + 1,
+      last_message_at: new Date(),
+      last_message:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation',
+    })),
+  ],
   chatsIds: [],
 };
 

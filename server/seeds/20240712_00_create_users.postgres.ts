@@ -9,21 +9,11 @@ const devData: {
   usersIds: number[];
 } = {
   users: [
-    {
-      username: 'tester',
-      email: 'test@gmail.com',
-      password_hash: bcrypt.hashSync('test123', 10),
-    },
-    {
-      username: 'tester2',
-      email: 'test2@gmail.com',
-      password_hash: bcrypt.hashSync('test123', 10),
-    },
-    {
-      username: 'tester3',
-      email: 'test3@gmail.com',
-      password_hash: bcrypt.hashSync('test123', 10),
-    },
+    ...Array.from({ length: 10 }, (_, i) => ({
+      username: `tester${i}`,
+      email: `test${i}@gmail.com`,
+      password_hash: bcrypt.hashSync('A1!aaaaa', 10),
+    })),
   ],
   usersIds: [],
 };

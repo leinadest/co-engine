@@ -81,8 +81,8 @@ User.beforeCreate(async (user) => {
 User.beforeBulkCreate(async (users) => {
   const record: Record<string, undefined | number> = {};
   for (const user of users) {
-    const incomingUsernameCount = record[`${user.username}`] ?? 0;
-    record[`${user.username}`] = incomingUsernameCount + 1;
+    const incomingUsernameCount = record[user.username] ?? 0;
+    record[user.username] = incomingUsernameCount + 1;
 
     const storedUsernameCount = await User.count({
       where: { username: user.username },

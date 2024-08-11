@@ -30,7 +30,6 @@ class UserFriendRequest extends Model {
     created_at: {
       type: DataTypes.DATE,
       allowNull: false,
-      primaryKey: true,
       defaultValue: Sequelize.fn('NOW'),
     },
   };
