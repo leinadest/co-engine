@@ -1,10 +1,14 @@
-import Button from '@/components/Button';
 import Image from 'next/image';
 import Link from 'next/link';
+
+import Button from '@/components/common/Button';
+import Header from '@/components/common/Header';
 
 export default function Home() {
   return (
     <>
+      <Header />
+
       <main className="container">
         <div className="flex-col-center mx-auto gap-4 text-center max-w-xl">
           <h1>Connect, communicate, collaborate</h1>
@@ -25,7 +29,7 @@ export default function Home() {
       <section className="container">
         <h2 className="text-center mb-4">Drive forward cooperation</h2>
         <div className="flex flex-wrap gap-2">
-          <section className="grow basis-0 rounded-lg p-4 bg-backgroundSecondary">
+          <section className="grow basis-0 rounded-lg p-4 bg-bgSecondary">
             <h5>Manage your connections</h5>
             <p>
               Access and take care of all your friends, blocked users, and
@@ -39,7 +43,7 @@ export default function Home() {
               className="mt-2"
             />
           </section>
-          <section className="grow basis-0 rounded-lg p-4 bg-backgroundSecondary">
+          <section className="grow basis-0 rounded-lg p-4 bg-bgSecondary">
             <h5>Communicate with others</h5>
             <p>
               Send messages and chat with friends, collaborators, and begin
@@ -53,7 +57,7 @@ export default function Home() {
               className="mt-2"
             />
           </section>
-          <section className="grow-[100] rounded-lg p-4 bg-backgroundSecondary">
+          <section className="grow-[100] rounded-lg p-4 bg-bgSecondary">
             <h5>Perform collaborations</h5>
             <p>
               Create or join a group with others in order to discuss ideas,
@@ -70,7 +74,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="p-12 bg-backgroundSecondary">
+      <section className="p-12 bg-bgSecondary">
         <div className="flex-col-center small-container gap-4 text-center">
           <h2>Use Co-Engine for free</h2>
           <p>All of Co-Engine&apos;s features are free to use.</p>

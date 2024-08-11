@@ -6,9 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import useAuth from '../hooks/useAuth';
 
-import InputField from '@/components/InputField';
+import InputField from '@/components/form/InputField';
 import { useEffect, useState } from 'react';
-import AuthStorage from '../stores/authStorage';
 
 interface FormValues {
   email: string;

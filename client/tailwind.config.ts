@@ -3,7 +3,7 @@ import type { Config } from 'tailwindcss';
 const config: Config = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
@@ -20,8 +20,9 @@ const config: Config = {
         error: '#EF4444', // Use for error notifications or messages
         warning: '#F59E0B', // Use for cautionary notifications or messages
         info: '#3B82F6', // Use for informational messages or alerts
-        backgroundPrimary: '#F9FAFB', // Use as a neutral color for background
-        backgroundSecondary: '#F3F4F6', // Use as a neutral color for background
+        bgPrimary: '#F9FAFB', // Use as a neutral color for background
+        bgSecondary: '#F3F4F6', // Use as a neutral color for background
+        bgSecondaryDark: '#E5E7EB', // Use as a darker color for background
         textPrimary: '#111827', // Use for headings
         textSecondary: '#374151', // Use for body text
         border: '#D1D5DB', // Use around cards, inputs, or containers
@@ -29,14 +30,6 @@ const config: Config = {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
       },
-      // lineHeight: {
-      //   none: '1',
-      //   shorter: '1.25',
-      //   short: '1.375',
-      //   base: '1.5',
-      //   tall: '1.625',
-      //   taller: '2',
-      // },
       maxWidth: {
         '2xl': '40rem',
         '3xl': '48rem',
