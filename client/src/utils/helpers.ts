@@ -39,3 +39,13 @@ export function calculateTimeDifference(date: string) {
   const diffInYears = Math.floor(diffInMonths / 12);
   return `${diffInYears}y`;
 }
+
+export function snakeToCamel(obj: Record<string, any>) {
+  return Object.keys(obj).reduce<Record<string, any>>((acc, key) => {
+    const camelKey = key.replace(/_([a-z])/g, (match, group1) =>
+      group1.toUpperCase()
+    );
+    acc[camelKey] = obj[key];
+    return acc;
+  }, {});
+}

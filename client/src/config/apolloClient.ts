@@ -5,7 +5,6 @@ import {
   createHttpLink,
   gql,
 } from '@apollo/client';
-import { onError } from '@apollo/client/link/error';
 import {
   offsetLimitPagination,
   relayStylePagination,
@@ -13,17 +12,6 @@ import {
 import { setContext } from '@apollo/client/link/context';
 
 import authStorage from '../features/auth/stores/authStorage';
-
-export const errorLink = onError(({ networkError, graphQLErrors }) => {
-  if (graphQLErrors) {
-    graphQLErrors.forEach(({ message, locations, path }) =>
-      console.log(`GraphQL Error: ${message}`)
-    );
-  }
-  if (networkError) {
-    console.log(`Network Error: ${networkError}`);
-  }
-});
 
 export const cache = new InMemoryCache({
   typePolicies: {
@@ -57,7 +45,7 @@ export function createApolloClient() {
   });
 
   return new ApolloClient({
-    link: ApolloLink.from([errorLink, authLink, httpLink]),
+    link: ApolloLink.from([authLink, httpLink]),
     cache,
   });
 }

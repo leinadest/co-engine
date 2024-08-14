@@ -1,15 +1,22 @@
-import Image from 'next/image';
-import { headers } from 'next/headers';
+'use client';
 
+import Image from 'next/image';
 import TrackerLink from '@/components/TrackerLink';
+import { useEffect, useState } from 'react';
 
 export default function CollabSideBar() {
-  const currentUrl = headers().get('referer');
-  const currentCollab = currentUrl && currentUrl.includes('home') && 'home';
+  const [currentContext, setCurrentContext] = useState<string>();
+
+  useEffect(() => {
+    const currentUrl = localStorage.getItem('lastPath');
+    if (currentUrl && currentUrl.includes('home')) {
+      setCurrentContext('home');
+    }
+  }, []);
 
   return (
     <div className="py-2 bg-bgSecondaryDark">
-      <div className={`collab ${currentCollab ? 'active' : ''}`}>
+      <div className={`collab ${currentContext ? 'active' : ''}`}>
         <TrackerLink href="/home" className="profile-circle">
           <Image src="/home.png" alt="home" width={26} height={26} />
         </TrackerLink>

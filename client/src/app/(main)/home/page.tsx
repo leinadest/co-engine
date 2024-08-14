@@ -1,13 +1,16 @@
 'use client';
 
+import { useEffect } from 'react';
 import { redirect } from 'next/navigation';
 
 export default function Home() {
-  const lastPath = localStorage.getItem('lastPath');
-  const currentPath = window.location.pathname;
-  if (lastPath && lastPath !== currentPath) {
-    redirect(lastPath);
-  }
+  useEffect(() => {
+    const lastPath = localStorage.getItem('lastPath');
+    const currentPath = window.location.pathname;
+    if (lastPath && lastPath !== currentPath) {
+      redirect(lastPath);
+    }
+  }, []);
 
   return (
     <main>

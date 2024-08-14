@@ -9,11 +9,14 @@ import useUser from '@/features/users/hooks/useUser';
 import SkeletonChatList from '@/features/chats/components/SkeletonChatList';
 import User from '@/features/users/components/User';
 import SkeletonUser from '@/features/users/components/SkeletonUser';
+import { snakeToCamel } from '@/utils/helpers';
 
 export default function Sidebar() {
-  const { data, loading, error } = useUser();
+  const { data, loading, error } = useUser({
+    fetchPolicy: 'cache-and-network',
+  });
 
-  if (error?.message === 'Not authenticated') {
+  if (error && error.message === 'Not authenticated') {
     redirect('/login');
   }
   if (error) {
@@ -22,15 +25,11 @@ export default function Sidebar() {
 
   let chats;
   if (!loading) {
-    chats = data.me.chats.edges.map((edge: any) => ({
-      ...edge.node,
-      lastMessageAt: edge.node.last_message_at,
-      lastMessage: edge.node.last_message,
-    }));
+    chats = data.me.chats.edges.map((edge: any) => snakeToCamel(edge.node));
   }
 
   return (
-    <div className="flex flex-col items-stretch">
+    <div className="flex flex-col items-stretch border-r">
       <TrackerLink
         href="/friends"
         className="flex items-center gap-2 p-2 bg-bgPrimary focus-by-brightness"
@@ -43,7 +42,7 @@ export default function Sidebar() {
       <input
         type="text"
         placeholder="Search"
-        className="m-2 px-2 rounded-md border bg-bgSecondary border-black"
+        className="m-2 px-2 rounded-md bg-bgSecondary"
       />
       {loading ? (
         <>

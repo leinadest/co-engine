@@ -115,8 +115,16 @@
       @apply h-6 bg-bgSecondaryDark;
     }
 
+    &.h6 {
+      @apply h-5 bg-bgSecondaryDark;
+    }
+
     &.body {
       @apply h-6 bg-bgSecondary;
+    }
+
+    &.body-sm {
+      @apply h-5 bg-bgSecondary;
     }
 
     &.body-xs {

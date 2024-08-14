@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client';
+import { gql, QueryHookOptions, useQuery } from '@apollo/client';
 
 const GET_ME = gql`
   query GetMe {
@@ -30,10 +30,10 @@ const GET_ME = gql`
   }
 `;
 
-export default function useUser() {
-  const result = useQuery(GET_ME, {
-    fetchPolicy: 'cache-and-network',
-  });
+export default function useUser(
+  options?: QueryHookOptions<NoInfer<any>, NoInfer<any>>
+) {
+  const result = useQuery(GET_ME, options);
 
   return result;
 }
