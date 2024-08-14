@@ -20,18 +20,17 @@ export const typeDefs = gql`
     """
     Returns messages from the specified context
     """
-    messages(query: MessagesInput!): MessageConnection
+    messages(query: MessagesInput!): MessageConnection!
   }
 `;
 
 interface MessagesInput {
   contextType: string;
   contextId: string;
-  by?: '_id' | 'created_at';
+  orderDirection?: 'ASC' | 'DESC';
+  orderBy?: '_id' | 'created_at';
   after?: string;
-  before?: string;
   first?: number;
-  last?: number;
 }
 
 const messagesInputSchema = yup.object().shape({
@@ -41,6 +40,14 @@ const messagesInputSchema = yup.object().shape({
     .oneOf(['chat', 'channel'], 'Context must be either chat or channel')
     .required('Context type is required'),
   contextId: yup.string().trim().required('Context ID is required'),
+  orderDirection: yup
+    .string()
+    .trim()
+    .oneOf(['ASC', 'DESC'], 'orderDirection must be either ASC or DESC'),
+  orderBy: yup
+    .string()
+    .trim()
+    .oneOf(['_id', 'created_at'], 'orderBy must be either _id or created_at'),
 });
 
 export const resolvers = {

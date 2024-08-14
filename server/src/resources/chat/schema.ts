@@ -14,6 +14,13 @@ const types = gql`
     profile_pic: String
   }
 
+  input ChatMessagesInput {
+    orderDirection: String
+    orderBy: String
+    after: String
+    first: Int
+  }
+
   type Chat {
     id: ID!
     creator_id: ID!
@@ -23,6 +30,7 @@ const types = gql`
     last_message_at: DateTime
     last_message: String
     users: [UserInfo!]!
+    messages(query: ChatMessagesInput): MessageConnection!
   }
 
   type ChatInfo {
@@ -49,10 +57,28 @@ const types = gql`
   }
 `;
 
+interface ChatMessagesInput {
+  orderDirection?: 'ASC' | 'DESC';
+  orderBy?: '_id' | 'created_at';
+  after?: string;
+  first?: number;
+}
+
 const resolvers = {
   Chat: {
     users: async (chat: Chat, _: any, { dataSources }: Context) => {
       return await dataSources.usersDB.getUsersByChat(chat.id);
+    },
+    messages: async (
+      chat: Chat,
+      args: ChatMessagesInput,
+      { dataSources }: Context
+    ) => {
+      return await dataSources.messagesDB.getMessages({
+        ...args,
+        contextId: chat.id,
+        contextType: 'chat',
+      });
     },
   },
 };

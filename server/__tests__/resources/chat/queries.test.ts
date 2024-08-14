@@ -1,8 +1,18 @@
-import { Chat, ChatUser, User, UserBlock } from '../../../src/resources';
+import mongoose from 'mongoose';
+
+import {
+  Chat,
+  ChatUser,
+  Message,
+  User,
+  UserBlock,
+} from '../../../src/resources';
 import sequelize from '../../../src/config/sequelize';
 import AuthService from '../../../src/services/authService';
 import { executeOperation } from '../helpers';
 import { encodeCursor } from '../../../src/utils/pagination';
+import { type IMessage } from '../../../src/resources/message/model';
+import connectToMongo from '../../../src/config/mongo';
 
 describe('Chat Queries Integration Tests', () => {
   const GET_CHATS = `
@@ -44,11 +54,36 @@ describe('Chat Queries Integration Tests', () => {
           discriminator
           profile_pic
         }
+          messages {
+          edges {
+            cursor
+            node {
+              id
+              creator {
+                id
+              }
+              formatted_created_at
+              formatted_edited_at
+              content
+              reactions {
+                reactor_id
+                reaction
+              }
+            }
+          }
+            pageInfo {
+              hasNextPage
+              hasPreviousPage
+              endCursor
+              startCursor
+            }
+        }
       }
     } 
   `;
 
   // Load users with user #1 as the authenticated user
+  const USER_IDX = 0;
   let users: User[];
   let userAccessToken: string;
   const loadUsers = async (): Promise<void> => {
@@ -84,16 +119,22 @@ describe('Chat Queries Integration Tests', () => {
   };
 
   beforeAll(async () => {
-    await sequelize.authenticate();
-    await sequelize.sync({ force: true });
+    await Promise.all([
+      sequelize.authenticate(),
+      sequelize.sync({ force: true }),
+      connectToMongo(),
+    ]);
   });
 
   beforeEach(async () => {
-    await sequelize.truncate({ cascade: true, restartIdentity: true });
+    await Promise.all([
+      sequelize.truncate({ cascade: true, restartIdentity: true }),
+      mongoose.connection.dropDatabase(),
+    ]);
   });
 
   afterAll(async () => {
-    await sequelize.close();
+    await Promise.all([sequelize.close(), mongoose.disconnect()]);
   });
 
   describe('chats', () => {
@@ -439,6 +480,8 @@ describe('Chat Queries Integration Tests', () => {
   });
 
   describe('chat', () => {
+    const CHAT_IDX = 0;
+
     describe('if User is not authenticated', () => {
       it('should throw an error', async () => {
         // Define expected error
@@ -458,14 +501,42 @@ describe('Chat Queries Integration Tests', () => {
     });
 
     describe('else if User queries for chat with id 1', () => {
+      // Load 20 messages in chats[CHAT_IDX] and another message in a different chat
+      let messages: IMessage[];
+      const loadMessages = async (): Promise<void> => {
+        const NUM_OF_MESSAGES = 20;
+        const DIFFERENCE = 1;
+
+        const messagesData = [
+          ...Array.from({ length: NUM_OF_MESSAGES }, (_, i) => ({
+            context_id: chats[CHAT_IDX].id,
+            context_type: 'chat',
+            creator_id: users[USER_IDX].id,
+            content: `test content ${i}`,
+            created_at: new Date(Math.random() * 10000),
+          })),
+          {
+            context_id: chats[CHAT_IDX].id + DIFFERENCE,
+            context_type: 'chat',
+            creator_id: users[USER_IDX].id,
+            content: 'test content in a different context',
+            created_at: new Date(Math.random() * 10000),
+          },
+        ];
+
+        messages = await Message.insertMany(messagesData);
+      };
+
       beforeEach(async () => {
         await loadUsers();
         await loadChats();
+        await loadMessages();
       });
 
-      it('should return chat', async () => {
+      it('should return chat with first 10 msgs descending by date', async () => {
         // Initialize test data
         const chatOne = chats[0];
+
         const chatOneUsers = chatUsers.filter(
           (chatUser) => chatUser.chat_id === chatOne.id
         );
@@ -479,6 +550,33 @@ describe('Chat Queries Integration Tests', () => {
           };
         });
 
+        const chatOneMessages = messages.filter(
+          (msg) => msg.context_type === 'chat' && msg.context_id === chatOne.id
+        );
+        const chatOneMessageConnection = {
+          edges: chatOneMessages
+            .sort((a, b) => b.created_at.getTime() - a.created_at.getTime())
+            .slice(0, 10)
+            .map((msg) => ({
+              cursor: expect.any(String),
+              node: {
+                ...msg.toJSON(),
+                context_id: undefined,
+                context_type: undefined,
+                creator_id: undefined,
+                creator: {
+                  id: msg.creator_id.toString(),
+                },
+              },
+            })),
+          pageInfo: {
+            hasNextPage: true,
+            hasPreviousPage: false,
+            endCursor: expect.any(String),
+            startCursor: expect.any(String),
+          },
+        };
+
         // Define expected chat
         const expectedChat = {
           ...chatOne.toJSON(),
@@ -487,6 +585,7 @@ describe('Chat Queries Integration Tests', () => {
           created_at: chatOne.created_at.toISOString(),
           last_message_at: chatOne.last_message_at?.toISOString() ?? null,
           users: usersOfChatOne,
+          messages: chatOneMessageConnection,
         };
 
         // Execute query and get results

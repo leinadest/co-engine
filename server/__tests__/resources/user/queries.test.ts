@@ -8,8 +8,8 @@ import {
   UserFields,
 } from '../../../src/resources/user/schema';
 import AuthService from '../../../src/services/authService';
-import sequelize from '../../../src/config/sequelize';
 import { encodeCursor } from '../../../src/utils/pagination';
+import sequelize from '../../../src/config/sequelize';
 
 describe('User Queries Integration Tests', () => {
   const GET_USERS = gql`

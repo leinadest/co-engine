@@ -44,6 +44,10 @@ describe('User Friend Request Queries Integration Tests', () => {
     await sequelize.sync({ force: true });
   });
 
+  beforeEach(async () => {
+    await sequelize.truncate({ cascade: true, restartIdentity: true });
+  });
+
   afterAll(async () => {
     await sequelize.close();
   });

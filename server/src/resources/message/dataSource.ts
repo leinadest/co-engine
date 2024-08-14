@@ -34,7 +34,7 @@ class MessagesDataSource {
     after,
     first = 10,
   }: {
-    contextId: string;
+    contextId: string | number;
     contextType: string;
     orderDirection?: 'ASC' | 'DESC';
     orderBy?: '_id' | 'created_at';

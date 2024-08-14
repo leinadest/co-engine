@@ -1,4 +1,3 @@
-// import { type GraphQLFormattedError } from 'graphql';
 import { ApolloServer } from '@apollo/server';
 
 import AuthService from '../../src/services/authService';
