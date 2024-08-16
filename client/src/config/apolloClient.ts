@@ -21,7 +21,7 @@ export const cache = new InMemoryCache({
         chats: relayStylePagination(),
         friends: relayStylePagination(),
         messages: relayStylePagination(),
-        userFriendRequests: offsetLimitPagination(),
+        userFriendRequests: { ...offsetLimitPagination(), keyArgs: ['type'] },
         users: relayStylePagination(),
       },
     },

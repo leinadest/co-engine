@@ -6,6 +6,7 @@ import useChat from '@/features/chats/hooks/useChat';
 import MessageList from '@/features/messages/components/MessageList';
 import SkeletonMessageList from '@/features/messages/components/SkeletonMessageList';
 import { snakeToCamel } from '@/utils/helpers';
+import { Edge } from '@/types/api';
 
 interface ChatPageProps {
   params: { chatId: string };
@@ -32,7 +33,7 @@ export default function ChatPage({ params: { chatId } }: ChatPageProps) {
   }
 
   const messages = data.chat.messages.edges
-    .map((edge: any) => snakeToCamel(edge.node))
+    .map((edge: Edge<any>) => snakeToCamel(edge.node))
     .reverse();
 
   return (

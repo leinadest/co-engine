@@ -1,3 +1,62 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "import/no-restricted-paths": [
+      "error",
+      {
+        "zones": [
+          // enforce unidirectional codebase: src/*/ --> src/features/ --> src/app
+          // e.g src/features and src/app can import from these shared modules but not the other way around
+          {
+            "target": [
+              "./src/components",
+              "./src/hooks",
+              "./src/lib",
+              "./src/types",
+              "./src/utils"
+            ],
+            "from": ["./src/features", "./src/app"]
+          },
+          // e.g. src/app can import from src/features but not the other way around
+          {
+            "target": "./src/features",
+            "from": "./src/app"
+          },
+
+          // disables cross-feature imports:
+          // eg. src/features/discussions cannot import from other src/features/ subdirectories
+          {
+            "target": "./src/features/auth",
+            "from": "./src/features",
+            "except": ["./auth"]
+          },
+          {
+            "target": "./src/features/chats",
+            "from": "./src/features",
+            "except": ["./chats"]
+          },
+          {
+            "target": "./src/features/collabs",
+            "from": "./src/features",
+            "except": ["./collabs"]
+          },
+          {
+            "target": "./src/features/friends",
+            "from": "./src/features",
+            "except": ["./friends"]
+          },
+          {
+            "target": "./src/features/messages",
+            "from": "./src/features",
+            "except": ["./messages"]
+          },
+          {
+            "target": "./src/features/users",
+            "from": "./src/features",
+            "except": ["./users"]
+          }
+        ]
+      }
+    ]
+  }
 }

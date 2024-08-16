@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { redirect } from 'next/navigation';
 
 import ChatList from '@/features/chats/components/ChatList';
-import TrackerLink from '../TrackerLink';
+import TrackerLink from '../../components/TrackerLink';
 import useUser from '@/features/users/hooks/useUser';
 import SkeletonChatList from '@/features/chats/components/SkeletonChatList';
 import User from '@/features/users/components/User';
@@ -31,7 +31,7 @@ export default function Sidebar() {
   return (
     <div className="flex flex-col items-stretch border-r">
       <TrackerLink
-        href="/friends"
+        href="/home/all-friends"
         className="flex items-center gap-2 p-2 bg-bgPrimary focus-by-brightness"
       >
         <div className="profile-circle">

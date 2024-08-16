@@ -1,7 +1,7 @@
 import React from 'react';
 
-import ChatHeader from '@/features/chats/components/ChatHeader';
-import ChatInput from '@/features/chats/components/ChatInput';
+import ChatHeader from './ChatHeader';
+import ChatInput from './ChatInput';
 
 interface LayoutProps {
   children: React.ReactNode;

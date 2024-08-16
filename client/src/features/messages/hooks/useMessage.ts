@@ -1,4 +1,3 @@
-import { GET_CHAT } from '@/features/chats/hooks/useChat';
 import { gql, useMutation } from '@apollo/client';
 import { DateTime } from 'luxon';
 
@@ -20,6 +19,45 @@ const GET_CREATOR = gql`
       id
       username
       profile_pic
+    }
+  }
+`;
+
+const GET_CHAT = gql`
+  query GetChat($id: ID!) {
+    chat(id: $id) {
+      id
+      name
+      picture
+      users {
+        id
+        username
+        profile_pic
+      }
+      messages {
+        edges {
+          cursor
+          node {
+            id
+            creator {
+              id
+              username
+              profile_pic
+            }
+            formatted_created_at
+            formatted_edited_at
+            content
+            reactions {
+              reactor_id
+              reaction
+            }
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
     }
   }
 `;

@@ -7,34 +7,14 @@ import { UserFriendRequest } from '../src/resources';
 const devData: { userFriendRequests: any[]; userFriendRequestsIds: number[] } =
   {
     userFriendRequests: [
-      {
+      ...Array.from({ length: 30 }, (_, i) => ({
         sender_id: 1,
-        receiver_id: 2,
-      },
-      {
-        sender_id: 1,
-        receiver_id: 3,
-      },
-      {
-        sender_id: 1,
-        receiver_id: 4,
-      },
-      {
-        sender_id: 6,
+        receiver_id: i + 2,
+      })),
+      ...Array.from({ length: 30 }, (_, i) => ({
+        sender_id: i + 32,
         receiver_id: 1,
-      },
-      {
-        sender_id: 7,
-        receiver_id: 1,
-      },
-      {
-        sender_id: 8,
-        receiver_id: 1,
-      },
-      {
-        sender_id: 9,
-        receiver_id: 1,
-      },
+      })),
     ],
     userFriendRequestsIds: [],
   };

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Op } from 'sequelize';
 
 import { NODE_ENV } from '../src/config/environment';
@@ -6,22 +5,14 @@ import { UserFriendship } from '../src/resources';
 
 const devData: { userFriendships: any[]; userFriendshipsIds: number[] } = {
   userFriendships: [
-    {
+    ...Array.from({ length: 30 }, (_, i) => ({
       user_id: 1,
-      friend_id: 5,
-    },
-    {
-      user_id: 5,
+      friend_id: i + 62,
+    })),
+    ...Array.from({ length: 30 }, (_, i) => ({
+      user_id: i + 62,
       friend_id: 1,
-    },
-    {
-      user_id: 1,
-      friend_id: 9,
-    },
-    {
-      user_id: 9,
-      friend_id: 1,
-    },
+    })),
   ],
   userFriendshipsIds: [],
 };
@@ -39,7 +30,7 @@ export const up = async (): Promise<void> => {
 
     const result = await UserFriendship.bulkCreate(data.userFriendships);
     data.userFriendshipsIds = result.map(
-      (userFriendship) => userFriendship.sender_id
+      (userFriendship) => userFriendship.user_id
     );
 
     console.log(`*** BULK INSERTED USER FRIENDSHIPS RESULT ***`);
@@ -56,7 +47,7 @@ export const down = async (): Promise<void> => {
 
     const result = await UserFriendship.destroy({
       where: {
-        sender_id: {
+        user_id: {
           [Op.in]: data.userFriendshipsIds,
         },
       },

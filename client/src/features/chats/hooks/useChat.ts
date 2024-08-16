@@ -1,6 +1,6 @@
 import { gql, QueryHookOptions, useQuery } from '@apollo/client';
 
-export const GET_CHAT = gql`
+const GET_CHAT = gql`
   query GetChat($id: ID!) {
     chat(id: $id) {
       id

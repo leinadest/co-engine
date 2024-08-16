@@ -1,6 +1,6 @@
 import CollabSideBar from '@/features/collabs/components/CollabSidebar';
 import ClientSideApolloProvider from '../_providers/apolloProvider';
-import Sidebar from '@/components/common/Sidebar';
+import Sidebar from '@/app/(main)/Sidebar';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (

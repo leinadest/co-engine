@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Op } from 'sequelize';
 
 import { NODE_ENV } from '../src/config/environment';
@@ -6,7 +5,7 @@ import Chat from '../src/resources/chat/model';
 
 const devData: { chats: any[]; chatsIds: number[] } = {
   chats: [
-    ...Array.from({ length: 10 }, (_, i) => ({
+    ...Array.from({ length: 100 }, (_, i) => ({
       name: `test${i}`,
       creator_id: i + 1,
       last_message_at: new Date(),

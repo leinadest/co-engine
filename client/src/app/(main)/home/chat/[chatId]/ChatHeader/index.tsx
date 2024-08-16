@@ -1,7 +1,7 @@
 'use client';
 
 import useUser from '@/features/users/hooks/useUser';
-import useChat from '../../hooks/useChat';
+import useChat from '../../../../../../features/chats/hooks/useChat';
 import ChatIdentity from './ChatIdentity';
 import SkeletonChatIdentity from './SkeletonChatIdentity';
 
