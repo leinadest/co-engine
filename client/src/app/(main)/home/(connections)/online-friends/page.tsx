@@ -8,7 +8,10 @@ import useFriends from '@/features/friends/hooks/useFriends';
 import { snakeToCamel } from '@/utils/helpers';
 
 export default function OnlineFriends() {
-  const { data, loading, error } = useFriends();
+  const { data, loading, error } = useFriends({
+    status: 'online',
+    fetchPolicy: 'cache-and-network',
+  });
 
   if (error) {
     throw error;
@@ -23,14 +26,15 @@ export default function OnlineFriends() {
     );
   }
 
-  const friends = data.friends.edges
+  const totalCount = data.friends.totalCount;
+  const onlineFriends = data.friends.edges
     .filter((edge) => edge.node.is_online)
     .map((edge) => snakeToCamel(edge.node)) as FriendProps[];
 
   return (
     <main className="p-2 pt-4 overflow-auto">
-      <h5 className="text-center">Online Friends ({friends.length})</h5>
-      <FriendList friends={friends} />
+      <h5 className="text-center">Online Friends ({totalCount})</h5>
+      <FriendList friends={onlineFriends} />
     </main>
   );
 }

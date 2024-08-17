@@ -12,9 +12,9 @@ export default function ChatInput({ chatId }: ChatInputProps) {
   const [input, setInput] = useState<string>('');
   const [error, setError] = useState<Error | null>();
 
-  function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    const formData = new FormData(e.target as HTMLFormElement);
+  function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    const formData = new FormData(event.target as HTMLFormElement);
     const message = formData.get('message') as string;
     createMessage('chat', chatId, message)
       .then(() => {

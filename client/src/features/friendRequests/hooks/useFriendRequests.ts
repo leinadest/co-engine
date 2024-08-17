@@ -1,27 +1,37 @@
 import { gql, QueryHookOptions, useQuery } from '@apollo/client';
 
-const GET_FRIEND_REQUESTS = gql`
+import { LimitOffsetResult } from '@/types/api';
+
+export const GET_FRIEND_REQUESTS = gql`
   query GetFriendRequests($query: UserFriendRequestsInput) {
     userFriendRequests(query: $query) {
-      sender {
-        id
-        username
-        discriminator
-        profile_pic
+      data {
+        sender {
+          id
+          username
+          discriminator
+          profile_pic
+        }
+        receiver {
+          id
+          username
+          discriminator
+          profile_pic
+        }
+        created_at
       }
-      receiver {
-        id
-        username
-        discriminator
-        profile_pic
+      meta {
+        totalCount
+        page
+        pageSize
+        totalPages
       }
-      created_at
     }
   }
 `;
 
 interface GetFriendRequestsData {
-  userFriendRequests: Array<{
+  userFriendRequests: LimitOffsetResult<{
     sender: {
       id: string;
       username: string;

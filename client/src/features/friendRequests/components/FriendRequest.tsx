@@ -1,3 +1,5 @@
+import useEndFriendRequest from '../hooks/useEndFriendRequest';
+
 export interface FriendRequestProps {
   userId: string;
   sender: {
@@ -21,8 +23,9 @@ export default function FriendRequest({
   receiver,
   createdAt,
 }: FriendRequestProps) {
-  const incoming = userId === receiver.id;
+  const { acceptFriendRequest, deleteFriendRequest } = useEndFriendRequest();
 
+  const incoming = userId === receiver.id;
   const otherUser = incoming ? sender : receiver;
   const tag = incoming ? 'Incoming Friend Request' : 'Outgoing Friend Request';
 
@@ -34,11 +37,17 @@ export default function FriendRequest({
         <p>{tag}</p>
       </div>
       {incoming && (
-        <button className="rounded-full size-8 bg-bgSecondary focus-by-brightness">
+        <button
+          onClick={() => acceptFriendRequest(sender.id)}
+          className="rounded-full size-8 bg-bgSecondary focus-by-brightness"
+        >
           ✓
         </button>
       )}
-      <button className="rounded-full size-8 bg-bgSecondary focus-by-brightness">
+      <button
+        onClick={() => deleteFriendRequest(sender.id, receiver.id)}
+        className="rounded-full size-8 bg-bgSecondary focus-by-brightness"
+      >
         ✕
       </button>
     </div>

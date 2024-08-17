@@ -8,7 +8,9 @@ import useFriends from '@/features/friends/hooks/useFriends';
 import { snakeToCamel } from '@/utils/helpers';
 
 export default function AllFriends() {
-  const { data, loading, error } = useFriends();
+  const { data, loading, error } = useFriends({
+    fetchPolicy: 'cache-and-network',
+  });
 
   if (error) {
     throw error;
@@ -29,7 +31,7 @@ export default function AllFriends() {
 
   return (
     <main className="p-2 pt-4 overflow-auto">
-      <h5 className="text-center">All Friends ({friends.length})</h5>
+      <h5 className="text-center">All Friends ({data.friends.totalCount})</h5>
       <FriendList friends={friends} />
     </main>
   );

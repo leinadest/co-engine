@@ -9,7 +9,9 @@ import useBlocked from '@/features/blocked/hooks/useBlocked';
 import { snakeToCamel } from '@/utils/helpers';
 
 export default function Blocked() {
-  const { data, loading, error } = useBlocked();
+  const { data, loading, error } = useBlocked({
+    fetchPolicy: 'cache-and-network',
+  });
 
   if (error) {
     throw error;
@@ -28,7 +30,7 @@ export default function Blocked() {
 
   return (
     <main className="p-2 pt-4 overflow-auto">
-      <h5 className="text-center">Blocked ({blocks.length})</h5>
+      <h5 className="text-center">Blocked ({data.blocked.totalCount})</h5>
       <BlockList blocks={blocks as BlockProps[]} />
     </main>
   );

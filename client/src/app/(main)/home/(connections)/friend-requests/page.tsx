@@ -6,12 +6,12 @@ import { FriendRequestProps } from '@/features/friendRequests/components/FriendR
 import FriendRequestList from '@/features/friendRequests/components/FriendRequestList';
 import SkeletonFriendRequest from '@/features/friendRequests/components/SkeletonFriendRequest';
 import useFriendRequests from '@/features/friendRequests/hooks/useFriendRequests';
-import useUser from '@/features/users/hooks/useUser';
+import useMe from '@/features/users/hooks/useUser';
 import { snakeToCamel } from '@/utils/helpers';
 import { useState } from 'react';
 
 export default function AllFriends() {
-  const userQuery = useUser();
+  const meQuery = useMe();
   const incomingRequestsQuery = useFriendRequests('incoming', {
     fetchPolicy: 'no-cache',
   });
@@ -21,19 +21,20 @@ export default function AllFriends() {
   const [filter, setFilter] = useState<'incoming' | 'outgoing'>('incoming');
 
   if (
-    userQuery.error ||
+    meQuery.error ||
     incomingRequestsQuery.error ||
     outgoingRequestsQuery.error
   ) {
     throw (
-      userQuery.error ||
+      meQuery.error ||
       incomingRequestsQuery.error ||
       outgoingRequestsQuery.error
     );
   }
 
   if (
-    userQuery.loading ||
+    meQuery.loading ||
+    !meQuery.data ||
     incomingRequestsQuery.loading ||
     !incomingRequestsQuery.data ||
     outgoingRequestsQuery.loading ||
@@ -52,14 +53,20 @@ export default function AllFriends() {
     );
   }
 
-  const user = userQuery.data.me;
+  console.log(incomingRequestsQuery, outgoingRequestsQuery);
 
-  const incomingRequests = incomingRequestsQuery.data.userFriendRequests.map(
-    (friendRequest) => snakeToCamel(friendRequest)
+  const incomingResult = incomingRequestsQuery.data.userFriendRequests;
+  const outgoingResult = outgoingRequestsQuery.data.userFriendRequests;
+
+  const incomingRequests = incomingResult.data.map((friendRequest) =>
+    snakeToCamel(friendRequest)
   );
-  const outgoingRequests = outgoingRequestsQuery.data.userFriendRequests.map(
-    (friendRequest) => snakeToCamel(friendRequest)
+  const outgoingRequests = outgoingResult.data.map((friendRequest) =>
+    snakeToCamel(friendRequest)
   );
+
+  const totalIncomingRequests = incomingResult.meta.totalCount;
+  const totalOutgoingRequests = outgoingResult.meta.totalCount;
 
   return (
     <>
@@ -70,7 +77,7 @@ export default function AllFriends() {
             filter === 'incoming' && 'brightness-95'
           }`}
         >
-          Incoming Requests ({incomingRequests.length})
+          Incoming Requests ({totalIncomingRequests})
         </button>
         <button
           onClick={() => setFilter('outgoing')}
@@ -78,12 +85,12 @@ export default function AllFriends() {
             filter === 'outgoing' && 'brightness-95'
           }`}
         >
-          Outgoing Requests ({outgoingRequests.length})
+          Outgoing Requests ({totalOutgoingRequests})
         </button>
       </div>
       <main className="p-2 overflow-auto">
         <FriendRequestList
-          userId={user.id}
+          userId={meQuery.data.me.id}
           friendRequests={
             (filter === 'incoming'
               ? incomingRequests

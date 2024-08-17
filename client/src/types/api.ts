@@ -15,3 +15,13 @@ export interface RelayConnection<T> {
   edges: Array<Edge<T>>;
   pageInfo: PageInfo;
 }
+
+export interface LimitOffsetResult<T> {
+  data: T[];
+  meta: {
+    totalCount: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+  };
+}

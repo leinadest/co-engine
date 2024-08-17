@@ -2,8 +2,8 @@ import { RelayConnection } from '@/types/api';
 import { gql, QueryHookOptions, useQuery } from '@apollo/client';
 
 const GET_FRIENDS = gql`
-  query GetFriends {
-    friends {
+  query GetFriends($query: FriendsInput) {
+    friends(query: $query) {
       edges {
         cursor
         node {
@@ -21,6 +21,7 @@ const GET_FRIENDS = gql`
         endCursor
         startCursor
       }
+      totalCount
     }
   }
 `;
@@ -31,14 +32,19 @@ interface Friends {
     username: string;
     discriminator: string;
     last_login_at: string;
-    is_online: string;
+    is_online: boolean;
     profile_pic: string;
   }>;
 }
 
-export default function useFriends(
-  options: QueryHookOptions<NoInfer<any>, NoInfer<any>> = {}
-) {
-  const friendsQuery = useQuery<Friends>(GET_FRIENDS, options);
-  return friendsQuery;
+interface useFriendsArgs extends QueryHookOptions<Friends, any> {
+  status?: 'online' | 'offline';
+}
+
+export default function useFriends(options?: useFriendsArgs) {
+  const { data, loading, error } = useQuery<Friends>(GET_FRIENDS, {
+    ...options,
+    variables: { query: { status: options?.status } },
+  });
+  return { data, loading, error };
 }

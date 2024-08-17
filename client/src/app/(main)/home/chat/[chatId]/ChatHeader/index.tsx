@@ -1,6 +1,6 @@
 'use client';
 
-import useUser from '@/features/users/hooks/useUser';
+import useMe from '@/features/users/hooks/useUser';
 import useChat from '../../../../../../features/chats/hooks/useChat';
 import ChatIdentity from './ChatIdentity';
 import SkeletonChatIdentity from './SkeletonChatIdentity';
@@ -10,7 +10,7 @@ interface ChatHeaderProps {
 }
 
 export default function ChatHeader({ chatId }: ChatHeaderProps) {
-  const userQuery = useUser();
+  const userQuery = useMe();
   const chatQuery = useChat(chatId) as any;
 
   const user = !userQuery.loading && userQuery.data.me;

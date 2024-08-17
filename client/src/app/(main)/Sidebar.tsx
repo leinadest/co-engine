@@ -5,14 +5,14 @@ import { redirect } from 'next/navigation';
 
 import ChatList from '@/features/chats/components/ChatList';
 import TrackerLink from '../../components/TrackerLink';
-import useUser from '@/features/users/hooks/useUser';
+import useMe from '@/features/users/hooks/useUser';
 import SkeletonChatList from '@/features/chats/components/SkeletonChatList';
 import User from '@/features/users/components/User';
 import SkeletonUser from '@/features/users/components/SkeletonUser';
 import { snakeToCamel } from '@/utils/helpers';
 
 export default function Sidebar() {
-  const { data, loading, error } = useUser({
+  const { data, loading, error } = useMe({
     fetchPolicy: 'cache-and-network',
   });
 

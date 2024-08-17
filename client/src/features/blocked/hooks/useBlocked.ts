@@ -19,6 +19,7 @@ const GET_BLOCKED = gql`
         endCursor
         startCursor
       }
+      totalCount
     }
   }
 `;

@@ -9,15 +9,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {}, [pathname]);
 
-  const options = {
+  const navMap = {
     All: 'all-friends',
     Online: 'online-friends',
     Pending: 'friend-requests',
     Blocked: 'blocked',
+    'Add Friends': 'add-friends',
   } as const;
 
-  const optionsList = Object.keys(options).map((option) => {
-    const optionHref = `/home/${options[option as keyof typeof options]}`;
+  const optionsList = Object.keys(navMap).map((option) => {
+    const optionHref = `/home/${navMap[option as keyof typeof navMap]}`;
     const optionClassName = pathname.includes(optionHref)
       ? 'btn-minimal brightness-95'
       : 'btn-minimal';
@@ -31,13 +32,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   });
 
   return (
-    <div className="flex flex-col min-w-[420px]">
-      <ul className="flex justify-evenly items-center p-2 border-b">
-        {optionsList}
-        <li>
-          <button className="btn-minimal">Add Friend</button>
-        </li>
-      </ul>
+    <div className="flex flex-col min-w-[480px]">
+      <nav className="p-4 border-b">
+        <ul className="flex justify-evenly items-center">{optionsList}</ul>
+      </nav>
       {children}
     </div>
   );
