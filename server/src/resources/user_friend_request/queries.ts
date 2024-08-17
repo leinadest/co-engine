@@ -17,7 +17,7 @@ const typeDefs = gql`
     """
     Returns the friend requests of the authenticated user.
     """
-    userFriendRequests(query: UserFriendRequestsInput): [UserFriendRequest]!
+    userFriendRequests(query: UserFriendRequestsInput): UserFriendRequests
   }
 `;
 
@@ -25,8 +25,8 @@ interface UserFriendRequestsInput {
   type?: string;
   orderBy?: string;
   orderDirection?: string;
-  after?: string;
-  first?: number;
+  limit?: number;
+  offset?: number;
 }
 
 const userFriendRequestInputSchema = yup.object().shape({
@@ -42,11 +42,14 @@ const userFriendRequestInputSchema = yup.object().shape({
     .string()
     .trim()
     .oneOf(['ASC', 'DESC'], 'orderDirection must be ASC or DESC'),
-  after: yup.string().trim(),
-  first: yup
+  limit: yup
     .number()
-    .integer('first must be an integer')
-    .min(1, 'first must be greater than or equal to 1'),
+    .integer('limit must be an integer')
+    .min(1, 'limit must be greater than or equal to 1'),
+  offset: yup
+    .number()
+    .integer('offset must be an integer')
+    .min(1, 'offset must be greater than or equal to 1'),
 });
 
 const resolvers = {

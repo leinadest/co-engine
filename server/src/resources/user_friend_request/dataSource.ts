@@ -5,6 +5,7 @@ import type UsersDataSource from '../user/dataSource';
 import type AuthService from '../../services/authService';
 import { GraphQLError } from 'graphql';
 import sequelize from '../../config/sequelize';
+import { type LimitOffsetResult } from '../../utils/types';
 
 class UserFriendRequestsDataSource {
   private readonly usersDB: UsersDataSource;
@@ -27,8 +28,7 @@ class UserFriendRequestsDataSource {
     orderDirection?: string;
     limit?: number;
     offset?: number;
-  }): Promise<UserFriendRequest[]> {
-    // Initialize query for the next messages to paginate after the cursor
+  }): Promise<LimitOffsetResult<UserFriendRequest>> {
     const query: FindOptions<any> = {
       include: {},
       where: {},
@@ -45,6 +45,7 @@ class UserFriendRequestsDataSource {
         where: {
           id: { [Op.notIn]: blockedUserIds },
         },
+        attributes: ['id', 'username', 'discriminator', 'profile_pic'],
       };
       query.where = {
         receiver_id: this.authService.getUserId(),
@@ -55,15 +56,24 @@ class UserFriendRequestsDataSource {
       query.include = {
         model: User,
         as: 'receiver',
+        attributes: ['id', 'username', 'discriminator', 'profile_pic'],
       };
       query.where = {
         sender_id: this.authService.getUserId(),
       };
     }
 
-    // Execute query
-    const friendRequests = await UserFriendRequest.findAll(query);
-    return friendRequests;
+    const { count, rows } = await UserFriendRequest.findAndCountAll(query);
+
+    return {
+      data: rows,
+      meta: {
+        totalCount: count,
+        page: Math.floor(offset / limit),
+        pageSize: limit,
+        totalPages: Math.floor(count / limit),
+      },
+    };
   }
 
   async acceptFriendRequest(userId: string | number): Promise<boolean> {

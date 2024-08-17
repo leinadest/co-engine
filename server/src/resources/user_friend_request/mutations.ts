@@ -14,6 +14,14 @@ const typeDefs = gql`
     sendFriendRequest(userId: ID!): UserFriendRequest
 
     """
+    Sends a friend request to the specified user.
+    """
+    sendFriendRequestByUsername(
+      username: String!
+      discriminator: String!
+    ): UserFriendRequest
+
+    """
     Accepts a friend request from the specified user.
     """
     acceptFriendRequest(userId: ID!): Boolean
@@ -65,6 +73,60 @@ const resolvers = {
         defaults: {
           sender_id: authService.getUserId(),
           receiver_id: userId,
+        },
+      });
+
+      if (!created) {
+        throw new GraphQLError('Friend request already exists between users', {
+          extensions: { code: 'FRIEND_REQUEST_ALREADY_EXISTS' },
+        });
+      }
+
+      return friendRequest;
+    },
+    sendFriendRequestByUsername: async (
+      _: any,
+      { username, discriminator }: { username: string; discriminator: string },
+      { authService }: Context
+    ) => {
+      const authUser = await authService.getUser();
+
+      if (authUser === null) {
+        throw new GraphQLError('Not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      if (
+        authUser.username === username &&
+        authUser.discriminator === discriminator
+      ) {
+        throw new GraphQLError('Cannot send friend request to yourself', {
+          extensions: { code: 'CANNOT_FRIEND_SELF' },
+        });
+      }
+
+      const user = await User.findOne({ where: { username, discriminator } });
+
+      if (user === null) {
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      const [friendRequest, created] = await UserFriendRequest.findOrCreate({
+        where: {
+          [Op.or]: [
+            { sender_id: authUser.id, receiver_id: user.id },
+            {
+              sender_id: user.id,
+              receiver_id: authUser.id,
+            },
+          ],
+        },
+        defaults: {
+          sender_id: authUser.id,
+          receiver_id: user.id,
         },
       });
 

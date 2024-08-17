@@ -1,5 +1,4 @@
-import { GraphQLError } from 'graphql';
-import { type FindOptions, Op } from 'sequelize';
+import { type FindOptions, Op, type WhereOptions } from 'sequelize';
 
 import type AuthService from '../../services/authService';
 import { Chat, User, UserBlock } from '..';
@@ -115,45 +114,54 @@ class UsersDataSource {
   }
 
   async getFriends({
+    status,
     search,
     orderBy = 'username',
     orderDirection = 'ASC',
     after,
     first = 10,
   }: {
+    status?: 'online' | 'offline';
     search?: string;
     orderBy?: string;
     orderDirection?: string;
     after?: string;
     first?: number;
   }): Promise<RelayConnection<User>> {
-    if (this.authService.getUserId() === undefined) {
-      throw new GraphQLError('Not authenticated', {
-        extensions: {
-          code: 'UNAUTHENTICATED',
-        },
-      });
+    // Initialize query for filtering down to the target dataset
+    let filterWhere: WhereOptions<User> = {};
+    if (status !== undefined) {
+      filterWhere.is_online = status === 'online';
+    }
+    if (search !== undefined) {
+      filterWhere = { username: { [Op.substring]: search } };
     }
 
     // Initialize query for the next messages to paginate after the cursor
+    let paginationWhere: WhereOptions<User> = {};
     const op = orderDirection === 'DESC' ? Op.lt : Op.gt;
-
-    let where = {};
-    if (search !== undefined) {
-      where = { username: { [Op.substring]: search } };
-    }
     if (after !== undefined) {
-      where = { ...where, [orderBy]: { [op]: decodeCursor(after) } };
+      paginationWhere = { [orderBy]: { [op]: decodeCursor(after) } };
     }
 
-    // Execute query
+    // Execute total-count query
+    const totalCount = await User.count({
+      include: {
+        model: User,
+        as: 'usersOfFriend',
+        where: { id: this.authService.getUserId() },
+      },
+      where: filterWhere,
+    });
+
+    // Execute pagination query
     const friends = await User.findAll({
       include: {
         model: User,
         as: 'usersOfFriend',
         where: { id: this.authService.getUserId() },
       },
-      where,
+      where: paginationWhere,
       attributes: { exclude: ['password_hash', 'email'] },
       order: [[orderBy, orderDirection]],
       limit: first,
@@ -173,7 +181,7 @@ class UsersDataSource {
       hasPreviousPage: Boolean(after),
     };
 
-    return { edges, pageInfo };
+    return { edges, pageInfo, totalCount };
   }
 
   async getBlocked({
@@ -194,11 +202,21 @@ class UsersDataSource {
     const trueOrderBy = queryByBlocks ? 'created_at' : orderBy;
     const op = orderDirection === 'DESC' ? Op.lt : Op.gt;
 
+    let totalCount: number | undefined;
     let edges: Array<Edge<User>> = [];
     let blockedUsers: User[] = [];
 
     if (!queryByBlocks) {
-      const blockedUsersQuery: FindOptions<any> = {
+      const totalCountQuery: FindOptions<User> = {
+        include: {
+          model: User,
+          as: 'blockers',
+          where: { id: this.authService.getUserId() },
+        },
+        where:
+          search !== undefined ? { username: { [Op.substring]: search } } : {},
+      };
+      const blockedUsersQuery: FindOptions<User> = {
         include: {
           model: User,
           as: 'blockers',
@@ -217,7 +235,10 @@ class UsersDataSource {
         subQuery: false,
       };
 
-      blockedUsers = await User.findAll(blockedUsersQuery);
+      [totalCount, blockedUsers] = await Promise.all([
+        User.count(totalCountQuery),
+        User.findAll(blockedUsersQuery),
+      ]);
 
       edges = blockedUsers.map((user) => ({
         cursor: encodeCursor(user[trueOrderBy]),
@@ -226,28 +247,42 @@ class UsersDataSource {
     }
 
     if (queryByBlocks) {
-      const blocksQuery: FindOptions<any> = {
+      const totalCountQuery: FindOptions<UserBlock> = {
+        where: { user_id: this.authService.getUserId() as string },
+      };
+      const blocksQuery: FindOptions<UserBlock> = {
         include: {
           model: User,
           as: 'blocked',
           attributes: { exclude: ['password_hash', 'email'] },
         },
-        where:
-          after !== undefined
-            ? { created_at: { [op]: decodeCursor(after) } }
-            : undefined,
+        where: {
+          user_id: this.authService.getUserId() as string,
+          created_at: {
+            [op]: after !== undefined ? decodeCursor(after) : undefined,
+          },
+        },
         order: [['created_at', orderDirection]],
         limit: first,
         subQuery: false,
       };
 
-      const blocksWithBlockedUsers = (await UserBlock.findAll(
-        blocksQuery
-      )) as unknown as Array<UserBlock & { blocked: User }>;
+      const queryResult = await Promise.all([
+        UserBlock.count(totalCountQuery),
+        UserBlock.findAll(blocksQuery),
+      ]);
 
-      blockedUsers = blocksWithBlockedUsers.map((block) => block.blocked);
+      totalCount = queryResult[0];
+      const blocksWithBlockedUser = queryResult[1] as unknown as Array<
+        UserBlock & { blocked: User }
+      >;
 
-      edges = blocksWithBlockedUsers.map((block) => ({
+      blockedUsers = blocksWithBlockedUser.map((block) => {
+        const blockedUser = block.blocked;
+        return blockedUser;
+      });
+
+      edges = blocksWithBlockedUser.map((block) => ({
         cursor: encodeCursor(block[trueOrderBy]),
         node: block.blocked.toJSON(),
       }));
@@ -261,7 +296,7 @@ class UsersDataSource {
       hasPreviousPage: Boolean(after),
     };
 
-    return { edges, pageInfo };
+    return { edges, pageInfo, totalCount };
   }
 }
 

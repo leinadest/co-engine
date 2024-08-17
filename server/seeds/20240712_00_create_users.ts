@@ -5,7 +5,7 @@ import { User } from '../src/resources';
 import bcrypt from 'bcrypt';
 
 const devData: {
-  users: Array<Record<string, string>>;
+  users: Array<Record<string, any>>;
   usersIds: number[];
 } = {
   users: [
@@ -13,6 +13,7 @@ const devData: {
       username: `tester${i}`,
       email: `test${i}@gmail.com`,
       password_hash: bcrypt.hashSync('A1!aaaaa', 10),
+      is_online: i % 2 === 0,
     })),
   ],
   usersIds: [],

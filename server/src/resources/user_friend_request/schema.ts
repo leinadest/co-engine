@@ -12,6 +12,11 @@ const typeDefs = gql`
     receiver: User!
     created_at: DateTime!
   }
+
+  type UserFriendRequests {
+    data: [UserFriendRequest!]!
+    meta: Meta!
+  }
 `;
 
 const resolvers = {

@@ -27,6 +27,13 @@ const rootPaginationTypeDefs = gql`
     hasPreviousPage: Boolean
     startCursor: String
   }
+
+  type Meta {
+    totalCount: Int!
+    page: Int!
+    pageSize: Int!
+    totalPages: Int!
+  }
 `;
 
 export default makeExecutableSchema({

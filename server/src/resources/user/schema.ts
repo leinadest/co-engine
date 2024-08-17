@@ -27,6 +27,7 @@ const typeDefs = gql`
   type PublicUserConnection {
     edges: [PublicUserEdge!]!
     pageInfo: PageInfo!
+    totalCount: Int
   }
 
   type User {
