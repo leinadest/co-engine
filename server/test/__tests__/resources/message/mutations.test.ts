@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 
-import connectToMongo from '../../../src/config/mongo';
-import sequelize from '../../../src/config/sequelize';
-import { Chat, ChatUser, Message, User } from '../../../src/resources';
+import connectToMongo from '../../../../src/config/mongo';
+import sequelize from '../../../../src/config/sequelize';
+import { Chat, ChatUser, Message, User } from '../../../../src/resources';
 import { executeOperation } from '../helpers';
-import AuthService from '../../../src/services/authService';
-import { type IMessageJSON } from '../../../src/resources/message/model';
+import AuthService from '../../../../src/services/authService';
+import { type IMessageJSON } from '../../../../src/resources/message/model';
 
 describe('Message Mutations Integration Tests', () => {
   const CREATE_MESSAGE = `
@@ -261,9 +261,9 @@ describe('Message Mutations Integration Tests', () => {
       });
     });
 
-    describe('else', () => {
-      it('should create a new message', async () => {
-        // Define expected message
+    describe('else if user creates a message', () => {
+      it('should create a message and update context', async () => {
+        // Define expected message and context
         const expectedMessage = {
           id: expect.any(String),
           context_type: validMessage.context_type,
@@ -273,6 +273,11 @@ describe('Message Mutations Integration Tests', () => {
           formatted_edited_at: null,
           content: validMessage.content,
           reactions: [],
+        };
+        const expectedContext = {
+          ...validContext.toJSON(),
+          last_message: validMessage.content,
+          last_message_at: expect.any(Date),
         };
 
         // Execute mutation and get results
@@ -288,9 +293,11 @@ describe('Message Mutations Integration Tests', () => {
           validAccessToken
         );
         const message = result.data.createMessage;
+        const context = await Chat.findByPk(validContext.id);
 
         // Assert
         expect(message).toEqual(expectedMessage);
+        expect(context).toMatchObject(expectedContext);
       });
     });
   });
@@ -489,8 +496,8 @@ describe('Message Mutations Integration Tests', () => {
       });
     });
 
-    describe('else', () => {
-      it('should edit message', async () => {
+    describe('else if user updates a message', () => {
+      it('should edit message and update context', async () => {
         // Define expected message
         const expectedMessage = {
           id: validMessage.id.toString(),
@@ -501,6 +508,11 @@ describe('Message Mutations Integration Tests', () => {
           formatted_edited_at: expect.any(String),
           content: 'new content',
           reactions: validMessage.reactions,
+        };
+        const expectedContext = {
+          ...validContext.toJSON(),
+          last_message: 'new content',
+          last_message_at: expect.anything(),
         };
 
         // Execute mutation and get results
@@ -513,9 +525,11 @@ describe('Message Mutations Integration Tests', () => {
           validAccessToken
         );
         const message = result.data.editMessage;
+        const context = await Chat.findByPk(validContext.id);
 
         // Assert
         expect(message).toEqual(expectedMessage);
+        expect(context).toMatchObject(expectedContext);
       });
     });
   });

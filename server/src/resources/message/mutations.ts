@@ -3,9 +3,13 @@ import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql/error/GraphQLError';
 import { escape } from 'lodash';
+import { type ClientSession } from 'mongoose';
 
-import { ChatUser, Message } from '../';
+import { Chat, ChatUser, Message } from '../';
 import type AuthService from '../../services/authService';
+import { transaction } from '../../utils/api';
+import { type Transaction } from 'sequelize';
+import { type IMessage } from './model';
 
 export const typeDefs = gql`
   input CreateMessageInput {
@@ -69,20 +73,13 @@ export const createPasswordHash = async (password: string): Promise<string> =>
   await bcrypt.hash(password, 10);
 
 export const resolvers = {
-  // TODO: Implement channel context and permission checks
   Mutation: {
     createMessage: async (
       _: any,
       { message }: { message: CreateMessageInput },
       { authService }: { authService: AuthService }
     ) => {
-      try {
-        await createMessageInputSchema.validate({ message });
-      } catch (error: any) {
-        throw new GraphQLError(error.message as string, {
-          extensions: { code: 'BAD_USER_INPUT' },
-        });
-      }
+      await createMessageInputSchema.validate({ message });
 
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
@@ -106,13 +103,33 @@ export const resolvers = {
         });
       }
 
-      const createdMessage = await Message.create({
-        context_type: message.contextType,
-        context_id: message.contextId,
-        creator_id: authService.getUserId(),
-        content: message.content,
+      const createMessageAndUpdateContext = async (
+        transaction: Transaction,
+        session: ClientSession
+      ): Promise<IMessage & Required<{ _id: unknown }>> => {
+        const newMessage = new Message({
+          context_type: message.contextType,
+          context_id: message.contextId,
+          creator_id: authService.getUserId(),
+          content: message.content,
+        });
+        const messageContext = message.contextType === 'chat' ? Chat : Chat;
+
+        const [createdMessage] = await Promise.all([
+          newMessage.save({ session }),
+          messageContext.update(
+            { last_message: message.content, last_message_at: new Date() },
+            { where: { id: message.contextId }, transaction }
+          ),
+        ]);
+
+        return await createdMessage.toJSON();
+      };
+
+      return await transaction({
+        run: createMessageAndUpdateContext,
+        errorMessage: 'createMessage transaction failed',
       });
-      return createdMessage.toJSON();
     },
     editMessage: async (
       _: any,
@@ -166,11 +183,29 @@ export const resolvers = {
         });
       }
 
-      message.content = content;
-      message.edited_at = new Date();
-      await message.save();
+      const updateMessageAndUpdateContext = async (
+        transaction: Transaction,
+        session: ClientSession
+      ): Promise<IMessage & Required<{ _id: unknown }>> => {
+        message.content = content;
+        message.edited_at = new Date();
+        const messageContext = message.context_type === 'chat' ? Chat : Chat;
 
-      return message.toJSON();
+        const [updatedMessage] = await Promise.all([
+          message.save({ session }),
+          messageContext.update(
+            { last_message: content, last_message_at: new Date() },
+            { where: { id: message.context_id }, transaction }
+          ),
+        ]);
+
+        return await updatedMessage.toJSON();
+      };
+
+      return await transaction({
+        run: updateMessageAndUpdateContext,
+        errorMessage: 'createMessage transaction failed',
+      });
     },
   },
 };

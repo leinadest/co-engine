@@ -1,18 +1,18 @@
 import { ApolloServer } from '@apollo/server';
 
-import AuthService from '../../src/services/authService';
+import AuthService from '../../../src/services/authService';
 import {
   apolloErrorFormatter,
   type Context,
-} from '../../src/config/apolloServer';
-import schema from '../../src/schema';
-import sequelize from '../../src/config/sequelize';
+} from '../../../src/config/apolloServer';
+import schema from '../../../src/schema';
+import sequelize from '../../../src/config/sequelize';
 import { type SingleGraphQLResponse } from './types';
 import { type DocumentNode } from 'graphql';
-import UsersDataSource from '../../src/resources/user/dataSource';
-import MessagesDataSource from '../../src/resources/message/dataSource';
-import UserFriendRequestsDataSource from '../../src/resources/user_friend_request/dataSource';
-import ChatsDataSource from '../../src/resources/chat/dataSource';
+import UsersDataSource from '../../../src/resources/user/dataSource';
+import MessagesDataSource from '../../../src/resources/message/dataSource';
+import UserFriendRequestsDataSource from '../../../src/resources/user_friend_request/dataSource';
+import ChatsDataSource from '../../../src/resources/chat/dataSource';
 
 export const executeOperation = async <ResponseData>(
   query: string | DocumentNode,

@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql/error/GraphQLError';
 import * as yup from 'yup';
 
 import { type Context } from '../../config/apolloServer';
-import { type Chat } from '..';
+import { User, type Chat } from '..';
 
 const typeDefs = gql`
   input ChatsInput {
@@ -24,6 +24,12 @@ const typeDefs = gql`
     Returns a single chat.
     """
     chat(id: ID!): Chat
+
+    """
+    Returns the authenticated user's direct chat with the specified user id.
+    Creates one if not found.
+    """
+    directChat(userId: ID!): Chat
   }
 `;
 
@@ -71,7 +77,6 @@ const resolvers = {
 
       return await dataSources.chatsDB.getChats(query ?? {});
     },
-
     chat: async (
       _: any,
       { id }: { id: string },
@@ -84,6 +89,30 @@ const resolvers = {
       }
 
       return await dataSources.chatsDB.getChat(id);
+    },
+    directChat: async (
+      _: any,
+      { userId }: { userId: string },
+      { authService, dataSources }: Context
+    ): Promise<Chat | null> => {
+      const [user, otherUser] = await Promise.all([
+        authService.getUser(),
+        User.findByPk(userId),
+      ]);
+
+      if (user === null) {
+        throw new GraphQLError('Not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      if (otherUser === null) {
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      return await dataSources.chatsDB.getOrCreateDirectChat(user, otherUser);
     },
   },
 };

@@ -1,17 +1,17 @@
 import mongoose from 'mongoose';
 
-import sequelize from '../../../src/config/sequelize';
-import connectToMongo from '../../../src/config/mongo';
+import sequelize from '../../../../src/config/sequelize';
+import connectToMongo from '../../../../src/config/mongo';
 import {
   Chat,
   ChatUser,
   Message,
   User,
   UserBlock,
-} from '../../../src/resources/';
-import { type IMessage } from '../../../src/resources/message/model';
+} from '../../../../src/resources/';
+import { type IMessage } from '../../../../src/resources/message/model';
 import { executeOperation } from '../helpers';
-import AuthService from '../../../src/services/authService';
+import AuthService from '../../../../src/services/authService';
 
 describe('Message Queries Integration Tests', () => {
   const GET_MESSAGES = `
