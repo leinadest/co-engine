@@ -24,7 +24,7 @@ services:
     environment:
       - PORT=4000
       - POSTGRES_URL=postgresql://postgres:example@postgres:5432
-      - MONGO_URL=mongodb://root:example@mongo:27017
+      - MONGO_URL=mongodb://root:example@mongo:27017/?directConnection=true
       - JWT_SECRET=secret1211
       - DISCORD_CLIENT_ID=1262427700925300780
       - DISCORD_CLIENT_SECRET=OBkWRr8Rv8EyPE2CQ4tYK84o7BbfgUMv
@@ -46,6 +46,11 @@ services:
     restart: always
     ports:
       - '27017:27017'
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
+    command: >
+      bash -c "
+        mongod --replSet rs0 --bind_ip_all &
+        sleep 5;
+        mongosh /docker-entrypoint-initdb.d/init-mongo.js;
+        tail -f /dev/null"
+    volumes:
+      - ./server/scripts/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js

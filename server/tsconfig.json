@@ -109,7 +109,7 @@
   "include": [
     "src/**/*.ts",
     "migrations/**/*.ts",
-    "__tests__/**/*.ts",
+    "test/**/*.ts",
     "seeds/**/*.ts",
     "scripts/**/*.ts"
   ],
