@@ -13,6 +13,24 @@ const CREATE_MESSAGE = gql`
   }
 `;
 
+interface CreateMessageData {
+  createMessage: {
+    id: string;
+    context_type: string;
+    context_id: string;
+    formatted_created_at: string;
+    content: string;
+  };
+}
+
+interface CreateMessageVariables {
+  message: {
+    contextType: String;
+    contextId: String;
+    content: String;
+  };
+}
+
 const GET_CREATOR = gql`
   query GetCreator {
     me {
@@ -62,11 +80,48 @@ const GET_CHAT = gql`
   }
 `;
 
+const GET_ME = gql`
+  query GetMe {
+    me {
+      id
+      created_at
+      email
+      username
+      discriminator
+      profile_pic
+      bio
+      chats {
+        edges {
+          cursor
+          node {
+            id
+            name
+            picture
+            last_message_at
+            last_message
+          }
+        }
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+      }
+    }
+  }
+`;
+
 export default function useMessage() {
-  const [messageMutation] = useMutation(CREATE_MESSAGE, {
-    update(cache, result) {
-      const createdMessage = result.data.createMessage;
+  const [messageMutation] = useMutation<
+    CreateMessageData,
+    CreateMessageVariables
+  >(CREATE_MESSAGE, {
+    update(cache, result, context) {
+      if (!result.data) {
+        return;
+      }
+
       const creatorQuery = cache.readQuery({ query: GET_CREATOR }) as any;
+      const createdMessage = result.data.createMessage;
 
       const createdMessageCache = {
         cursor: 'temp',
@@ -98,6 +153,39 @@ export default function useMessage() {
           },
         })
       );
+
+      if (createdMessage.context_type !== 'chat') {
+        return;
+      }
+
+      const meQuery = cache.readQuery({ query: GET_ME }) as any;
+      const chatCache = meQuery.me.chats.edges.find(
+        ({ node }: any) => node.id === createdMessage.context_id
+      );
+
+      const updatedChatCache = {
+        ...chatCache,
+        node: {
+          ...chatCache.node,
+          last_message: createdMessage.content,
+          last_message_at: new Date(),
+        },
+      };
+
+      cache.updateQuery({ query: GET_ME }, (oldData) => ({
+        me: {
+          ...oldData.me,
+          chats: {
+            ...oldData.me.chats,
+            edges: [
+              updatedChatCache,
+              ...oldData.me.chats.edges.filter(
+                (edge: any) => edge !== chatCache
+              ),
+            ],
+          },
+        },
+      }));
     },
   });
 

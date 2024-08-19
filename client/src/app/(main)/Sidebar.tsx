@@ -10,9 +10,10 @@ import SkeletonChatList from '@/features/chats/components/SkeletonChatList';
 import User from '@/features/users/components/User';
 import SkeletonUser from '@/features/users/components/SkeletonUser';
 import { snakeToCamel } from '@/utils/helpers';
+import { ChatProps } from '@/features/chats/components/Chat';
 
 export default function Sidebar() {
-  const { data, loading, error } = useMe({
+  const { me, loading, error } = useMe({
     fetchPolicy: 'cache-and-network',
   });
 
@@ -25,7 +26,7 @@ export default function Sidebar() {
 
   let chats;
   if (!loading) {
-    chats = data.me.chats.edges.map((edge: any) => snakeToCamel(edge.node));
+    chats = me?.chats.edges.map((edge: any) => snakeToCamel(edge.node));
   }
 
   return (
@@ -51,8 +52,11 @@ export default function Sidebar() {
         </>
       ) : (
         <>
-          <ChatList chats={chats} />
-          <User profilePic={data.me.profile_pic} username={data.me.username} />
+          <ChatList chats={chats as ChatProps[]} />
+          <User
+            profilePic={me?.profile_pic}
+            username={me?.username as string}
+          />
         </>
       )}
     </div>
