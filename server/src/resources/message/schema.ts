@@ -3,6 +3,7 @@ import { merge } from 'lodash';
 
 import queries from './queries';
 import mutations from './mutations';
+import subscriptions from './subscriptions';
 import { type IMessage } from '../message/model';
 import { type Context } from '../../config/apolloServer';
 
@@ -43,6 +44,16 @@ const resolvers = {
 };
 
 export default {
-  typeDefs: [typeDefs, queries.typeDefs, mutations.typeDefs],
-  resolvers: merge(resolvers, queries.resolvers, mutations.resolvers),
+  typeDefs: [
+    typeDefs,
+    queries.typeDefs,
+    mutations.typeDefs,
+    subscriptions.typeDefs,
+  ],
+  resolvers: merge(
+    resolvers,
+    queries.resolvers,
+    mutations.resolvers,
+    subscriptions.resolvers
+  ),
 };

@@ -18,6 +18,10 @@ const rootTypeDefs = gql`
   type Mutation {
     root: String
   }
+
+  type Subscription {
+    root: String
+  }
 `;
 
 const rootPaginationTypeDefs = gql`

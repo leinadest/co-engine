@@ -10,6 +10,7 @@ import type AuthService from '../../services/authService';
 import { transaction } from '../../utils/api';
 import { type Transaction } from 'sequelize';
 import { type IMessage } from './model';
+import { pubsub } from '../../config/apolloServer';
 
 export const typeDefs = gql`
   input CreateMessageInput {
@@ -88,6 +89,7 @@ export const resolvers = {
       }
 
       let contextUser: ChatUser | null = null;
+
       if (message.contextType === 'chat') {
         contextUser = await ChatUser.findOne({
           where: {
@@ -126,23 +128,21 @@ export const resolvers = {
         return await createdMessage.toJSON();
       };
 
-      return await transaction({
+      const result = await transaction({
         run: createMessageAndUpdateContext,
         errorMessage: 'createMessage transaction failed',
       });
+
+      await pubsub.publish('messageCreated', { messageCreated: result });
+
+      return result;
     },
     editMessage: async (
       _: any,
       { messageId, content }: EditMessageInput,
       { authService }: { authService: AuthService }
     ) => {
-      try {
-        await editMessageInputSchema.validate({ messageId, content });
-      } catch (error: any) {
-        throw new GraphQLError(error.message as string, {
-          extensions: { code: 'BAD_USER_INPUT' },
-        });
-      }
+      await editMessageInputSchema.validate({ messageId, content });
 
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
@@ -151,6 +151,7 @@ export const resolvers = {
       }
 
       const message = await Message.findById(messageId);
+
       if (message === null) {
         throw new GraphQLError('Message not found', {
           extensions: {
@@ -168,6 +169,7 @@ export const resolvers = {
       }
 
       let contextUser: ChatUser | null = null;
+
       if (message.context_type === 'chat') {
         contextUser = await ChatUser.findOne({
           where: {
@@ -202,10 +204,14 @@ export const resolvers = {
         return await updatedMessage.toJSON();
       };
 
-      return await transaction({
+      const result = await transaction({
         run: updateMessageAndUpdateContext,
-        errorMessage: 'createMessage transaction failed',
+        errorMessage: 'editMessage transaction failed',
       });
+
+      await pubsub.publish('messageEdited', { messageEdited: result });
+
+      return result;
     },
   },
 };

@@ -18,4 +18,13 @@ const sequelize = new Sequelize(POSTGRES_URL, {
   dialectOptions: {},
 });
 
+export const verifySequelizeConnection = async (): Promise<void> => {
+  try {
+    await sequelize.authenticate();
+    console.log('Connected to PostgreSQL');
+  } catch (error: any) {
+    console.log('Error connection to PostgreSQL:', error);
+  }
+};
+
 export default sequelize;
