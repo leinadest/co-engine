@@ -1,15 +1,15 @@
 import { QueryHookOptions, useQuery } from '@apollo/client';
 
-import { GET_CHAT, GetChatData, GetChatVariables } from '../queries/getChat';
+import { GET_CHAT } from '../queries/getChat';
 
 export default function useChat(
   chatId: string,
   options?: QueryHookOptions<NoInfer<any>, NoInfer<any>>
 ) {
-  const result = useQuery<GetChatData, GetChatVariables>(GET_CHAT, {
+  const { data, loading, error } = useQuery(GET_CHAT, {
     ...options,
     variables: { id: chatId },
+    skip: !chatId,
   });
-
-  return result;
+  return { data, loading, error };
 }

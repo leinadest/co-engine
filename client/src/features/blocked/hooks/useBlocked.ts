@@ -1,7 +1,31 @@
 import { RelayConnection } from '@/types/api';
-import { gql, QueryHookOptions, useQuery } from '@apollo/client';
+import {
+  gql,
+  QueryHookOptions,
+  TypedDocumentNode,
+  useQuery,
+} from '@apollo/client';
 
-const GET_BLOCKED = gql`
+interface GetBlockedData {
+  blocked: RelayConnection<{
+    id: string;
+    username: string;
+    discriminator: string;
+    profile_pic: string;
+  }>;
+}
+
+interface GetBlockedVariables {
+  query?: {
+    search?: string;
+    orderDirection?: string;
+    orderBy?: string;
+    after?: string;
+    first?: number;
+  };
+}
+
+const GET_BLOCKED: TypedDocumentNode<GetBlockedData, GetBlockedVariables> = gql`
   query GetBlocked($query: UsersInput) {
     blocked(query: $query) {
       edges {
@@ -24,29 +48,9 @@ const GET_BLOCKED = gql`
   }
 `;
 
-interface GetBlockedData {
-  blocked: RelayConnection<{
-    id: string;
-    username: string;
-    discriminator: string;
-    profile_pic: string;
-  }>;
-}
-
-interface UsersInput {
-  search?: string;
-  orderDirection?: string;
-  orderBy?: string;
-  after?: string;
-  first?: number;
-}
-
 export default function useBlocked(
   options?: QueryHookOptions<NoInfer<any>, NoInfer<any>>
 ) {
-  const blockedQuery = useQuery<GetBlockedData, UsersInput>(
-    GET_BLOCKED,
-    options
-  );
-  return blockedQuery;
+  const { data, loading, error } = useQuery(GET_BLOCKED, options);
+  return { data, loading, error };
 }

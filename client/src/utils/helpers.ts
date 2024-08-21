@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 export function calculateTimeDifference(date: string) {
   const now = new Date();
   const diffInMs = now.getTime() - Date.parse(date);
@@ -40,7 +42,12 @@ export function calculateTimeDifference(date: string) {
   return `${diffInYears}y`;
 }
 
-export function snakeToCamel(obj: Record<string, any>) {
+export function formatTime(date: string, format: Intl.DateTimeFormatOptions) {
+  return DateTime.fromISO(date).toLocaleString(DateTime.DATE_MED);
+}
+
+export function snakeToCamel(obj: any) {
+  if (!obj) return obj;
   return Object.keys(obj).reduce<Record<string, any>>((acc, key) => {
     const camelKey = key.replace(/_([a-z])/g, (match, group1) =>
       group1.toUpperCase()

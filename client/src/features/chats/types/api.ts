@@ -1,6 +1,7 @@
 export interface PartialUser {
   id: string;
   username: string;
+  discriminator: string;
   profile_pic: string;
 }
 

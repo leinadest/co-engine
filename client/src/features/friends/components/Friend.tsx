@@ -1,4 +1,7 @@
 import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
+
 import TrackerLink from '@/components/TrackerLink';
 
 export interface FriendProps {
@@ -18,11 +21,23 @@ export default function Friend({
   isOnline,
   profilePic,
 }: FriendProps) {
+  const [showDiscriminator, setShowDiscriminator] = useState(false);
   return (
     <div className="flex items-center gap-2 p-2">
-      <div className="profile-circle"></div>
+      <Link href={`/home/user/${id}`} className="profile-circle"></Link>
       <div className="mr-auto">
-        <h5>{username}</h5>
+        <Link
+          href={`/home/user/${id}`}
+          onMouseOver={() => setShowDiscriminator(true)}
+          onMouseLeave={() => setShowDiscriminator(false)}
+        >
+          <h5>
+            {username}
+            {showDiscriminator && (
+              <span className="font-normal">#{discriminator}</span>
+            )}
+          </h5>
+        </Link>
         <p>{isOnline ? 'Online' : 'Offline'}</p>
       </div>
       <TrackerLink

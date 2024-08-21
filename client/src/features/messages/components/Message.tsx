@@ -1,10 +1,13 @@
 import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 
 export interface MessageProps {
   id: string;
   creator: {
     id: string;
     username: string;
+    discriminator: string;
     profilePic: string;
   };
   formattedCreatedAt: string;
@@ -24,23 +27,38 @@ export default function Message({
   content,
   reactions,
 }: MessageProps) {
+  const [showDiscriminator, setShowDiscriminator] = useState(false);
+
   const timestamp = formattedEditedAt
     ? `Edited at ${formattedEditedAt}`
     : formattedCreatedAt;
 
   return (
     <div className="flex px-2 gap-4">
-      <div className="shrink-0 profile-circle">
+      <Link
+        href={`/home/user/${creator.id}`}
+        className="shrink-0 profile-circle"
+      >
         <Image
           src="/connections.png"
           alt="profile pic"
           width={26}
           height={26}
         />
-      </div>
+      </Link>
       <div className="flex flex-col gap-1">
         <div className="flex gap-4">
-          <h6>{creator.username}</h6>
+          <Link href={`/home/user/${creator.id}`}>
+            <h6
+              onMouseOver={() => setShowDiscriminator(true)}
+              onMouseLeave={() => setShowDiscriminator(false)}
+            >
+              {creator.username}
+              {showDiscriminator && (
+                <span className="font-normal">#{creator.discriminator}</span>
+              )}
+            </h6>
+          </Link>
           <p className="text-sm">{timestamp}</p>
         </div>
         <div className="text-sm">{content}</div>

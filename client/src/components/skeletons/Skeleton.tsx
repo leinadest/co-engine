@@ -1,5 +1,13 @@
 interface SkeletonProps {
-  type?: 'h5' | 'h6' | 'body' | 'body-sm' | 'body-xs' | 'avatar' | 'container';
+  type?:
+    | 'h1'
+    | 'h5'
+    | 'h6'
+    | 'body'
+    | 'body-sm'
+    | 'body-xs'
+    | 'avatar'
+    | 'container';
   className?: string;
   children?: React.ReactNode;
 }

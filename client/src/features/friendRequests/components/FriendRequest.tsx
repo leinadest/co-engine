@@ -1,3 +1,6 @@
+import Link from 'next/link';
+import { useState } from 'react';
+
 import useEndFriendRequest from '../hooks/useEndFriendRequest';
 
 export interface FriendRequestProps {
@@ -23,6 +26,7 @@ export default function FriendRequest({
   receiver,
   createdAt,
 }: FriendRequestProps) {
+  const [showDiscriminator, setShowDiscriminator] = useState(false);
   const { acceptFriendRequest, deleteFriendRequest } = useEndFriendRequest();
 
   const incoming = userId === receiver.id;
@@ -31,9 +35,23 @@ export default function FriendRequest({
 
   return (
     <div className="flex items-center gap-2 p-2">
-      <div className="profile-circle"></div>
+      <Link
+        href={`/home/user/${otherUser.id}`}
+        className="profile-circle"
+      ></Link>
       <div className="mr-auto">
-        <h5>{otherUser.username}</h5>
+        <Link
+          href={`/home/user/${otherUser.id}`}
+          onMouseOver={() => setShowDiscriminator(true)}
+          onMouseLeave={() => setShowDiscriminator(false)}
+        >
+          <h5>
+            {otherUser.username}
+            {showDiscriminator && (
+              <span className="font-normal">#{otherUser.discriminator}</span>
+            )}
+          </h5>
+        </Link>
         <p>{tag}</p>
       </div>
       {incoming && (

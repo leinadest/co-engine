@@ -1,9 +1,23 @@
-import { gql } from '@apollo/client';
+import { gql, TypedDocumentNode } from '@apollo/client';
 
 import { RelayConnection } from '@/types/api';
 import { MessageNode, PartialUser } from '../types/api';
 
-export const GET_CHAT = gql`
+export interface GetChatData {
+  chat: {
+    id: string;
+    name: string;
+    picture: string;
+    users: PartialUser[];
+    messages: RelayConnection<MessageNode>;
+  };
+}
+
+export interface GetChatVariables {
+  id: string;
+}
+
+export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
   query GetChat($id: ID!) {
     chat(id: $id) {
       id
@@ -12,6 +26,7 @@ export const GET_CHAT = gql`
       users {
         id
         username
+        discriminator
         profile_pic
       }
       messages {
@@ -22,6 +37,7 @@ export const GET_CHAT = gql`
             creator {
               id
               username
+              discriminator
               profile_pic
             }
             formatted_created_at
@@ -41,17 +57,3 @@ export const GET_CHAT = gql`
     }
   }
 `;
-
-export interface GetChatData {
-  chat: {
-    id: string;
-    name: string;
-    picture: string;
-    users: PartialUser[];
-    messages: RelayConnection<MessageNode>;
-  };
-}
-
-export interface GetChatVariables {
-  id: string;
-}

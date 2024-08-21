@@ -1,21 +1,6 @@
-import { gql } from '@apollo/client';
+import { gql, TypedDocumentNode } from '@apollo/client';
 
-export const GET_USER = gql`
-  query GetUser($userId: ID!) {
-    user(userId: $userId) {
-      id
-      username
-      discriminator
-      created_at
-      last_login_at
-      is_online
-      profile_pic
-      bio
-    }
-  }
-`;
-
-export interface GetUserData {
+export interface GetUserResult {
   user: {
     id: string;
     username: string;
@@ -27,3 +12,22 @@ export interface GetUserData {
     bio: string;
   };
 }
+
+interface GetUserVariables {
+  userId: string;
+}
+
+export const GET_USER: TypedDocumentNode<GetUserResult, GetUserVariables> = gql`
+  query GetUser($userId: ID!) {
+    user(id: $userId) {
+      id
+      username
+      discriminator
+      created_at
+      last_login_at
+      is_online
+      profile_pic
+      bio
+    }
+  }
+`;

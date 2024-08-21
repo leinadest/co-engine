@@ -112,6 +112,10 @@
   .skeleton {
     @apply animate-pulse;
 
+    &.h1 {
+      @apply h-10 bg-bgSecondaryDark;
+    }
+
     &.h5 {
       @apply h-6 bg-bgSecondaryDark;
     }
@@ -180,6 +184,14 @@
     &:hover::before,
     &:focus::before {
       @apply inset-y-2 rounded-l-none bg-secondary;
+    }
+  }
+
+  .shade-top {
+    @apply relative;
+
+    &::before {
+      @apply absolute z-[-1] top-0 h-36 inset-x-0 content-[''] bg-bgSecondary;
     }
   }
 }

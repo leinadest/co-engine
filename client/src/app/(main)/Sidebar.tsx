@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 import ChatList from '@/features/chats/components/ChatList';
 import TrackerLink from '../../components/TrackerLink';
-import useMe from '@/features/users/hooks/useUser';
+import useMe from '@/features/users/hooks/useMe';
 import SkeletonChatList from '@/features/chats/components/SkeletonChatList';
 import User from '@/features/users/components/User';
 import SkeletonUser from '@/features/users/components/SkeletonUser';
