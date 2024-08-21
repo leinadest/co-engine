@@ -6,9 +6,9 @@ import { FriendRequestProps } from '@/features/friendRequests/components/FriendR
 import FriendRequestList from '@/features/friendRequests/components/FriendRequestList';
 import SkeletonFriendRequest from '@/features/friendRequests/components/SkeletonFriendRequest';
 import useFriendRequests from '@/features/friendRequests/hooks/useFriendRequests';
-import useMe from '@/features/users/hooks/useUser';
+import useMe from '@/features/users/hooks/useMe';
 import { snakeToCamel } from '@/utils/helpers';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function AllFriends() {
   const meQuery = useMe();
@@ -20,17 +20,19 @@ export default function AllFriends() {
   });
   const [filter, setFilter] = useState<'incoming' | 'outgoing'>('incoming');
 
-  if (
-    meQuery.error ||
-    incomingRequestsQuery.error ||
-    outgoingRequestsQuery.error
-  ) {
-    throw (
+  useEffect(() => {
+    if (
       meQuery.error ||
       incomingRequestsQuery.error ||
       outgoingRequestsQuery.error
-    );
-  }
+    ) {
+      throw (
+        meQuery.error ||
+        incomingRequestsQuery.error ||
+        outgoingRequestsQuery.error
+      );
+    }
+  }, [meQuery.error, incomingRequestsQuery.error, outgoingRequestsQuery.error]);
 
   if (
     meQuery.loading ||
@@ -52,8 +54,6 @@ export default function AllFriends() {
       </>
     );
   }
-
-  console.log(incomingRequestsQuery, outgoingRequestsQuery);
 
   const incomingResult = incomingRequestsQuery.data.userFriendRequests;
   const outgoingResult = outgoingRequestsQuery.data.userFriendRequests;
@@ -90,7 +90,7 @@ export default function AllFriends() {
       </div>
       <main className="p-2 overflow-auto">
         <FriendRequestList
-          userId={meQuery.me.me.id}
+          userId={meQuery.me.id}
           friendRequests={
             (filter === 'incoming'
               ? incomingRequests

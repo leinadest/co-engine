@@ -110,7 +110,7 @@ const GET_ME = gql`
   }
 `;
 
-export default function useMessage() {
+export default function useCreateMessage() {
   const [messageMutation] = useMutation<
     CreateMessageData,
     CreateMessageVariables
@@ -154,14 +154,14 @@ export default function useMessage() {
         })
       );
 
-      if (createdMessage.context_type !== 'chat') {
-        return;
-      }
-
       const meQuery = cache.readQuery({ query: GET_ME }) as any;
       const chatCache = meQuery.me.chats.edges.find(
         ({ node }: any) => node.id === createdMessage.context_id
       );
+
+      if (createdMessage.context_type !== 'chat' || !chatCache) {
+        return;
+      }
 
       const updatedChatCache = {
         ...chatCache,

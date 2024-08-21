@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import Skeleton from '@/components/skeletons/Skeleton';
 import SkeletonList from '@/components/skeletons/SkeletonList';
 import { BlockProps } from '@/features/blocked/components/Block';
@@ -13,9 +15,9 @@ export default function Blocked() {
     fetchPolicy: 'cache-and-network',
   });
 
-  if (error) {
-    throw error;
-  }
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
 
   if (loading || !data) {
     return (

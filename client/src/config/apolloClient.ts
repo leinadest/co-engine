@@ -1,41 +1,27 @@
 import {
   ApolloClient,
-  ApolloLink,
   InMemoryCache,
   createHttpLink,
-  gql,
+  split,
 } from '@apollo/client';
 import {
   offsetLimitPagination,
   relayStylePagination,
 } from '@apollo/client/utilities';
 import { setContext } from '@apollo/client/link/context';
+import { getMainDefinition } from '@apollo/client/utilities';
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import { createClient } from 'graphql-ws';
 
 import authStorage from '../features/auth/stores/authStorage';
-
-export const cache = new InMemoryCache({
-  typePolicies: {
-    Query: {
-      fields: {
-        blocked: relayStylePagination(),
-        chats: relayStylePagination(),
-        friends: relayStylePagination(),
-        messages: relayStylePagination(),
-        userFriendRequests: { ...offsetLimitPagination(), keyArgs: ['type'] },
-        users: relayStylePagination(),
-      },
-    },
-  },
-});
 
 export function createApolloClient() {
   const authLink = setContext(async (_, { headers }) => {
     try {
       const accessToken = authStorage.getAccessToken();
-      const authorization = accessToken !== null ? `Bearer ${accessToken}` : '';
+      const authorization = accessToken ? `Bearer ${accessToken}` : '';
       return { headers: { ...headers, authorization } };
     } catch (e) {
-      console.log(e);
       return { headers };
     }
   });
@@ -44,33 +30,39 @@ export function createApolloClient() {
     uri: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
   });
 
-  return new ApolloClient({
-    link: ApolloLink.from([authLink, httpLink]),
-    cache,
+  const wsLink = new GraphQLWsLink(
+    createClient({
+      url: `${process.env.NEXT_PUBLIC_API_URL?.replace('http', 'ws')}/graphql`,
+      connectionParams: { authToken: authStorage.getAccessToken() },
+    })
+  );
+
+  const splitLink = split(
+    ({ query }) => {
+      const definition = getMainDefinition(query);
+      const useWsLink =
+        definition.kind === 'OperationDefinition' &&
+        definition.operation === 'subscription';
+      return useWsLink;
+    },
+    wsLink,
+    httpLink
+  );
+
+  const cache = new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          blocked: relayStylePagination(),
+          chats: relayStylePagination(),
+          friends: relayStylePagination(),
+          messages: relayStylePagination(),
+          userFriendRequests: { ...offsetLimitPagination(), keyArgs: ['type'] },
+          users: relayStylePagination(),
+        },
+      },
+    },
   });
-}
-export async function waitForServer(retryInterval = 5000, maxRetries = 12) {
-  const client = createApolloClient();
-  let attempts = 0;
 
-  while (attempts < maxRetries) {
-    try {
-      const res = await client.query({
-        query: gql`
-          {
-            root
-          }
-        `,
-      });
-      console.log('Query result:', res);
-      console.log('Server is up and running');
-      return client;
-    } catch (error) {
-      console.error('Server not ready, retrying...', error);
-      await new Promise((resolve) => setTimeout(resolve, retryInterval));
-      attempts++;
-    }
-  }
-
-  throw new Error('Server is not ready after maximum retries');
+  return new ApolloClient({ link: authLink.concat(splitLink), cache });
 }

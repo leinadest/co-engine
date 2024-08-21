@@ -1,6 +1,6 @@
 'use client';
 
-import { useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 
 import useChat from '@/features/chats/hooks/useChat';
 import MessageList from '@/features/messages/components/MessageList';
@@ -8,16 +8,24 @@ import SkeletonMessageList from '@/features/messages/components/SkeletonMessageL
 import { snakeToCamel } from '@/utils/helpers';
 import { Edge } from '@/types/api';
 import { MessageProps } from '@/features/messages/components/Message';
+import useMessages from '@/features/messages/hooks/useMessages';
 
 interface ChatPageProps {
   params: { chatId: string };
 }
 
 export default function ChatPage({ params: { chatId } }: ChatPageProps) {
-  const { data, loading, error } = useChat(chatId, {
+  const chatQuery = useChat(chatId, {
     fetchPolicy: 'cache-and-network',
   });
+  const messagesSubscription = useMessages('chat', chatId);
   const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (chatQuery.error || messagesSubscription.error) {
+      throw chatQuery.error || messagesSubscription.error;
+    }
+  }, [chatQuery.error, messagesSubscription.error]);
 
   useLayoutEffect(() => {
     if (mainRef.current) {
@@ -25,11 +33,7 @@ export default function ChatPage({ params: { chatId } }: ChatPageProps) {
     }
   });
 
-  if (error) {
-    throw error;
-  }
-
-  if (loading || !data) {
+  if (chatQuery.loading) {
     return (
       <main className="grow p-2 border-t overflow-auto min-w-96">
         <SkeletonMessageList />
@@ -37,7 +41,7 @@ export default function ChatPage({ params: { chatId } }: ChatPageProps) {
     );
   }
 
-  const messages = data.chat.messages.edges
+  const messages = chatQuery.data?.chat.messages.edges
     .map((edge: Edge<any>) => snakeToCamel(edge.node))
     .reverse();
 

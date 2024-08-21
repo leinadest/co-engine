@@ -258,9 +258,9 @@ class UsersDataSource {
         },
         where: {
           user_id: this.authService.getUserId() as string,
-          created_at: {
-            [op]: after !== undefined ? decodeCursor(after) : undefined,
-          },
+          ...(after !== undefined && {
+            created_at: { [op]: decodeCursor(after) },
+          }),
         },
         order: [['created_at', orderDirection]],
         limit: first,

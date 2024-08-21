@@ -21,8 +21,7 @@ const createWsServer = (httpServer: http.Server): Disposable => {
     {
       schema,
       context: (ctx) => {
-        const authorization = ctx.connectionParams?.authorization as string;
-        const accessToken = authorization?.replace('Bearer ', '');
+        const accessToken = ctx.connectionParams?.authToken as string;
 
         const authService = new AuthService(accessToken ?? '');
         const usersDB = new UsersDataSource(authService);

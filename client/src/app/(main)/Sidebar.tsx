@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import ChatList from '@/features/chats/components/ChatList';
 import TrackerLink from '../../components/TrackerLink';
@@ -11,23 +11,31 @@ import User from '@/features/users/components/User';
 import SkeletonUser from '@/features/users/components/SkeletonUser';
 import { snakeToCamel } from '@/utils/helpers';
 import { ChatProps } from '@/features/chats/components/Chat';
+import { useEffect, useState } from 'react';
+import { Edge } from '@/types/api';
 
 export default function Sidebar() {
   const { me, loading, error } = useMe({
     fetchPolicy: 'cache-and-network',
   });
+  const router = useRouter();
+  const [chats, setChats] = useState<ChatProps[]>([]);
 
-  if (error && error.message === 'Not authenticated') {
-    redirect('/login');
-  }
-  if (error) {
-    throw error;
-  }
-
-  let chats;
-  if (!loading) {
-    chats = me?.chats.edges.map((edge: any) => snakeToCamel(edge.node));
-  }
+  useEffect(() => {
+    if (error && error.message === 'Not authenticated') {
+      router.replace('/login');
+      return;
+    }
+    if (error) {
+      throw error;
+    }
+    if (!loading) {
+      const chatEdges = me?.chats.edges as Edge<any>[];
+      setChats(
+        chatEdges.map(({ node }: any) => snakeToCamel(node)) as ChatProps[]
+      );
+    }
+  }, [error, router, loading, me]);
 
   return (
     <div className="flex flex-col items-stretch border-r">

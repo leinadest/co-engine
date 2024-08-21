@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 
 import useDirectChat from '@/features/chats/hooks/useDirectChat';
 import SkeletonChatPage from './SkeletonChatPage';
+import { useEffect } from 'react';
 
 interface ChatPageRouterProps {
   searchParams: {
@@ -17,13 +18,14 @@ export default function ChatPageRouter({
   const { directChat, loading, error } = useDirectChat(userId);
   const router = useRouter();
 
-  if (error) {
-    throw error;
-  }
+  useEffect(() => {
+    if (error) {
+      throw error;
+    }
+    if (!loading && directChat) {
+      router.replace(`/home/chat/${directChat.id}`);
+    }
+  }, [error, loading, directChat, router]);
 
-  if (loading || !directChat) {
-    return <SkeletonChatPage />;
-  }
-
-  router.replace(`/home/chat/${directChat.id}`);
+  return <SkeletonChatPage />;
 }

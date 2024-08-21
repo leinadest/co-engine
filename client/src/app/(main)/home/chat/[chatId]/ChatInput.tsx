@@ -1,14 +1,15 @@
 'use client';
 
-import useMessage from '@/features/messages/hooks/useMessage';
 import { FormEvent, useState } from 'react';
+
+import useCreateMessage from '@/features/messages/hooks/useCreateMessage';
 
 interface ChatInputProps {
   chatId: string;
 }
 
 export default function ChatInput({ chatId }: ChatInputProps) {
-  const { createMessage } = useMessage();
+  const { createMessage } = useCreateMessage();
   const [input, setInput] = useState<string>('');
   const [error, setError] = useState<Error | null>();
 
