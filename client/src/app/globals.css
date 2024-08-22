@@ -85,6 +85,10 @@
     }
   }
 
+  .btn-disabled {
+    @apply bg-bgSecondaryDark text-white px-4 py-2 rounded-md;
+  }
+
   .btn-minimal {
     @apply px-4 py-2 rounded-lg bg-bgPrimary focus-by-brightness;
   }
@@ -99,6 +103,14 @@
 
   .form-group {
     @apply flex flex-col gap-2 mb-4;
+
+    &.bold label {
+      @apply font-bold;
+    }
+
+    &.secondary input {
+      @apply border-0 bg-bgSecondary;
+    }
   }
 
   .error {
@@ -136,6 +148,10 @@
       @apply h-4 bg-bgSecondary;
     }
 
+    &.input {
+      @apply h-8 rounded-md bg-bgSecondary;
+    }
+
     &.avatar {
       @apply w-12 h-12 bg-bgSecondaryDark rounded-full;
     }
@@ -162,6 +178,10 @@
 
   .focus-by-brightness {
     @apply focus:outline-none focus:brightness-95 hover:brightness-95;
+  }
+
+  .focus-by-brighten {
+    @apply focus:outline-none focus:brightness-[6] hover:brightness-[6];
   }
 
   .collab {

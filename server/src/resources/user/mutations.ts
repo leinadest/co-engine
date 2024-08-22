@@ -5,12 +5,19 @@ import { GraphQLError } from 'graphql/error/GraphQLError';
 
 import { User } from '../';
 import AuthService from '../../services/authService';
+import { type Context } from '../../config/apolloServer';
 
-export const typeDefs = gql`
+const typeDefs = gql`
   input CreateUserInput {
     username: String!
     email: String!
     password: String!
+  }
+
+  input EditMeInput {
+    username: String
+    email: String
+    profilePic: String
   }
 
   input AuthenticateInput {
@@ -28,12 +35,17 @@ export const typeDefs = gql`
     """
     Creates a new user, if the provided email does not already exist.
     """
-    createUser(user: CreateUserInput): User
+    createUser(user: CreateUserInput!): User
+
+    """
+    Edit a user's account information.
+    """
+    editMe(edit: EditMeInput!): Boolean
 
     """
     Generates a new access token, if provided credentials (username and password) match any registered user.
     """
-    authenticate(credentials: AuthenticateInput): AuthenticatePayload
+    authenticate(credentials: AuthenticateInput!): AuthenticatePayload
   }
 `;
 
@@ -45,6 +57,14 @@ interface CreateUserInput {
   };
 }
 
+interface EditMeInput {
+  edit?: {
+    username?: string;
+    email?: string;
+    profilePic?: string;
+  };
+}
+
 interface AuthenticateInput {
   credentials: {
     email: string;
@@ -52,7 +72,7 @@ interface AuthenticateInput {
   };
 }
 
-const userSchema = yup.object().shape({
+const createUserInputSchema = yup.object().shape({
   user: yup.object().shape({
     username: yup
       .string()
@@ -81,7 +101,30 @@ const userSchema = yup.object().shape({
   }),
 });
 
-const credSchema = yup.object().shape({
+const editMeInputSchema = yup.object().shape({
+  edit: yup.object().shape({
+    username: yup
+      .string()
+      .optional()
+      .min(3, 'Username must be between 3 and 30 characters long')
+      .max(30, 'Username must be between 3 and 30 characters long')
+      .matches(
+        /^[a-zA-Z0-9]+$/,
+        'Username must contain only letters or numbers'
+      )
+      .lowercase(),
+    email: yup
+      .string()
+      .optional()
+      .matches(
+        /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
+        'Email must be a valid email'
+      ),
+    profilePic: yup.string(),
+  }),
+});
+
+const authenticateInputSchema = yup.object().shape({
   credentials: yup.object().shape({
     email: yup
       .string()
@@ -94,21 +137,13 @@ const credSchema = yup.object().shape({
   }),
 });
 
-export const createPasswordHash = async (password: string): Promise<string> =>
-  await bcrypt.hash(password, 10);
-
-export const resolvers = {
+const resolvers = {
   Mutation: {
     createUser: async (_parent: any, args: CreateUserInput) => {
-      let username, email, password;
-      try {
-        const user = await userSchema.validate(args, { stripUnknown: true });
-        ({ username, email, password } = user.user);
-      } catch (err: any) {
-        throw new GraphQLError(err.message as string, {
-          extensions: { code: 'BAD_USER_INPUT' },
-        });
-      }
+      const validArgs = await createUserInputSchema.validate(args, {
+        stripUnknown: true,
+      });
+      const { username, email, password } = validArgs.user;
 
       const existingEmail = await User.findOne({ where: { email } });
       if (existingEmail !== null) {
@@ -118,7 +153,7 @@ export const resolvers = {
         );
       }
 
-      const passwordHash = await createPasswordHash(password);
+      const passwordHash = await bcrypt.hash(password, 10);
 
       return await User.create({
         email,
@@ -126,16 +161,36 @@ export const resolvers = {
         password_hash: passwordHash,
       });
     },
-    authenticate: async (_parentValue: any, args: AuthenticateInput) => {
-      let email, password;
-      try {
-        const cred = await credSchema.validate(args, { stripUnknown: true });
-        ({ email, password } = cred.credentials);
-      } catch (err: any) {
-        throw new GraphQLError(err.message as string, {
-          extensions: { code: 'BAD_USER_INPUT' },
+    editMe: async (_: any, args: EditMeInput, { authService }: Context) => {
+      const validArgs = await editMeInputSchema.validate(args);
+      const {
+        edit: { username, email, profilePic },
+      } = validArgs;
+
+      const userId = authService.getUserId();
+      if (userId === null) {
+        throw new GraphQLError('Not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' },
         });
       }
+
+      const [affectedCount] = await User.update(
+        { username, email, profile_pic: profilePic },
+        { where: { id: userId } }
+      );
+      if (affectedCount === 0) {
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      return affectedCount > 0;
+    },
+    authenticate: async (_parentValue: any, args: AuthenticateInput) => {
+      const validArgs = await authenticateInputSchema.validate(args, {
+        stripUnknown: true,
+      });
+      const { email, password } = validArgs.credentials;
 
       const user = await User.findOne({ where: { email } });
       if (user === null) {

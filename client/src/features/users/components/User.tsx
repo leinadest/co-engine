@@ -14,7 +14,7 @@ export default function User({ profilePic, username }: UserProps) {
       </div>
       <p className="grow">{username}</p>
       <Link
-        href="/home/settings"
+        href="/home/settings/account"
         className="p-1 rounded-md bg-inherit focus-by-brightness"
       >
         <Image src="/settings.png" alt="settings" width={26} height={26} />

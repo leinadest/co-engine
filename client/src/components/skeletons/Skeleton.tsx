@@ -6,6 +6,7 @@ interface SkeletonProps {
     | 'body'
     | 'body-sm'
     | 'body-xs'
+    | 'input'
     | 'avatar'
     | 'container';
   className?: string;

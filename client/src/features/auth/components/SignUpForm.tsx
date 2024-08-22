@@ -49,10 +49,8 @@ export default function SignUpForm({
 }: {
   formValues?: FormValues;
 }) {
-  const [error, setError] = useState(null);
-  if (error) {
-    throw error;
-  }
+  const [formError, setError] = useState<any>(null);
+  if (formError) throw formError;
 
   const form = useForm({
     defaultValues: {
@@ -70,22 +68,21 @@ export default function SignUpForm({
     }
   }, [formValues, form]);
 
-  const { signUp } = useAuth();
+  const { signUp, data, error } = useAuth();
   const router = useRouter();
 
-  function onSubmit({ username, email, password }: FormValues) {
-    signUp({ username, email, password })
-      .then(() => {
-        router.push('/login');
-      })
-      .catch((err) => {
-        (err as any).formValues = form.getValues();
-        setError(err);
-      });
-  }
+  useEffect(() => {
+    if (error) {
+      (error as any).formValues = form.getValues();
+      setError(error);
+    }
+    if (!error && data) {
+      router.push('/login');
+    }
+  }, [data, error, form, router]);
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form onSubmit={form.handleSubmit(signUp)}>
       <InputField
         label="Username"
         name="username"

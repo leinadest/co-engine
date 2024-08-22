@@ -5,6 +5,7 @@ interface InputFieldProps {
   name: string;
   type: string;
   placeholder: string;
+  className?: string;
   form: UseFormReturn<any, any, undefined>;
 }
 
@@ -13,11 +14,12 @@ export default function InputField({
   name,
   type,
   placeholder,
+  className,
   form,
 }: InputFieldProps) {
   const error = form.formState.errors[name]?.message;
   return (
-    <div className="form-group">
+    <div className={`form-group ${className ?? ''}`}>
       <label>{label}</label>
       <input
         type={type}

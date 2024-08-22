@@ -1,8 +1,28 @@
-import { gql, useMutation } from '@apollo/client';
+import { useState } from 'react';
+import {
+  ApolloError,
+  gql,
+  TypedDocumentNode,
+  useMutation,
+} from '@apollo/client';
 
 import AuthStorage from '../stores/authStorage';
 
-const SIGN_UP = gql`
+interface SignUpResult {
+  createUser: {
+    created_at: Date;
+  };
+}
+
+interface SignUpVariables {
+  user: {
+    username: string;
+    email: string;
+    password: string;
+  };
+}
+
+const SIGN_UP: TypedDocumentNode<SignUpResult, SignUpVariables> = gql`
   mutation SignUp($user: CreateUserInput) {
     createUser(user: $user) {
       created_at
@@ -10,7 +30,30 @@ const SIGN_UP = gql`
   }
 `;
 
-const LOG_IN = gql`
+interface LogInResult {
+  authenticate: {
+    accessToken: string;
+    expiresAt: string;
+    user: {
+      id: string;
+      email: string;
+      username: string;
+      discriminator: string;
+      created_at: string;
+      profile_pic: string;
+      bio: string;
+    };
+  };
+}
+
+interface LogInVariables {
+  credentials: {
+    email: string;
+    password: string;
+  };
+}
+
+const LOG_IN: TypedDocumentNode<LogInResult, LogInVariables> = gql`
   mutation LogIn($credentials: AuthenticateInput) {
     authenticate(credentials: $credentials) {
       accessToken
@@ -29,15 +72,19 @@ const LOG_IN = gql`
 `;
 
 export default function useAuth() {
-  const [signUpMutation] = useMutation(SIGN_UP);
-  const [loginMutation] = useMutation(LOG_IN);
+  const [signUpMutate] = useMutation(SIGN_UP);
+  const [loginMutate] = useMutation(LOG_IN);
+
+  const [data, setData] = useState<any>();
+  const [loading, setLoading] = useState<boolean>();
+  const [error, setError] = useState<ApolloError>();
 
   function signUp(formData: {
     username: string;
     email: string;
     password: string;
   }) {
-    return signUpMutation({
+    return signUpMutate({
       variables: {
         user: {
           username: formData.username,
@@ -45,22 +92,29 @@ export default function useAuth() {
           password: formData.password,
         },
       },
-    });
+    })
+      .then((res) => setData(res.data))
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
   }
 
   function logIn(formData: { email: string; password: string }) {
-    return loginMutation({
+    return loginMutate({
       variables: {
         credentials: {
           email: formData.email,
           password: formData.password,
         },
       },
-    }).then((res) => {
-      const accessToken = res.data.authenticate.accessToken;
-      AuthStorage.setAccessToken(accessToken);
-    });
+    })
+      .then((res) => {
+        const accessToken = res.data?.authenticate.accessToken;
+        AuthStorage.setAccessToken(accessToken ?? '');
+        setData(res.data);
+      })
+      .catch((err) => setError(err))
+      .finally(() => setLoading(false));
   }
 
-  return { signUp, logIn };
+  return { signUp, logIn, data, loading, error };
 }
