@@ -10,13 +10,13 @@ export const GET_FRIEND_REQUESTS = gql`
           id
           username
           discriminator
-          profile_pic
+          profile_pic_url
         }
         receiver {
           id
           username
           discriminator
-          profile_pic
+          profile_pic_url
         }
         created_at
       }
@@ -36,13 +36,13 @@ interface GetFriendRequestsData {
       id: string;
       username: string;
       discriminator: string;
-      profile_pic: string;
+      profile_pic_url: string;
     };
     receiver: {
       id: string;
       username: string;
       discriminator: string;
-      profile_pic: string;
+      profile_pic_url: string;
     };
     created_at: string;
   }>;

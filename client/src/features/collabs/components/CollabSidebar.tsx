@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import TrackerLink from '@/components/TrackerLink';
 import { useEffect, useState } from 'react';
+import ProfilePic from '@/components/users/ProfilePic';
 
 export default function CollabSideBar() {
   const [currentContext, setCurrentContext] = useState<string>();
@@ -15,28 +16,30 @@ export default function CollabSideBar() {
   }, []);
 
   return (
-    <div className="py-2 bg-bgSecondaryDark">
-      <div>
-        <TrackerLink
-          href="/home"
-          className={`collab profile-circle mx-auto ${
-            currentContext ? 'active' : ''
-          }`}
-        >
-          <Image src="/home.png" alt="home" width={26} height={26} />
-        </TrackerLink>
-      </div>
-      <hr className="mt-0 mb-2 mx-2 self-stretch border-t-2 border-bgSecondary" />
-      <div>
-        <button className="collab relative profile-circle mx-auto focus:outline-none">
-          <p className="absolute top-[4px] text-3xl">+</p>
-        </button>
-      </div>
-      <div>
-        <button className="collab profile-circle mx-auto focus:outline-none">
-          <Image src="/explore.png" alt="home" width={26} height={26} />
-        </button>
-      </div>
-    </div>
+    <nav className="py-2 bg-bgSecondaryDark">
+      <ol>
+        <li>
+          <TrackerLink
+            href="/home"
+            className={`collab relative mx-auto ${
+              currentContext ? 'active' : ''
+            }`}
+          >
+            <ProfilePic defaultSrc="/home.png" alt="home" />
+          </TrackerLink>
+        </li>
+        <hr className="mt-0 mb-2 mx-2 self-stretch border-t-2 border-bgSecondary" />
+        <li>
+          <button className="collab relative mx-auto focus:outline-none">
+            <ProfilePic defaultSrc="/add.svg" alt="add" />
+          </button>
+        </li>
+        <li>
+          <button className="collab mx-auto focus:outline-none">
+            <ProfilePic defaultSrc="/explore.png" alt="explore" />
+          </button>
+        </li>
+      </ol>
+    </nav>
   );
 }

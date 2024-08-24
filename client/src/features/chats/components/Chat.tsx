@@ -2,6 +2,7 @@ import Image from 'next/image';
 
 import { calculateTimeDifference } from '../../../utils/helpers';
 import TrackerLink from '@/components/TrackerLink';
+import ProfilePic from '@/components/users/ProfilePic';
 
 export interface ChatProps {
   id: string;
@@ -18,15 +19,12 @@ export default function Chat({
   name,
   picture,
 }: ChatProps) {
-  picture = '/connections.png';
   return (
     <TrackerLink
       href={`/home/chat/${id}`}
       className="grid grid-cols-[48px_1fr] gap-2 px-2 py-1 bg-bgPrimary focus-by-brightness"
     >
-      <div className="profile-circle">
-        <Image src={picture} alt="profile" width={26} height={26} />
-      </div>
+      <ProfilePic src={picture} defaultSrc={'/chat.png'} />
       <div className="flex flex-col justify-center">
         <div className="grid grid-cols-[1fr_50px] gap-2 items-center">
           <p>{name}</p>

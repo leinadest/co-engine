@@ -3,6 +3,7 @@ import { makeExecutableSchema } from '@graphql-tools/schema';
 import { merge } from 'lodash';
 
 import dateTimeScalar from './scalars/DateTime';
+import uploadScalar from './scalars/Upload';
 import userSchema from '../resources/user/schema';
 import userFriendRequestSchema from '../resources/user_friend_request/schema';
 import userFriendshipSchema from '../resources/user_friendship/schema';
@@ -45,6 +46,7 @@ export default makeExecutableSchema({
     rootTypeDefs,
     rootPaginationTypeDefs,
     dateTimeScalar.typeDefs,
+    uploadScalar.typeDefs,
     userSchema.typeDefs,
     userFriendRequestSchema.typeDefs,
     userFriendshipSchema.typeDefs,
@@ -54,6 +56,7 @@ export default makeExecutableSchema({
   ],
   resolvers: merge(
     dateTimeScalar.resolvers,
+    uploadScalar.resolvers,
     userSchema.resolvers,
     userFriendRequestSchema.resolvers,
     userFriendshipSchema.resolvers,

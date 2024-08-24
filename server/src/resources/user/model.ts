@@ -13,6 +13,7 @@ class User extends Model {
   declare last_login_at: Date;
   declare is_online: boolean;
   declare profile_pic: string;
+  declare profile_pic_url: string;
   declare bio: string;
 
   static schemaDetails = {
@@ -50,6 +51,9 @@ class User extends Model {
       defaultValue: false,
     },
     profile_pic: {
+      type: DataTypes.STRING,
+    },
+    profile_pic_url: {
       type: DataTypes.STRING,
     },
     bio: {

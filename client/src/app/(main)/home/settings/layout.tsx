@@ -1,12 +1,17 @@
 'use client';
 
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  useEffect(() => {}, [pathname]);
+
   const listLinks = ['Account', 'Profile', 'Preferences'].map((item) => {
     const href = `/home/settings/${item.toLowerCase()}`;
     const className = `focus-by-brighten ${
-      href === window.location.pathname ? 'underline' : ''
+      href === pathname ? 'underline' : ''
     }`;
     return (
       <li key={item}>
@@ -16,8 +21,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </li>
     );
   });
+
   return (
-    <div className="grid grid-cols-[200px_1fr] bg-bgSecondary">
+    <div className="grid grid-cols-[200px_1fr] grid-rows-[100%] bg-bgSecondary">
       <div className="p-4 text-center">
         <h5>Settings</h5>
         <hr className="border-t-2" />

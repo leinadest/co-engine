@@ -1,8 +1,9 @@
+import ProfilePic from '@/components/users/ProfilePic';
 import { formatTime } from '@/utils/helpers';
 import { DateTime } from 'luxon';
 
 interface UserProfileProps {
-  profilePic?: string;
+  profilePicUrl?: string;
   username: string;
   discriminator: string;
   bio?: string;
@@ -10,7 +11,7 @@ interface UserProfileProps {
 }
 
 export default function UserProfile({
-  profilePic,
+  profilePicUrl,
   username,
   discriminator,
   bio,
@@ -18,8 +19,13 @@ export default function UserProfile({
 }: UserProfileProps) {
   return (
     <>
-      <div className="mx-auto mb-2 rounded-full content-center size-40 bg-bgSecondaryDark"></div>
-      <h1 className="text-center">
+      <ProfilePic
+        src={profilePicUrl}
+        defaultSrc="/person.png"
+        alt="profile"
+        className="mx-auto mb-2 content-center size-40 bg-bgSecondaryDark *:size-24"
+      />
+      <h1 className="mb-4 text-center">
         {username}#{discriminator}
       </h1>
       <h5>About Me</h5>

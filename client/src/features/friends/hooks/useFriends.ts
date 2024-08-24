@@ -12,7 +12,7 @@ const GET_FRIENDS = gql`
           discriminator
           last_login_at
           is_online
-          profile_pic
+          profile_pic_url
         }
       }
       pageInfo {
@@ -33,7 +33,7 @@ interface Friends {
     discriminator: string;
     last_login_at: string;
     is_online: boolean;
-    profile_pic: string;
+    profile_pic_url: string;
   }>;
 }
 

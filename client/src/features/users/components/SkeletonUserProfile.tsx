@@ -4,7 +4,7 @@ export default function SkeletonUserProfile() {
   return (
     <>
       <Skeleton className="mx-auto mb-2 rounded-full content-center size-40 bg-bgSecondaryDark" />
-      <Skeleton type="h1" className="mx-auto w-80" />
+      <Skeleton type="h1" className="mb-4 mx-auto w-80" />
       <h5>About Me</h5>
       <hr className="my-2" />
       <Skeleton type="body" />

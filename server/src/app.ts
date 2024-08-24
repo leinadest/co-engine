@@ -4,6 +4,7 @@ import http from 'http';
 import express from 'express';
 import passport from 'passport';
 import cors from 'cors';
+import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 import { expressMiddleware } from '@apollo/server/express4';
 
 import { verifySequelizeConnection } from './config/sequelize';
@@ -44,6 +45,7 @@ Promise.all([
   .then(() => {
     app.use(
       '/api/graphql',
+      graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }),
       expressMiddleware<Context>(apolloServer, expressMiddlewareConfig)
     );
   })

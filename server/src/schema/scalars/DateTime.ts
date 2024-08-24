@@ -17,6 +17,7 @@ const config = {
     'compliant with the `date-time` format outlined in section 5.6 of ' +
     'the RFC 3339 profile of the ISO 8601 standard for representation ' +
     'of dates and times using the Gregorian calendar.',
+  // Serialize query response result on the backend
   serialize(value: any) {
     if (isValidDateTime(value)) {
       return new Date(value as Date).toISOString();
@@ -26,6 +27,7 @@ const config = {
       `DateTime can not be serialized from ${JSON.stringify(value)}`
     );
   },
+  // Parse query variable object on the backend
   parseValue(value: any) {
     if (isValidDateTime(value)) {
       return new Date(value as Date);
@@ -35,6 +37,7 @@ const config = {
       `DateTime can not be parsed from ${JSON.stringify(value)}`
     );
   },
+  // Parse query variable literal on the backend
   parseLiteral(ast: any) {
     if (ast.kind !== Kind.STRING) {
       throw new TypeError(

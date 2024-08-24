@@ -14,7 +14,7 @@ export default function AccountPage() {
     if (meQuery.error) throw meQuery.error;
   }, [meQuery.error]);
 
-  const me = snakeToCamel(meQuery.me);
+  const me = snakeToCamel(meQuery.data);
 
   return (
     <main className="flex flex-col p-4 bg-bgPrimary">

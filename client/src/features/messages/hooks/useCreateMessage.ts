@@ -31,16 +31,6 @@ interface CreateMessageVariables {
   };
 }
 
-const GET_CREATOR = gql`
-  query GetCreator {
-    me {
-      id
-      username
-      profile_pic
-    }
-  }
-`;
-
 const GET_CHAT = gql`
   query GetChat($id: ID!) {
     chat(id: $id) {
@@ -50,7 +40,8 @@ const GET_CHAT = gql`
       users {
         id
         username
-        profile_pic
+        discriminator
+        profile_pic_url
       }
       messages {
         edges {
@@ -60,7 +51,8 @@ const GET_CHAT = gql`
             creator {
               id
               username
-              profile_pic
+              discriminator
+              profile_pic_url
             }
             formatted_created_at
             formatted_edited_at
@@ -89,6 +81,7 @@ const GET_ME = gql`
       username
       discriminator
       profile_pic
+      profile_pic_url
       bio
       chats {
         edges {
@@ -115,19 +108,24 @@ export default function useCreateMessage() {
     CreateMessageData,
     CreateMessageVariables
   >(CREATE_MESSAGE, {
-    update(cache, result, context) {
+    update(cache, result) {
       if (!result.data) {
         return;
       }
 
-      const creatorQuery = cache.readQuery({ query: GET_CREATOR }) as any;
+      const meQuery = cache.readQuery({ query: GET_ME }) as any;
       const createdMessage = result.data.createMessage;
 
       const createdMessageCache = {
         cursor: 'temp',
         node: {
           id: Date.now().toString(),
-          creator: creatorQuery.me,
+          creator: {
+            id: meQuery.me.id,
+            username: meQuery.me.username,
+            discriminator: meQuery.me.discriminator,
+            profile_pic_url: meQuery.me.profile_pic_url,
+          },
           formatted_created_at: DateTime.fromJSDate(new Date()).toLocaleString(
             DateTime.DATETIME_MED
           ),
@@ -154,7 +152,6 @@ export default function useCreateMessage() {
         })
       );
 
-      const meQuery = cache.readQuery({ query: GET_ME }) as any;
       const chatCache = meQuery.me.chats.edges.find(
         ({ node }: any) => node.id === createdMessage.context_id
       );
@@ -168,7 +165,7 @@ export default function useCreateMessage() {
         node: {
           ...chatCache.node,
           last_message: createdMessage.content,
-          last_message_at: new Date(),
+          last_message_at: new Date().toISOString(),
         },
       };
 

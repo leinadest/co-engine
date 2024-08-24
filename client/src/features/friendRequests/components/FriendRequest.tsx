@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import useEndFriendRequest from '../hooks/useEndFriendRequest';
+import ProfilePic from '@/components/users/ProfilePic';
 
 export interface FriendRequestProps {
   userId: string;
@@ -9,13 +10,13 @@ export interface FriendRequestProps {
     id: string;
     username: string;
     discriminator: string;
-    profilePic: string;
+    profilePicUrl: string;
   };
   receiver: {
     id: string;
     username: string;
     discriminator: string;
-    profilePic: string;
+    profilePicUrl: string;
   };
   createdAt: string;
 }
@@ -35,10 +36,13 @@ export default function FriendRequest({
 
   return (
     <div className="flex items-center gap-2 p-2">
-      <Link
-        href={`/home/user/${otherUser.id}`}
-        className="profile-circle"
-      ></Link>
+      <Link href={`/home/user/${otherUser.id}`}>
+        <ProfilePic
+          src={otherUser.profilePicUrl}
+          defaultSrc={'/person.png'}
+          alt="user"
+        />
+      </Link>
       <div className="mr-auto">
         <Link
           href={`/home/user/${otherUser.id}`}

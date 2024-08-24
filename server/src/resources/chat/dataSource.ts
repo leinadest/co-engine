@@ -99,7 +99,7 @@ class ChatsDataSource {
       include: {
         model: User,
         as: 'users',
-        attributes: ['id', 'username', 'discriminator', 'profile_pic'],
+        attributes: ['id', 'username', 'discriminator', 'profile_pic_url'],
       },
     })) as unknown as (Chat & { users: User[] }) | null;
 
@@ -119,7 +119,7 @@ class ChatsDataSource {
           model: User,
           as: 'users',
           where: { [Op.and]: [{ id: user.id }, { id: otherUser.id }] },
-          attributes: ['id', 'username', 'discriminator', 'profile_pic'],
+          attributes: ['id', 'username', 'discriminator', 'profile_pic_url'],
         },
         where: {
           [Op.or]: [

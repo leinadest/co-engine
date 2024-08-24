@@ -15,7 +15,7 @@ interface SkeletonProps {
 
 export default function Skeleton({ type, className, children }: SkeletonProps) {
   return (
-    <div className={`skeleton ${type ?? ''} ${className ?? ''}`}>
+    <div className={`skeleton ${className ?? ''} ${type ?? ''}`}>
       {children}
     </div>
   );

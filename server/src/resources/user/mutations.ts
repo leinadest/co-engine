@@ -2,10 +2,12 @@ import { gql } from 'graphql-tag';
 import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql/error/GraphQLError';
+import { type FileUpload } from 'graphql-upload/processRequest.js';
 
 import { User } from '../';
 import AuthService from '../../services/authService';
 import { type Context } from '../../config/apolloServer';
+import { deleteImage, uploadImage } from '../../services/cloudinaryService';
 
 const typeDefs = gql`
   input CreateUserInput {
@@ -17,7 +19,8 @@ const typeDefs = gql`
   input EditMeInput {
     username: String
     email: String
-    profilePic: String
+    profilePic: Upload
+    bio: String
   }
 
   input AuthenticateInput {
@@ -40,7 +43,7 @@ const typeDefs = gql`
     """
     Edit a user's account information.
     """
-    editMe(edit: EditMeInput!): Boolean
+    editMe(edit: EditMeInput!): User
 
     """
     Generates a new access token, if provided credentials (username and password) match any registered user.
@@ -58,10 +61,11 @@ interface CreateUserInput {
 }
 
 interface EditMeInput {
-  edit?: {
+  edit: {
     username?: string;
     email?: string;
-    profilePic?: string;
+    profilePic?: Promise<FileUpload>;
+    bio?: string;
   };
 }
 
@@ -120,7 +124,13 @@ const editMeInputSchema = yup.object().shape({
         /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
         'Email must be a valid email'
       ),
-    profilePic: yup.string(),
+    profilePic: yup
+      .mixed<Promise<FileUpload> | any>()
+      .test('isFile', 'Profile picture must be a file', async (value) => {
+        const file = await value;
+        return value === undefined || 'filename' in file;
+      }),
+    bio: yup.string().max(200, 'Bio cannot be longer than 200 characters'),
   }),
 });
 
@@ -164,19 +174,38 @@ const resolvers = {
     editMe: async (_: any, args: EditMeInput, { authService }: Context) => {
       const validArgs = await editMeInputSchema.validate(args);
       const {
-        edit: { username, email, profilePic },
+        edit: { username, email, profilePic, bio },
       } = validArgs;
 
-      const userId = authService.getUserId();
-      if (userId === null) {
+      const user = await authService.getUser();
+      if (user === null) {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
       }
 
-      const [affectedCount] = await User.update(
-        { username, email, profile_pic: profilePic },
-        { where: { id: userId } }
+      let profilePicId: string | undefined;
+      let profilePicUrl: string | undefined;
+
+      if (profilePic !== undefined && user.profile_pic !== null) {
+        await deleteImage(user.profile_pic);
+      }
+      if (profilePic !== undefined) {
+        const fileUpload = (await profilePic) as FileUpload;
+        const { publicId, url } = await uploadImage(fileUpload);
+        profilePicId = publicId;
+        profilePicUrl = url;
+      }
+
+      const [affectedCount, affectedUsers] = await User.update(
+        {
+          username,
+          email,
+          profile_pic: profilePicId,
+          profile_pic_url: profilePicUrl,
+          bio,
+        },
+        { where: { id: user.id }, returning: true }
       );
       if (affectedCount === 0) {
         throw new GraphQLError('User not found', {
@@ -184,7 +213,7 @@ const resolvers = {
         });
       }
 
-      return affectedCount > 0;
+      return affectedUsers[0];
     },
     authenticate: async (_parentValue: any, args: AuthenticateInput) => {
       const validArgs = await authenticateInputSchema.validate(args, {

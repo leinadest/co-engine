@@ -11,7 +11,7 @@ const types = gql`
     id: ID!
     username: String
     discriminator: String
-    profile_pic: String
+    profile_pic_url: String
   }
 
   input ChatMessagesInput {

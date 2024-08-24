@@ -45,7 +45,7 @@ class UserFriendRequestsDataSource {
         where: {
           id: { [Op.notIn]: blockedUserIds },
         },
-        attributes: ['id', 'username', 'discriminator', 'profile_pic'],
+        attributes: ['id', 'username', 'discriminator', 'profile_pic_url'],
       };
       query.where = {
         receiver_id: this.authService.getUserId(),
@@ -56,7 +56,7 @@ class UserFriendRequestsDataSource {
       query.include = {
         model: User,
         as: 'receiver',
-        attributes: ['id', 'username', 'discriminator', 'profile_pic'],
+        attributes: ['id', 'username', 'discriminator', 'profile_pic_url'],
       };
       query.where = {
         sender_id: this.authService.getUserId(),

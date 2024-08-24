@@ -15,9 +15,7 @@ interface ChatPageProps {
 }
 
 export default function ChatPage({ params: { chatId } }: ChatPageProps) {
-  const chatQuery = useChat(chatId, {
-    fetchPolicy: 'cache-and-network',
-  });
+  const chatQuery = useChat(chatId, { fetchPolicy: 'network-only' });
   const messagesSubscription = useMessages('chat', chatId);
   const mainRef = useRef<HTMLElement>(null);
 

@@ -16,6 +16,7 @@ const typeDefs = gql`
     last_login_at: DateTime
     is_online: Boolean!
     profile_pic: String
+    profile_pic_url: String
     bio: String
   }
 
@@ -39,6 +40,7 @@ const typeDefs = gql`
     last_login_at: DateTime
     is_online: Boolean!
     profile_pic: String
+    profile_pic_url: String
     bio: String
     chats(query: ChatsInput): ChatConnection!
   }
@@ -63,6 +65,7 @@ export const PublicUserFields = gql`
     last_login_at
     is_online
     profile_pic
+    profile_pic_url
     bio
   }
 `;
@@ -79,6 +82,7 @@ export const PublicUserConnectionFields = gql`
         last_login_at
         is_online
         profile_pic
+        profile_pic_url
         bio
       }
     }
@@ -101,6 +105,7 @@ export const UserFields = gql`
     last_login_at
     is_online
     profile_pic
+    profile_pic_url
     bio
   }
 `;

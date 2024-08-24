@@ -1,4 +1,4 @@
-import Image from 'next/image';
+import ProfilePic from '@/components/users/ProfilePic';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -8,7 +8,7 @@ export interface MessageProps {
     id: string;
     username: string;
     discriminator: string;
-    profilePic: string;
+    profilePicUrl: string;
   };
   formattedCreatedAt: string;
   formattedEditedAt?: string;
@@ -35,15 +35,11 @@ export default function Message({
 
   return (
     <div className="flex px-2 gap-4">
-      <Link
-        href={`/home/user/${creator.id}`}
-        className="shrink-0 profile-circle"
-      >
-        <Image
-          src="/connections.png"
-          alt="profile pic"
-          width={26}
-          height={26}
+      <Link href={`/home/user/${creator.id}`} className="shrink-0">
+        <ProfilePic
+          src={creator.profilePicUrl}
+          defaultSrc={'/person.png'}
+          alt="user"
         />
       </Link>
       <div className="flex flex-col gap-1">

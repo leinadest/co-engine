@@ -2,7 +2,7 @@ export interface PartialUser {
   id: string;
   username: string;
   discriminator: string;
-  profile_pic: string;
+  profile_pic_url: string;
 }
 
 export interface MessageNode {

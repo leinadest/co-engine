@@ -68,7 +68,7 @@ export default function UserPage({ params: { userId } }: UserPageProps) {
   }, [blockResult.error, blockResult.data]);
 
   const user = snakeToCamel(userQuery.data?.user);
-  const me = snakeToCamel(meQuery.me);
+  const me = snakeToCamel(meQuery.data);
 
   if (!user || !me) {
     return (

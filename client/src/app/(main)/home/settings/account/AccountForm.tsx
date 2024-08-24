@@ -8,11 +8,11 @@ import { useForm } from 'react-hook-form';
 import InputField from '@/components/form/InputField';
 import useEditMe from '@/features/users/hooks/useEditMe';
 import Alert, { AlertState } from '@/components/common/Alert';
+import ResetSaveBtns from '@/components/form/ResetSaveBtns';
 
 interface FormValues {
   username: string;
   email: string;
-  profilePic?: string;
 }
 
 const validationSchema = yup.object().shape({
@@ -30,23 +30,18 @@ const validationSchema = yup.object().shape({
       /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
       'Email must be a valid email'
     ),
-  profilePic: yup.string(),
 });
 
-export default function AccountForm({
-  username,
-  email,
-  profilePic,
-}: FormValues) {
+export default function AccountForm({ username, email }: FormValues) {
   const form = useForm({
-    defaultValues: { username, email, profilePic },
+    defaultValues: { username, email },
     resolver: yupResolver(validationSchema),
   });
 
   const { editMe, data, error } = useEditMe();
 
-  function onSubmit({ username, email, profilePic }: FormValues) {
-    editMe({ username, email, profilePic });
+  function onSubmit({ username, email }: FormValues) {
+    editMe({ username, email });
   }
 
   const [alert, setAlert] = useState<AlertState>({ visible: false });
@@ -62,7 +57,7 @@ export default function AccountForm({
     }
 
     if (name === false) {
-      throw error;
+      setAlert({ visible: true, type: 'error', message: error?.message });
     }
 
     if (error) {
@@ -100,22 +95,7 @@ export default function AccountForm({
         className="bold secondary"
         form={form}
       />
-      <div className="flex gap-4 mt-auto mx-auto">
-        <button
-          disabled={!form.formState.isDirty || form.formState.isSubmitting}
-          onClick={() => form.reset()}
-          className={form.formState.isDirty ? 'btn' : 'btn-disabled'}
-        >
-          Reset
-        </button>
-        <button
-          disabled={!form.formState.isDirty || form.formState.isSubmitting}
-          onClick={form.handleSubmit(onSubmit)}
-          className={form.formState.isDirty ? 'btn' : 'btn-disabled'}
-        >
-          Save Changes
-        </button>
-      </div>
+      <ResetSaveBtns form={form} onSubmit={onSubmit} />
       <Alert setAlert={setAlert} {...alert} />
     </form>
   );

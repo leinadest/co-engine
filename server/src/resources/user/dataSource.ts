@@ -99,7 +99,7 @@ class UsersDataSource {
         as: 'chats',
         where: { id: chatId },
       },
-      attributes: ['id', 'username', 'discriminator', 'profile_pic'],
+      attributes: ['id', 'username', 'discriminator', 'profile_pic_url'],
     });
     return usersOfChat;
   }

@@ -46,13 +46,19 @@ export function formatTime(date: string, format: Intl.DateTimeFormatOptions) {
   return DateTime.fromISO(date).toLocaleString(DateTime.DATE_MED);
 }
 
-export function snakeToCamel(obj: any) {
-  if (!obj) return obj;
-  return Object.keys(obj).reduce<Record<string, any>>((acc, key) => {
-    const camelKey = key.replace(/_([a-z])/g, (match, group1) =>
-      group1.toUpperCase()
-    );
-    acc[camelKey] = obj[key];
-    return acc;
-  }, {});
+export function snakeToCamel(obj: any): any {
+  if (typeof obj !== 'object' || obj === null) {
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(snakeToCamel);
+  }
+
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [
+      key.replace(/_([a-z])/g, (_, group1) => group1.toUpperCase()),
+      snakeToCamel(value),
+    ])
+  );
 }

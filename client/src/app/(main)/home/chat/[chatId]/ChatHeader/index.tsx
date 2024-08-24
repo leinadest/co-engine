@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import useChat from '../../../../../../features/chats/hooks/useChat';
 import ChatIdentity from './ChatIdentity';
 import SkeletonChatIdentity from './SkeletonChatIdentity';
@@ -9,25 +10,21 @@ interface ChatHeaderProps {
 }
 
 export default function ChatHeader({ chatId }: ChatHeaderProps) {
-  const { data, loading, error } = useChat(chatId);
+  const { data, error } = useChat(chatId);
 
-  if (error) {
-    throw error;
-  }
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
 
-  if (loading || !data) {
-    return (
-      <header className="flex items-center p-2 gap-6 overflow-clip">
-        <SkeletonChatIdentity />
-      </header>
-    );
-  }
-
-  const chat = data.chat;
+  const chat = data?.chat;
 
   return (
     <header className="flex items-center p-2 gap-6 overflow-clip">
-      <ChatIdentity name={chat.name} picture={chat.picture} />
+      {chat ? (
+        <ChatIdentity name={chat.name} picture={chat.picture} />
+      ) : (
+        <SkeletonChatIdentity />
+      )}
     </header>
   );
 }

@@ -27,7 +27,7 @@ export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
         id
         username
         discriminator
-        profile_pic
+        profile_pic_url
       }
       messages {
         edges {
@@ -38,7 +38,7 @@ export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
               id
               username
               discriminator
-              profile_pic
+              profile_pic_url
             }
             formatted_created_at
             formatted_edited_at

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import TrackerLink from '@/components/TrackerLink';
+import ProfilePic from '@/components/users/ProfilePic';
 
 export interface FriendProps {
   id: string;
@@ -10,7 +11,7 @@ export interface FriendProps {
   discriminator: string;
   lastLoginAt: string;
   isOnline: boolean;
-  profilePic: string;
+  profilePicUrl: string;
 }
 
 export default function Friend({
@@ -19,12 +20,18 @@ export default function Friend({
   discriminator,
   lastLoginAt,
   isOnline,
-  profilePic,
+  profilePicUrl,
 }: FriendProps) {
   const [showDiscriminator, setShowDiscriminator] = useState(false);
   return (
     <div className="flex items-center gap-2 p-2">
-      <Link href={`/home/user/${id}`} className="profile-circle"></Link>
+      <Link href={`/home/user/${id}`}>
+        <ProfilePic
+          src={profilePicUrl}
+          defaultSrc={'/person.png'}
+          alt="friend"
+        />
+      </Link>
       <div className="mr-auto">
         <Link
           href={`/home/user/${id}`}

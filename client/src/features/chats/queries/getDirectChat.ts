@@ -12,7 +12,8 @@ export const GET_DIRECT_CHAT = gql`
       users {
         id
         username
-        profile_pic
+        discriminator
+        profile_pic_url
       }
       messages {
         edges {
@@ -22,7 +23,8 @@ export const GET_DIRECT_CHAT = gql`
             creator {
               id
               username
-              profile_pic
+              discriminator
+              profile_pic_url
             }
             formatted_created_at
             formatted_edited_at

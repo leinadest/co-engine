@@ -9,6 +9,7 @@ export interface GetUserResult {
     last_login_at: string;
     is_online: boolean;
     profile_pic: string;
+    profile_pic_url: string;
     bio: string;
   };
 }
@@ -27,6 +28,7 @@ export const GET_USER: TypedDocumentNode<GetUserResult, GetUserVariables> = gql`
       last_login_at
       is_online
       profile_pic
+      profile_pic_url
       bio
     }
   }

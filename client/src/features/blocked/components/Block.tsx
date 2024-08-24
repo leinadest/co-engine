@@ -1,19 +1,21 @@
+import ProfilePic from '@/components/users/ProfilePic';
+
 export interface BlockProps {
   id: string;
   username: string;
   discriminator: string;
-  profilePic: string;
+  profilePicUrl: string;
 }
 
 export default function Block({
   id,
   username,
   discriminator,
-  profilePic,
+  profilePicUrl,
 }: BlockProps) {
   return (
     <div className="flex items-center gap-2 p-2">
-      <div className="profile-circle"></div>
+      <ProfilePic src={profilePicUrl} defaultSrc={'/person.png'} alt="block" />
       <h5>
         {username}#{discriminator}
       </h5>

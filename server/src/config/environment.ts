@@ -1,25 +1,51 @@
 import dotenv from 'dotenv';
 
-if ('error' in dotenv.config()) {
-  console.log(dotenv.config().error);
+if (dotenv.config().error !== undefined) {
+  throw dotenv.config().error as Error;
 }
 
-export const NODE_ENV = process.env.NODE_ENV ?? 'development';
-export const PORT = process.env.PORT ?? '3000';
+const variables = {
+  NODE_ENV: process.env.NODE_EN ?? 'development',
+  PORT: process.env.PORT ?? '3000',
 
-export const POSTGRES_URL = process.env.POSTGRES_URL as string;
-export const MONGO_URL = process.env.MONGO_URL as string;
+  POSTGRES_URL: process.env.POSTGRES_URL as string,
+  MONGO_URL: process.env.MONGO_URL as string,
+  FRONTEND_BASE_URL: process.env.FRONTEND_BASE_URL as string,
 
-export const JWT_SECRET = process.env.JWT_SECRET as string;
-export const ACCESS_TOKEN_EXPIRATION_TIME = 60 * 60 * 24 * 7; // 7 days
+  JWT_SECRET: process.env.JWT_SECRET as string,
+  ACCESS_TOKEN_EXPIRATION_TIME: 60 * 60 * 24 * 7,
 
-export const DISCORD_CLIENT_ID = process.env.DISCORD_CLIENT_ID as string;
-export const DISCORD_CLIENT_SECRET = process.env
-  .DISCORD_CLIENT_SECRET as string;
-export const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI as string;
+  DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID as string,
+  DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET as string,
+  DISCORD_REDIRECT_URI: process.env.DISCORD_REDIRECT_URI as string,
 
-export const FRONTEND_BASE_URL = process.env.FRONTEND_BASE_URL as string;
+  CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
+  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
+  CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
+};
 
-if (NODE_ENV !== 'production') {
-  console.log(module.exports);
+Object.entries(variables).forEach(([key, value]) => {
+  if (value === undefined) {
+    throw new Error(`Missing environment variable: ${key}`);
+  }
+});
+
+if (variables.NODE_ENV !== 'production') {
+  console.log(variables);
 }
+
+export const {
+  NODE_ENV,
+  PORT,
+  POSTGRES_URL,
+  MONGO_URL,
+  FRONTEND_BASE_URL,
+  JWT_SECRET,
+  ACCESS_TOKEN_EXPIRATION_TIME,
+  DISCORD_CLIENT_ID,
+  DISCORD_CLIENT_SECRET,
+  DISCORD_REDIRECT_URI,
+  CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET,
+}: typeof variables = variables;

@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import Skeleton from '@/components/skeletons/Skeleton';
 import { FriendProps } from '@/features/friends/components/Friend';
 import FriendList from '@/features/friends/components/FriendList';
@@ -12,9 +14,9 @@ export default function AllFriends() {
     fetchPolicy: 'cache-and-network',
   });
 
-  if (error) {
-    throw error;
-  }
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
 
   if (loading || data === undefined) {
     return (

@@ -1,5 +1,6 @@
 import {
   ApolloClient,
+  ApolloLink,
   InMemoryCache,
   createHttpLink,
   split,
@@ -11,6 +12,7 @@ import {
 import { setContext } from '@apollo/client/link/context';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
+import createUploadLink from 'apollo-upload-client/createUploadLink.mjs';
 import { createClient } from 'graphql-ws';
 
 import authStorage from '../features/auth/stores/authStorage';
@@ -37,17 +39,13 @@ export function createApolloClient() {
     })
   );
 
-  const splitLink = split(
-    ({ query }) => {
-      const definition = getMainDefinition(query);
-      const useWsLink =
-        definition.kind === 'OperationDefinition' &&
-        definition.operation === 'subscription';
-      return useWsLink;
+  const uploadLink = createUploadLink({
+    uri: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
+    headers: {
+      'x-apollo-operation-name': 'Upload',
+      'apollo-require-preflight': 'true',
     },
-    wsLink,
-    httpLink
-  );
+  });
 
   const cache = new InMemoryCache({
     typePolicies: {
@@ -64,5 +62,31 @@ export function createApolloClient() {
     },
   });
 
-  return new ApolloClient({ link: authLink.concat(splitLink), cache });
+  return new ApolloClient({
+    link: authLink.concat(
+      split(
+        ({ query }) => {
+          const definition = getMainDefinition(query);
+          const useUploadLink =
+            definition.kind === 'OperationDefinition' &&
+            definition.operation === 'mutation' &&
+            definition.name?.value === 'EditMe';
+          return useUploadLink;
+        },
+        uploadLink,
+        split(
+          ({ query }) => {
+            const definition = getMainDefinition(query);
+            const useWsLink =
+              definition.kind === 'OperationDefinition' &&
+              definition.operation === 'subscription';
+            return useWsLink;
+          },
+          wsLink,
+          httpLink
+        )
+      )
+    ),
+    cache,
+  });
 }

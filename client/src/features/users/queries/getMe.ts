@@ -10,6 +10,7 @@ export interface GetMeResult {
     username: string;
     discriminator: string;
     profile_pic: string;
+    profile_pic_url: string;
     bio: string;
     chats: RelayConnection<{
       id: string;
@@ -30,6 +31,7 @@ export const GET_ME: TypedDocumentNode<GetMeResult> = gql`
       username
       discriminator
       profile_pic
+      profile_pic_url
       bio
       chats {
         edges {

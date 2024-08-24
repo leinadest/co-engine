@@ -36,7 +36,7 @@ export default function AllFriends() {
 
   if (
     meQuery.loading ||
-    !meQuery.me ||
+    !meQuery.data ||
     incomingRequestsQuery.loading ||
     !incomingRequestsQuery.data ||
     outgoingRequestsQuery.loading ||
@@ -90,7 +90,7 @@ export default function AllFriends() {
       </div>
       <main className="p-2 overflow-auto">
         <FriendRequestList
-          userId={meQuery.me.id}
+          userId={meQuery.data.id}
           friendRequests={
             (filter === 'incoming'
               ? incomingRequests
