@@ -1,7 +1,22 @@
 import { gql, TypedDocumentNode } from '@apollo/client';
 
 import { RelayConnection } from '@/types/api';
-import { MessageNode, PartialUser } from '../types/api';
+
+interface PartialUser {
+  id: string;
+  username: string;
+  discriminator: string;
+  profile_pic_url: string;
+}
+
+interface MessageNode {
+  id: string;
+  creator: PartialUser;
+  formatted_created_at: string;
+  formatted_edited_at: string | null;
+  content: string;
+  reactions: Array<{ reactor_id: string; reaction: string }>;
+}
 
 export interface GetChatData {
   chat: {
@@ -15,10 +30,16 @@ export interface GetChatData {
 
 export interface GetChatVariables {
   id: string;
+  messagesQuery?: {
+    orderDirection?: string;
+    orderBy?: string;
+    after?: string;
+    first?: number;
+  };
 }
 
 export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
-  query GetChat($id: ID!) {
+  query GetChat($id: ID!, $messagesQuery: ChatMessagesInput) {
     chat(id: $id) {
       id
       name
@@ -29,7 +50,7 @@ export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
         discriminator
         profile_pic_url
       }
-      messages {
+      messages(query: $messagesQuery) {
         edges {
           cursor
           node {

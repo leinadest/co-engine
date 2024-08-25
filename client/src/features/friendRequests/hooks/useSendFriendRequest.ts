@@ -1,63 +1,24 @@
-import {
-  ApolloError,
-  gql,
-  MutationHookOptions,
-  useMutation,
-} from '@apollo/client';
+import { ApolloError, MutationHookOptions, useMutation } from '@apollo/client';
 import { useState } from 'react';
 
-const SEND_FRIEND_REQUEST = gql`
-  mutation SendFriendRequest($userId: ID!) {
-    sendFriendRequest(userId: $userId) {
-      created_at
-    }
-  }
-`;
-
-interface SendFriendRequestData {
-  sendFriendRequest: {
-    created_at: string;
-  };
-}
-
-interface SendFriendRequestVariables {
-  userId: string;
-}
-
-const SEND_FRIEND_REQUEST_BY_USERNAME = gql`
-  mutation SendFriendRequestByUsername(
-    $username: String!
-    $discriminator: String!
-  ) {
-    sendFriendRequestByUsername(
-      username: $username
-      discriminator: $discriminator
-    ) {
-      created_at
-    }
-  }
-`;
-
-interface SendFriendRequestByUsernameData {
-  sendFriendRequestByUsername: {
-    created_at: string;
-  };
-}
-
-interface SendFriendRequestByUsernameVariables {
-  username: string;
-  discriminator: string;
-}
+import SEND_FRIEND_REQUEST, {
+  SendFriendRequestResult,
+  SendFriendRequestVariables,
+} from '@/graphql/mutations/sendFriendRequest';
+import SEND_FRIEND_REQUEST_BY_USERNAME, {
+  SendFriendRequestByUsernameResult,
+  SendFriendRequestByUsernameVariables,
+} from '@/graphql/mutations/sendFriendRequestByUsername';
 
 export default function useSendFriendRequest(
-  options?: MutationHookOptions<NoInfer<any>, NoInfer<any>, any, any>
+  options?: MutationHookOptions<any, any>
 ) {
   const [mutateById] = useMutation<
-    SendFriendRequestData,
+    SendFriendRequestResult,
     SendFriendRequestVariables
   >(SEND_FRIEND_REQUEST, options);
   const [mutateByUsername] = useMutation<
-    SendFriendRequestByUsernameData,
+    SendFriendRequestByUsernameResult,
     SendFriendRequestByUsernameVariables
   >(SEND_FRIEND_REQUEST_BY_USERNAME, options);
 

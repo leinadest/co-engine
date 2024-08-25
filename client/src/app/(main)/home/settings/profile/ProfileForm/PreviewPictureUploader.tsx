@@ -4,7 +4,7 @@ import { UseFormReturn } from 'react-hook-form';
 import { useState } from 'react';
 
 import PictureUploader from '@/components/form/PictureUploader';
-import ProfilePic from '@/components/users/ProfilePic';
+import Avatar from '@/components/Avatar';
 
 interface PreviewProps {
   me: any;
@@ -23,7 +23,7 @@ export default function PreviewPictureUploader({ me, form }: PreviewProps) {
   return (
     <>
       <div className="relative mx-auto mb-2">
-        <ProfilePic
+        <Avatar
           src={preview}
           defaultSrc={'/person.png'}
           alt="profile preview"

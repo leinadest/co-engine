@@ -1,18 +1,18 @@
 import Image from 'next/image';
 
-interface ProfilePicProps {
+interface AvatarProps {
   src?: string;
   defaultSrc: string;
   alt?: string;
   className?: string;
 }
 
-export default function ProfilePic({
+export default function Avatar({
   src,
   defaultSrc,
   alt,
   className,
-}: ProfilePicProps) {
+}: AvatarProps) {
   return src ? (
     <Image
       src={src}

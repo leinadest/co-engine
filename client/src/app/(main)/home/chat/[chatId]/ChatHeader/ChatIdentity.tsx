@@ -1,4 +1,4 @@
-import ProfilePic from '@/components/users/ProfilePic';
+import Avatar from '@/components/Avatar';
 
 interface ChatIdentityProps {
   picture: string;
@@ -8,7 +8,7 @@ interface ChatIdentityProps {
 export default function ChatIdentity({ picture, name }: ChatIdentityProps) {
   return (
     <div className="flex items-center gap-2">
-      <ProfilePic src={picture} defaultSrc={'/chat.png'} alt="chat" />
+      <Avatar src={picture} defaultSrc={'/chat.png'} alt="chat" />
       <h5>{name}</h5>
     </div>
   );

@@ -1,117 +1,9 @@
-import { gql, TypedDocumentNode, useSubscription } from '@apollo/client';
+import { useSubscription } from '@apollo/client';
 import { DateTime } from 'luxon';
 
-interface MessageCreatedSubscriptionResult {
-  messageCreated: {
-    id: string;
-    context_type: string;
-    context_id: string;
-    creator: {
-      id: string;
-      username: string;
-      profile_pic: string;
-    };
-    formatted_created_at: string;
-    content: string;
-  };
-}
-
-interface MessageCreatedSubscriptionVariables {
-  contextType: string;
-  contextId: string;
-}
-
-const MESSAGE_CREATED_SUBSCRIPTION: TypedDocumentNode<
-  MessageCreatedSubscriptionResult,
-  MessageCreatedSubscriptionVariables
-> = gql`
-  subscription MessageCreatedSubscription(
-    $contextType: String!
-    $contextId: String!
-  ) {
-    messageCreated(contextType: $contextType, contextId: $contextId) {
-      id
-      context_type
-      context_id
-      creator {
-        id
-        username
-        profile_pic
-      }
-      formatted_created_at
-      content
-    }
-  }
-`;
-
-const GET_CHAT = gql`
-  query GetChat($id: ID!) {
-    chat(id: $id) {
-      id
-      name
-      picture
-      users {
-        id
-        username
-        profile_pic
-      }
-      messages {
-        edges {
-          cursor
-          node {
-            id
-            creator {
-              id
-              username
-              profile_pic
-            }
-            formatted_created_at
-            formatted_edited_at
-            content
-            reactions {
-              reactor_id
-              reaction
-            }
-          }
-        }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-      }
-    }
-  }
-`;
-
-const GET_ME = gql`
-  query GetMe {
-    me {
-      id
-      created_at
-      email
-      username
-      discriminator
-      profile_pic
-      bio
-      chats {
-        edges {
-          cursor
-          node {
-            id
-            name
-            picture
-            last_message_at
-            last_message
-          }
-        }
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-      }
-    }
-  }
-`;
+import { GET_CHAT } from '@/graphql/queries/getChat';
+import { GET_ME } from '@/graphql/queries/getMe';
+import MESSAGE_CREATED_SUBSCRIPTION from '@/graphql/subscriptions/messageCreated';
 
 export default function useMessages(contextType: string, contextId: string) {
   const { data, loading, error } = useSubscription(
@@ -142,21 +34,24 @@ export default function useMessages(contextType: string, contextId: string) {
             query: GET_CHAT,
             variables: { id: createdMessage.context_id },
           },
-          (oldData) => ({
-            ...oldData,
-            chat: {
-              ...oldData.chat,
-              messages: {
-                ...oldData.chat.messages,
-                edges: [createdMessageCache, ...oldData.chat.messages.edges],
+          (oldData) => {
+            if (!oldData) return;
+            return {
+              ...oldData,
+              chat: {
+                ...oldData.chat,
+                messages: {
+                  ...oldData.chat.messages,
+                  edges: [createdMessageCache, ...oldData.chat.messages.edges],
+                },
               },
-            },
-          })
+            };
+          }
         );
 
-        const meQuery = cache.readQuery({ query: GET_ME }) as any;
-        const chatCache = meQuery.me.chats.edges.find(
-          ({ node }: any) => node.id === createdMessage.context_id
+        const meQuery = cache.readQuery({ query: GET_ME });
+        const chatCache = meQuery?.me.chats.edges.find(
+          ({ node: chat }: any) => chat.id === createdMessage.context_id
         );
 
         if (createdMessage.context_type !== 'chat' || !chatCache) {
@@ -168,24 +63,27 @@ export default function useMessages(contextType: string, contextId: string) {
           node: {
             ...chatCache.node,
             last_message: createdMessage.content,
-            last_message_at: new Date(),
+            last_message_at: new Date().toISOString(),
           },
         };
 
-        cache.updateQuery({ query: GET_ME }, (oldData) => ({
-          me: {
-            ...oldData.me,
-            chats: {
-              ...oldData.me.chats,
-              edges: [
-                updatedChatCache,
-                ...oldData.me.chats.edges.filter(
-                  (edge: any) => edge !== chatCache
-                ),
-              ],
+        cache.updateQuery({ query: GET_ME }, (oldData) => {
+          if (!oldData) return;
+          return {
+            me: {
+              ...oldData.me,
+              chats: {
+                ...oldData.me.chats,
+                edges: [
+                  updatedChatCache,
+                  ...oldData.me.chats.edges.filter(
+                    (edge: any) => edge !== chatCache
+                  ),
+                ],
+              },
             },
-          },
-        }));
+          };
+        });
       },
     }
   );

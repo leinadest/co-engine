@@ -112,8 +112,12 @@ export const UserFields = gql`
 
 const resolvers = {
   User: {
-    chats: async (_: User, args: ChatsInput, { dataSources }: Context) => {
-      return await dataSources.chatsDB.getChats(args);
+    chats: async (
+      _: User,
+      { query }: { query: ChatsInput },
+      { dataSources }: Context
+    ) => {
+      return await dataSources.chatsDB.getChats(query ?? {});
     },
   },
 };

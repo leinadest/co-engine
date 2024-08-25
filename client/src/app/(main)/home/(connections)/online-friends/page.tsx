@@ -26,8 +26,8 @@ export default function OnlineFriends() {
     );
   }
 
-  const totalCount = data.friends.totalCount;
-  const onlineFriends = data.friends.edges
+  const totalCount = data.totalCount;
+  const onlineFriends = data.edges
     .filter((edge) => edge.node.is_online)
     .map((edge) => snakeToCamel(edge.node)) as FriendProps[];
 

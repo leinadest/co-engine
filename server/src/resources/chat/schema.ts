@@ -71,11 +71,11 @@ const resolvers = {
     },
     messages: async (
       chat: Chat,
-      args: ChatMessagesInput,
+      { query }: { query: ChatMessagesInput },
       { dataSources }: Context
     ) => {
       return await dataSources.messagesDB.getMessages({
-        ...args,
+        ...query,
         contextId: chat.id,
         contextType: 'chat',
       });

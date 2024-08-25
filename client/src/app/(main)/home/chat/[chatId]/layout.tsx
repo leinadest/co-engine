@@ -12,7 +12,7 @@ interface LayoutProps {
 
 export default function Layout({ children, params: { chatId } }: LayoutProps) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col h-full">
       <ChatHeader chatId={chatId} />
       {children}
       <ChatInput chatId={chatId} />

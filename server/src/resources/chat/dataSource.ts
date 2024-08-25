@@ -39,7 +39,18 @@ class ChatsDataSource {
       where = { name: { [Op.substring]: search } };
     }
     if (after !== undefined) {
-      where = { ...where, [orderBy]: { [op]: decodeCursor(after) } };
+      const cursor = decodeCursor(after) as Record<string, any>;
+      where = {
+        ...where,
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { [orderBy]: { [op]: cursor[orderBy] } },
+              { [orderBy]: cursor[orderBy], id: { [Op.lt]: cursor.id } },
+            ],
+          },
+        ],
+      };
     }
 
     // Query for chats that aren't from blocked users after being blocked
@@ -60,7 +71,6 @@ class ChatsDataSource {
       };
     }
 
-    // Get chats
     const userId = this.authService.getUserId() as string;
 
     const chats = await Chat.findAll({
@@ -73,14 +83,19 @@ class ChatsDataSource {
         ...where,
         ...whereUnblocked,
       },
-      order: [[orderBy, orderDirection]],
+      order: [
+        [orderBy, orderDirection],
+        ['id', 'DESC'],
+      ],
       limit: first,
       attributes: { exclude: ['creator_id', 'created_at'] },
     });
 
-    // Create connection
     const edges = chats.map((chat) => ({
-      cursor: encodeCursor(chat[orderBy]),
+      cursor: encodeCursor({
+        id: chat.id,
+        [orderBy]: chat[orderBy],
+      }),
       node: chat.toJSON(),
     }));
 

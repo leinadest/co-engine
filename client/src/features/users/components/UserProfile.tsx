@@ -1,4 +1,4 @@
-import ProfilePic from '@/components/users/ProfilePic';
+import Avatar from '@/components/Avatar';
 import { formatTime } from '@/utils/helpers';
 import { DateTime } from 'luxon';
 
@@ -19,7 +19,7 @@ export default function UserProfile({
 }: UserProfileProps) {
   return (
     <>
-      <ProfilePic
+      <Avatar
         src={profilePicUrl}
         defaultSrc="/person.png"
         alt="profile"

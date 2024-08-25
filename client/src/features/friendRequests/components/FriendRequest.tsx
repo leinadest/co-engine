@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import useEndFriendRequest from '../hooks/useEndFriendRequest';
-import ProfilePic from '@/components/users/ProfilePic';
+import Avatar from '@/components/Avatar';
 
 export interface FriendRequestProps {
   userId: string;
@@ -37,7 +37,7 @@ export default function FriendRequest({
   return (
     <div className="flex items-center gap-2 p-2">
       <Link href={`/home/user/${otherUser.id}`}>
-        <ProfilePic
+        <Avatar
           src={otherUser.profilePicUrl}
           defaultSrc={'/person.png'}
           alt="user"

@@ -1,4 +1,4 @@
-import ProfilePic from '@/components/users/ProfilePic';
+import Avatar from '@/components/Avatar';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -11,7 +11,7 @@ export default function User({ profilePicUrl, username }: UserProps) {
   return (
     <div className="flex items-center gap-2 p-2 bg-bgSecondary">
       <Link href="/home/settings/profile">
-        <ProfilePic
+        <Avatar
           src={profilePicUrl}
           defaultSrc={'/person.png'}
           className="bg-bgSecondaryDark"

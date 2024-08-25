@@ -1,50 +1,19 @@
-import { RelayConnection } from '@/types/api';
-import { gql, QueryHookOptions, useQuery } from '@apollo/client';
+import { QueryHookOptions, useQuery } from '@apollo/client';
 
-const GET_FRIENDS = gql`
-  query GetFriends($query: FriendsInput) {
-    friends(query: $query) {
-      edges {
-        cursor
-        node {
-          id
-          username
-          discriminator
-          last_login_at
-          is_online
-          profile_pic_url
-        }
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-        endCursor
-        startCursor
-      }
-      totalCount
-    }
-  }
-`;
+import GET_FRIENDS, {
+  GetFriendsResult,
+  GetFriendsVariables,
+} from '@/graphql/queries/getFriends';
 
-interface Friends {
-  friends: RelayConnection<{
-    id: string;
-    username: string;
-    discriminator: string;
-    last_login_at: string;
-    is_online: boolean;
-    profile_pic_url: string;
-  }>;
-}
-
-interface useFriendsArgs extends QueryHookOptions<Friends, any> {
+interface useFriendsArgs
+  extends QueryHookOptions<GetFriendsResult, GetFriendsVariables> {
   status?: 'online' | 'offline';
 }
 
 export default function useFriends(options?: useFriendsArgs) {
-  const { data, loading, error } = useQuery<Friends>(GET_FRIENDS, {
+  const { data, loading, error } = useQuery(GET_FRIENDS, {
     ...options,
     variables: { query: { status: options?.status } },
   });
-  return { data, loading, error };
+  return { data: data?.friends, loading, error };
 }

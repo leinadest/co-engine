@@ -19,7 +19,7 @@ export default function ChatHeader({ chatId }: ChatHeaderProps) {
   const chat = data?.chat;
 
   return (
-    <header className="flex items-center p-2 gap-6 overflow-clip">
+    <header className="flex items-center p-2 gap-6">
       {chat ? (
         <ChatIdentity name={chat.name} picture={chat.picture} />
       ) : (

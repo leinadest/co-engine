@@ -43,25 +43,35 @@ class MessagesDataSource {
   }): Promise<RelayConnection<IMessage>> {
     // Initialize query for the next messages to paginate after the cursor
     const op = orderDirection === 'DESC' ? '$lt' : '$gt';
+    const cursor = after !== undefined ? decodeCursor(after) : undefined;
     const query =
-      after !== undefined ? { [orderBy]: { [op]: decodeCursor(after) } } : {};
+      cursor !== undefined
+        ? {
+            $or: [
+              { [orderBy]: { [op]: cursor[orderBy] } },
+              {
+                [orderBy]: cursor[orderBy],
+                _id: { [op]: cursor._id },
+              },
+            ],
+          }
+        : {};
 
     // Initialize query for filtering messages from blocked users
     const unblockedMessagesQuery = await this.getUnblockedMessagesQuery();
 
     // Execute query
+    const direction = orderDirection === 'ASC' ? 1 : -1;
     const messages = await Message.find({
       context_id: contextId,
       context_type: contextType,
-      ...query,
-      ...unblockedMessagesQuery,
+      $and: [query, unblockedMessagesQuery],
     })
-      .limit(first)
-      .sort({ [orderBy]: orderDirection.toLowerCase() as 'asc' | 'desc' });
+      .sort({ [orderBy]: direction, _id: direction })
+      .limit(first);
 
-    // Generate edges and page info
     const edges = messages.map((message) => ({
-      cursor: encodeCursor(message[orderBy]),
+      cursor: encodeCursor({ _id: message._id, [orderBy]: message[orderBy] }),
       node: message.toJSON(),
     }));
 

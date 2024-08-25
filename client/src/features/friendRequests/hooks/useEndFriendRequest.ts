@@ -1,55 +1,18 @@
 import { useState } from 'react';
-import {
-  ApolloError,
-  gql,
-  MutationHookOptions,
-  useMutation,
-} from '@apollo/client';
+import { ApolloError, MutationHookOptions, useMutation } from '@apollo/client';
 
-const ACCEPT_FRIEND_REQUEST = gql`
-  mutation AcceptFriendRequest($userId: ID!) {
-    acceptFriendRequest(userId: $userId)
-  }
-`;
-
-interface AcceptFriendRequestData {
-  acceptFriendRequest: boolean;
-}
-
-interface AcceptFriendRequestVariables {
-  userId: string;
-}
-
-const DELETE_FRIEND_REQUEST = gql`
-  mutation DeleteFriendRequest($senderId: ID!, $receiverId: ID!) {
-    deleteFriendRequest(senderId: $senderId, receiverId: $receiverId)
-  }
-`;
-
-interface DeleteFriendRequestData {
-  deleteFriendRequest: boolean;
-}
-
-interface DeleteFriendRequestVariables {
-  senderId: string;
-  receiverId: string;
-}
+import ACCEPT_FRIEND_REQUEST from '@/graphql/mutations/acceptFriendRequest';
+import DELETE_FRIEND_REQUEST from '@/graphql/mutations/deleteFriendRequest';
 
 export default function useEndFriendRequest(
-  options?: MutationHookOptions<NoInfer<any>, NoInfer<any>, any, any>
+  options?: MutationHookOptions<any, any>
 ) {
-  const [mutateAccept] = useMutation<
-    AcceptFriendRequestData,
-    AcceptFriendRequestVariables
-  >(ACCEPT_FRIEND_REQUEST, {
+  const [mutateAccept] = useMutation(ACCEPT_FRIEND_REQUEST, {
     ...options,
     refetchQueries: ['GetFriendRequests'],
   });
 
-  const [mutateDelete] = useMutation<
-    DeleteFriendRequestData,
-    DeleteFriendRequestVariables
-  >(DELETE_FRIEND_REQUEST, {
+  const [mutateDelete] = useMutation(DELETE_FRIEND_REQUEST, {
     ...options,
     refetchQueries: ['GetFriendRequests'],
   });

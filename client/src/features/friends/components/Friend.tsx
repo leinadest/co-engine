@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 import TrackerLink from '@/components/TrackerLink';
-import ProfilePic from '@/components/users/ProfilePic';
+import Avatar from '@/components/Avatar';
 
 export interface FriendProps {
   id: string;
@@ -26,11 +26,7 @@ export default function Friend({
   return (
     <div className="flex items-center gap-2 p-2">
       <Link href={`/home/user/${id}`}>
-        <ProfilePic
-          src={profilePicUrl}
-          defaultSrc={'/person.png'}
-          alt="friend"
-        />
+        <Avatar src={profilePicUrl} defaultSrc={'/person.png'} alt="friend" />
       </Link>
       <div className="mr-auto">
         <Link

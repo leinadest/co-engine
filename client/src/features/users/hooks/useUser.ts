@@ -1,6 +1,6 @@
 import { QueryHookOptions, useQuery } from '@apollo/client';
 
-import { GET_USER } from '../queries/getUser';
+import { GET_USER } from '../../../graphql/queries/getUser';
 
 export default function useUser(
   userId: string,

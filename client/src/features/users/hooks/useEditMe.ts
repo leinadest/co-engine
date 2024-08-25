@@ -1,7 +1,10 @@
 import { MutationHookOptions, useMutation } from '@apollo/client';
 
-import EDIT_ME, { EditMeResult, EditMeVariables } from '../mutations/editUser';
-import { GET_ME } from '../queries/getMe';
+import EDIT_ME, {
+  EditMeResult,
+  EditMeVariables,
+} from '../../../graphql/mutations/editUser';
+import { GET_ME } from '../../../graphql/queries/getMe';
 
 export default function useEditMe(
   options?: MutationHookOptions<EditMeResult, EditMeVariables>
@@ -9,8 +12,11 @@ export default function useEditMe(
   const [mutate, { data, loading, error }] = useMutation(EDIT_ME, {
     ...options,
     update(cache, { data }) {
+      if (!data || !data.editMe) {
+        return;
+      }
       cache.updateQuery({ query: GET_ME }, (prevData) => {
-        if (!prevData || !data || !data.editMe) {
+        if (!prevData) {
           return prevData;
         }
         return { me: { ...prevData.me, ...data.editMe } };

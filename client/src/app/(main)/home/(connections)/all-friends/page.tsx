@@ -27,13 +27,13 @@ export default function AllFriends() {
     );
   }
 
-  const friends = data.friends.edges.map((edge) =>
+  const friends = data.edges.map((edge) =>
     snakeToCamel(edge.node)
   ) as FriendProps[];
 
   return (
     <main className="p-2 pt-4 overflow-auto">
-      <h5 className="text-center">All Friends ({data.friends.totalCount})</h5>
+      <h5 className="text-center">All Friends ({data.totalCount})</h5>
       <FriendList friends={friends} />
     </main>
   );

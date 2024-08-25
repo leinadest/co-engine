@@ -55,8 +55,8 @@ export default function AllFriends() {
     );
   }
 
-  const incomingResult = incomingRequestsQuery.data.userFriendRequests;
-  const outgoingResult = outgoingRequestsQuery.data.userFriendRequests;
+  const incomingResult = incomingRequestsQuery.data;
+  const outgoingResult = outgoingRequestsQuery.data;
 
   const incomingRequests = incomingResult.data.map((friendRequest) =>
     snakeToCamel(friendRequest)

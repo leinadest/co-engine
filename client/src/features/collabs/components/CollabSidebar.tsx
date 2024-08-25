@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import TrackerLink from '@/components/TrackerLink';
 import { useEffect, useState } from 'react';
-import ProfilePic from '@/components/users/ProfilePic';
+import Avatar from '@/components/Avatar';
 
 export default function CollabSideBar() {
   const [currentContext, setCurrentContext] = useState<string>();
@@ -25,18 +25,18 @@ export default function CollabSideBar() {
               currentContext ? 'active' : ''
             }`}
           >
-            <ProfilePic defaultSrc="/home.png" alt="home" />
+            <Avatar defaultSrc="/home.png" alt="home" />
           </TrackerLink>
         </li>
         <hr className="mt-0 mb-2 mx-2 self-stretch border-t-2 border-bgSecondary" />
         <li>
           <button className="collab relative mx-auto focus:outline-none">
-            <ProfilePic defaultSrc="/add.svg" alt="add" />
+            <Avatar defaultSrc="/add.svg" alt="add" />
           </button>
         </li>
         <li>
           <button className="collab mx-auto focus:outline-none">
-            <ProfilePic defaultSrc="/explore.png" alt="explore" />
+            <Avatar defaultSrc="/explore.png" alt="explore" />
           </button>
         </li>
       </ol>

@@ -1,4 +1,4 @@
-import ProfilePic from '@/components/users/ProfilePic';
+import Avatar from '@/components/Avatar';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -36,7 +36,7 @@ export default function Message({
   return (
     <div className="flex px-2 gap-4">
       <Link href={`/home/user/${creator.id}`} className="shrink-0">
-        <ProfilePic
+        <Avatar
           src={creator.profilePicUrl}
           defaultSrc={'/person.png'}
           alt="user"

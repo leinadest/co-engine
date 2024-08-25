@@ -1,4 +1,4 @@
-import ProfilePic from '@/components/users/ProfilePic';
+import Avatar from '@/components/Avatar';
 
 export interface BlockProps {
   id: string;
@@ -15,7 +15,7 @@ export default function Block({
 }: BlockProps) {
   return (
     <div className="flex items-center gap-2 p-2">
-      <ProfilePic src={profilePicUrl} defaultSrc={'/person.png'} alt="block" />
+      <Avatar src={profilePicUrl} defaultSrc={'/person.png'} alt="block" />
       <h5>
         {username}#{discriminator}
       </h5>
