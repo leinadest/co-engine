@@ -12,10 +12,22 @@ class UserBlock extends Model {
     user_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     blocked_user_id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     created_at: {
       type: DataTypes.DATE,

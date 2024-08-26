@@ -1,4 +1,10 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  DataTypes,
+  Model,
+  type ModelAttributes,
+  type Optional,
+  Sequelize,
+} from 'sequelize';
 
 import sequelize from '../../config/sequelize';
 
@@ -8,7 +14,10 @@ class UserFriendRequest extends Model {
   declare receiver_id: number;
   declare created_at: Date;
 
-  static schemaDetails = {
+  static schemaDetails: ModelAttributes<
+    UserFriendRequest,
+    Optional<any, never>
+  > = {
     sender_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -17,6 +26,8 @@ class UserFriendRequest extends Model {
         model: 'users',
         key: 'id',
       },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     receiver_id: {
       type: DataTypes.INTEGER,
@@ -26,6 +37,8 @@ class UserFriendRequest extends Model {
         model: 'users',
         key: 'id',
       },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     created_at: {
       type: DataTypes.DATE,

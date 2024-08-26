@@ -16,6 +16,8 @@ class UserFriendship extends Model {
         model: 'users',
         key: 'id',
       },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
     friend_id: {
       type: DataTypes.INTEGER,
@@ -25,6 +27,8 @@ class UserFriendship extends Model {
         model: 'users',
         key: 'id',
       },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
   };
 }
