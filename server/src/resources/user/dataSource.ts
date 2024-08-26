@@ -139,9 +139,24 @@ class UsersDataSource {
 
     // Initialize query for the next messages to paginate after the cursor
     let paginationWhere: WhereOptions<User> = {};
-    const op = orderDirection === 'DESC' ? Op.lt : Op.gt;
     if (after !== undefined) {
-      paginationWhere = { [orderBy]: { [op]: decodeCursor(after) } };
+      const op = orderDirection === 'DESC' ? Op.lt : Op.gt;
+      const cursor = decodeCursor(after);
+      paginationWhere = {
+        [Op.and]: [
+          {
+            [Op.or]: [
+              {
+                [orderBy]: { [op]: cursor[orderBy] },
+              },
+              {
+                [orderBy]: cursor[orderBy],
+                id: { [op]: cursor.id },
+              },
+            ],
+          },
+        ],
+      };
     }
 
     // Execute total-count query
@@ -160,17 +175,24 @@ class UsersDataSource {
         model: User,
         as: 'usersOfFriend',
         where: { id: this.authService.getUserId() },
+        attributes: [],
       },
-      where: paginationWhere,
+      where: {
+        ...filterWhere,
+        ...paginationWhere,
+      },
       attributes: { exclude: ['password_hash', 'email'] },
-      order: [[orderBy, orderDirection]],
+      order: [
+        [orderBy, orderDirection],
+        ['id', orderDirection],
+      ],
       limit: first,
       subQuery: false,
     });
 
     // Generate edges and page info
     const edges = friends.map((friend) => ({
-      cursor: encodeCursor(friend[orderBy]),
+      cursor: encodeCursor({ id: friend.id, [orderBy]: friend[orderBy] }),
       node: friend.toJSON(),
     }));
 
@@ -185,17 +207,17 @@ class UsersDataSource {
   }
 
   async getBlocked({
-    search,
-    orderBy = 'blocked_at',
-    orderDirection = 'DESC',
     after,
     first = 10,
+    orderBy = 'blocked_at',
+    orderDirection = 'DESC',
+    search,
   }: {
-    search?: string;
-    orderBy?: string;
-    orderDirection?: string;
     after?: string;
     first?: number;
+    orderBy?: string;
+    orderDirection?: string;
+    search?: string;
   }): Promise<RelayConnection<User>> {
     // Initialize query for the next messages to paginate after the cursor
     const queryByBlocks = orderBy === 'blocked_at';

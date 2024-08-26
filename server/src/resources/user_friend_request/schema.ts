@@ -13,9 +13,15 @@ const typeDefs = gql`
     created_at: DateTime!
   }
 
-  type UserFriendRequests {
-    data: [UserFriendRequest!]!
-    meta: Meta!
+  type UserFriendRequestEdge {
+    cursor: String!
+    node: UserFriendRequest!
+  }
+
+  type UserFriendRequestConnection {
+    totalCount: Int!
+    edges: [UserFriendRequestEdge!]!
+    pageInfo: PageInfo!
   }
 `;
 

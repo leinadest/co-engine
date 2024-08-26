@@ -1,14 +1,10 @@
 import {
   ApolloClient,
-  ApolloLink,
   InMemoryCache,
   createHttpLink,
   split,
 } from '@apollo/client';
-import {
-  offsetLimitPagination,
-  relayStylePagination,
-} from '@apollo/client/utilities';
+import { relayStylePagination } from '@apollo/client/utilities';
 import { setContext } from '@apollo/client/link/context';
 import { getMainDefinition } from '@apollo/client/utilities';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
@@ -51,12 +47,19 @@ export function createApolloClient() {
     typePolicies: {
       Query: {
         fields: {
-          blocked: relayStylePagination(),
-          chats: relayStylePagination(),
-          friends: relayStylePagination(),
+          userBlocks: relayStylePagination(),
+          friends: relayStylePagination(['status']),
           messages: relayStylePagination(),
-          userFriendRequests: { ...offsetLimitPagination(), keyArgs: ['type'] },
+          userFriendRequests: relayStylePagination(['type']),
           users: relayStylePagination(),
+        },
+      },
+      User: {
+        fields: { chats: relayStylePagination() },
+      },
+      Chat: {
+        fields: {
+          messages: relayStylePagination(),
         },
       },
     },

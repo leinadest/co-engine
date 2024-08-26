@@ -1,37 +1,33 @@
 import gql from 'graphql-tag';
 import * as yup from 'yup';
-import { GraphQLError } from 'graphql';
 
 import { type Context } from '../../config/apolloServer';
+import { GraphQLError } from 'graphql';
 
 const typeDefs = gql`
   extend type Query {
     """
-    Returns the friend requests of the authenticated user.
+    Returns the user blocks of the authenticated user.
     """
-    userFriendRequests(
-      type: String
+    userBlocks(
       after: String
       first: Int
       orderBy: String
       orderDirection: String
-    ): UserFriendRequestConnection!
+      search: String
+    ): UserBlockConnection!
   }
 `;
 
-interface UserFriendRequestsInput {
-  type?: string;
+interface UserBlocksInput {
   after?: string;
   first?: number;
   orderBy?: string;
   orderDirection?: string;
+  search?: string;
 }
 
-const userFriendRequestInputSchema = yup.object().shape({
-  type: yup
-    .string()
-    .trim()
-    .oneOf(['sent', 'received'], 'Type must be sent or received'),
+const userBlocksInputSchema = yup.object().shape({
   after: yup.string().trim(),
   first: yup
     .number()
@@ -40,21 +36,25 @@ const userFriendRequestInputSchema = yup.object().shape({
   orderBy: yup
     .string()
     .trim()
-    .oneOf(['username, created_at'], 'orderBy must be username or created_at'),
+    .oneOf(
+      ['username', 'created_at'],
+      'orderBy must be username or created_at'
+    ),
   orderDirection: yup
     .string()
     .trim()
     .oneOf(['ASC', 'DESC'], 'orderDirection must be ASC or DESC'),
+  search: yup.string().trim(),
 });
 
 const resolvers = {
   Query: {
-    userFriendRequests: async (
+    userBlocks: async (
       _: any,
-      args: UserFriendRequestsInput,
+      args: UserBlocksInput,
       { authService, dataSources }: Context
     ) => {
-      await userFriendRequestInputSchema.validate(args);
+      await userBlocksInputSchema.validate(args);
 
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
@@ -62,7 +62,7 @@ const resolvers = {
         });
       }
 
-      return await dataSources.friendRequestsDB.getFriendRequests(args);
+      return await dataSources.blocksDB.getUserBlocks(args);
     },
   },
 };

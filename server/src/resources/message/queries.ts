@@ -7,20 +7,18 @@ import Chat from '../chat/model';
 import { User } from '..';
 
 export const typeDefs = gql`
-  input MessagesInput {
-    contextType: String!
-    contextId: String!
-    orderDirection: String
-    orderBy: String
-    after: String
-    first: Int
-  }
-
   extend type Query {
     """
     Returns messages from the specified context
     """
-    messages(query: MessagesInput!): MessageConnection!
+    messages(
+      contextType: String!
+      contextId: String!
+      orderDirection: String
+      orderBy: String
+      after: String
+      first: Int
+    ): MessageConnection!
   }
 `;
 
@@ -55,16 +53,10 @@ export const resolvers = {
     // TODO: Implement channel context and permission checks
     messages: async (
       _parent: any,
-      { query }: { query: MessagesInput },
+      args: MessagesInput,
       { authService, dataSources }: Context
     ) => {
-      try {
-        await messagesInputSchema.validate(query);
-      } catch (error: any) {
-        throw new GraphQLError(error.message as string, {
-          extensions: { code: 'BAD_USER_INPUT' },
-        });
-      }
+      await messagesInputSchema.validate(args);
 
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
@@ -72,14 +64,14 @@ export const resolvers = {
         });
       }
 
-      const context = query.contextType === 'chat' ? Chat : Chat;
-      const contextAlias = query.contextType === 'chat' ? 'chats' : 'chats';
+      const context = args.contextType === 'chat' ? Chat : Chat;
+      const contextAlias = args.contextType === 'chat' ? 'chats' : 'chats';
 
       const user = (await User.findOne({
         include: {
           model: context,
           as: contextAlias,
-          where: { id: query.contextId },
+          where: { id: args.contextId },
         },
         where: { id: authService.getUserId() },
       })) as unknown as (User & Record<string, any>) | null;
@@ -90,7 +82,7 @@ export const resolvers = {
         });
       }
 
-      const messages = await dataSources.messagesDB.getMessages(query);
+      const messages = await dataSources.messagesDB.getMessages(args);
       return messages;
     },
   },

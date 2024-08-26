@@ -1,6 +1,6 @@
 import Skeleton from '@/components/skeletons/Skeleton';
 
-export default function Message() {
+export default function SkeletonMessage() {
   return (
     <div className="flex px-2 gap-4">
       <Skeleton type="avatar" />

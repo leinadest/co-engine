@@ -1,11 +1,12 @@
-import { type FindOptions, Op } from 'sequelize';
+import { type Includeable, Op, type WhereOptions } from 'sequelize';
 
 import { User, UserFriendRequest, UserFriendship } from '..';
 import type UsersDataSource from '../user/dataSource';
 import type AuthService from '../../services/authService';
 import { GraphQLError } from 'graphql';
 import sequelize from '../../config/sequelize';
-import { type LimitOffsetResult } from '../../utils/types';
+import { type RelayConnection } from '../../utils/types';
+import { decodeCursor, encodeCursor } from '../../utils/pagination';
 
 class UserFriendRequestsDataSource {
   private readonly usersDB: UsersDataSource;
@@ -18,62 +19,105 @@ class UserFriendRequestsDataSource {
 
   async getFriendRequests({
     type = 'received',
+    after,
+    first = 10,
     orderBy = 'created_at',
     orderDirection = 'DESC',
-    limit = 10,
-    offset = 0,
   }: {
     type?: string;
+    after?: string;
+    first?: number;
     orderBy?: string;
     orderDirection?: string;
-    limit?: number;
-    offset?: number;
-  }): Promise<LimitOffsetResult<UserFriendRequest>> {
-    const query: FindOptions<any> = {
-      include: {},
-      where: {},
-      order: [[orderBy, orderDirection]],
-      limit,
-      offset,
-    };
+  }): Promise<RelayConnection<UserFriendRequest>> {
+    let include: Includeable = {};
+    let where: WhereOptions<any> = {};
 
     if (type === 'received') {
       const { blockedUserIds } = await this.usersDB.getBlockedInfo();
-      query.include = {
+      include = {
         model: User,
         as: 'sender',
-        where: {
-          id: { [Op.notIn]: blockedUserIds },
-        },
+        where: { id: { [Op.notIn]: blockedUserIds } },
         attributes: ['id', 'username', 'discriminator', 'profile_pic_url'],
       };
-      query.where = {
+      where = {
         receiver_id: this.authService.getUserId(),
       };
     }
 
     if (type === 'sent') {
-      query.include = {
+      include = {
         model: User,
         as: 'receiver',
         attributes: ['id', 'username', 'discriminator', 'profile_pic_url'],
       };
-      query.where = {
+      where = {
         sender_id: this.authService.getUserId(),
       };
     }
 
-    const { count, rows } = await UserFriendRequest.findAndCountAll(query);
+    let paginationWhere: WhereOptions<any> = {};
 
-    return {
-      data: rows,
-      meta: {
-        totalCount: count,
-        page: Math.floor(offset / limit),
-        pageSize: limit,
-        totalPages: Math.floor(count / limit),
-      },
+    if (after !== undefined) {
+      const op = orderDirection === 'DESC' ? Op.lt : Op.gt;
+      const cursor = decodeCursor(after);
+      // console.log(JSON.stringify(cursor, null, 2));
+      paginationWhere = {
+        [Op.and]: [
+          {
+            [Op.or]: [
+              { [orderBy]: { [op]: cursor[orderBy] } },
+              {
+                [Op.and]: [
+                  { [orderBy]: cursor[orderBy] },
+                  { sender_id: { [op]: cursor.sender_id } },
+                ],
+              },
+              {
+                [Op.and]: [
+                  { [orderBy]: cursor[orderBy] },
+                  { receiver_id: { [op]: cursor.receiver_id } },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+    }
+
+    const [totalCount, friendRequests] = await Promise.all([
+      UserFriendRequest.count({ include, where }),
+      UserFriendRequest.findAll({
+        include,
+        where: { [Op.and]: [where, paginationWhere] },
+        order: [
+          [orderBy, orderDirection],
+          ['sender_id', orderDirection],
+          ['receiver_id', orderDirection],
+        ],
+        limit: first,
+      }),
+    ]);
+
+    const edges = friendRequests.map((friendRequest) => ({
+      ...(console.log(friendRequest.created_at), {}),
+      cursor: encodeCursor({
+        [orderBy]: friendRequest[orderBy],
+        sender_id: friendRequest.sender_id,
+        receiver_id: friendRequest.receiver_id,
+      }),
+      node: friendRequest.toJSON(),
+    }));
+
+    const pageInfo = {
+      hasNextPage: edges.length > 0,
+      endCursor: edges[edges.length - 1]?.cursor,
+      hasPreviousPage: false,
+      startCursor: edges[0]?.cursor,
     };
+
+    return { totalCount, edges, pageInfo };
   }
 
   async acceptFriendRequest(userId: string | number): Promise<boolean> {

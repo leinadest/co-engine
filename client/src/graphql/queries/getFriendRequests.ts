@@ -1,9 +1,8 @@
+import { RelayConnection } from '@/types/api';
 import { gql, TypedDocumentNode } from '@apollo/client';
 
-import { LimitOffsetResult } from '@/types/api';
-
 export interface GetFriendRequestsResult {
-  userFriendRequests: LimitOffsetResult<{
+  userFriendRequests: RelayConnection<{
     sender: {
       id: string;
       username: string;
@@ -21,41 +20,53 @@ export interface GetFriendRequestsResult {
 }
 
 export interface GetFriendRequestsVariables {
-  query: {
-    type?: string;
-    orderBy?: string;
-    orderDirection?: string;
-    after?: string;
-    first?: number;
-  };
+  type?: 'sent' | 'received';
+  orderBy?: string;
+  orderDirection?: string;
+  after?: string;
+  first?: number;
 }
 
 const GET_FRIEND_REQUESTS: TypedDocumentNode<
   GetFriendRequestsResult,
   GetFriendRequestsVariables
 > = gql`
-  query GetFriendRequests($query: UserFriendRequestsInput) {
-    userFriendRequests(query: $query) {
-      data {
-        sender {
-          id
-          username
-          discriminator
-          profile_pic_url
+  query GetFriendRequests(
+    $after: String
+    $first: Int
+    $orderBy: String
+    $orderDirection: String
+    $type: String
+  ) {
+    userFriendRequests(
+      after: $after
+      first: $first
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      type: $type
+    ) {
+      totalCount
+      edges {
+        cursor
+        node {
+          sender {
+            id
+            username
+            discriminator
+            profile_pic_url
+          }
+          receiver {
+            id
+            username
+            discriminator
+            profile_pic_url
+          }
+          created_at
         }
-        receiver {
-          id
-          username
-          discriminator
-          profile_pic_url
-        }
-        created_at
       }
-      meta {
-        totalCount
-        page
-        pageSize
-        totalPages
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
   }

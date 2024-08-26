@@ -1,5 +1,6 @@
 import React, {
   ComponentType,
+  ReactNode,
   UIEvent,
   useLayoutEffect,
   useRef,
@@ -7,16 +8,20 @@ import React, {
 } from 'react';
 
 interface ListProps {
+  top?: ReactNode;
   item: ComponentType<any>;
   data: any[];
+  getKey?: (item: any) => string;
   startAtBottom?: boolean;
   onEndReached?: () => void;
   className?: string;
 }
 
 export default function List({
+  top: heading,
   item: Item,
   data,
+  getKey = (item: any) => item.id,
   startAtBottom,
   onEndReached,
   className,
@@ -52,8 +57,9 @@ export default function List({
       onScroll={onScroll}
       className={className + ' size-full overflow-auto'}
     >
+      {heading}
       {data.map((itemData) => (
-        <li key={itemData.id}>
+        <li key={getKey(itemData)}>
           <Item {...itemData} />
         </li>
       ))}

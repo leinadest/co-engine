@@ -6,16 +6,32 @@ import GET_FRIEND_REQUESTS, {
 } from '@/graphql/queries/getFriendRequests';
 
 export default function useFriendRequests(
-  kind: 'incoming' | 'outgoing' = 'incoming',
   options?: QueryHookOptions<
     GetFriendRequestsResult,
     GetFriendRequestsVariables
   >
 ) {
-  const type = kind === 'incoming' ? 'received' : 'sent';
-  const { data, loading, error } = useQuery(GET_FRIEND_REQUESTS, {
-    ...options,
-    variables: { query: { type } },
-  });
-  return { data: data?.userFriendRequests, loading, error };
+  const { data, loading, error, fetchMore, variables } = useQuery(
+    GET_FRIEND_REQUESTS,
+    {
+      ...options,
+      notifyOnNetworkStatusChange: true,
+      skip: !options?.variables?.type,
+    }
+  );
+
+  function handleFetchMore() {
+    const canFetchMore =
+      data?.userFriendRequests.pageInfo.hasNextPage && !loading;
+    if (!canFetchMore) return;
+    const endCursor = data?.userFriendRequests.pageInfo.endCursor;
+    fetchMore({ variables: { ...variables, after: endCursor } });
+  }
+
+  return {
+    data: data?.userFriendRequests,
+    loading,
+    error,
+    fetchMore: handleFetchMore,
+  };
 }

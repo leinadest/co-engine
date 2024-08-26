@@ -1,17 +1,18 @@
 import Avatar from '@/components/Avatar';
 
 export interface BlockProps {
-  id: string;
-  username: string;
-  discriminator: string;
-  profilePicUrl: string;
+  blockedUser: {
+    id: string;
+    username: string;
+    discriminator: string;
+    profilePicUrl: string;
+  };
+  createdAt: Date;
 }
 
 export default function Block({
-  id,
-  username,
-  discriminator,
-  profilePicUrl,
+  blockedUser: { id, username, discriminator, profilePicUrl },
+  createdAt,
 }: BlockProps) {
   return (
     <div className="flex items-center gap-2 p-2">

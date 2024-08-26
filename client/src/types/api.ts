@@ -16,8 +16,8 @@ export interface RelayConnection<T> {
   pageInfo: PageInfo;
 }
 
-export interface LimitOffsetResult<T> {
-  data: T[];
+export interface OffsetLimitResult<TItem> {
+  items: TItem[];
   meta: {
     totalCount: number;
     page: number;

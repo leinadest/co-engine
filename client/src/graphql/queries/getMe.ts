@@ -23,17 +23,21 @@ export interface GetMeResult {
 }
 
 export interface GetMeVariables {
-  chatsQuery: {
-    search?: string;
-    orderBy?: string;
-    orderDirection?: string;
-    after?: string;
-    first?: number;
-  };
+  after?: string;
+  first?: number;
+  search?: string;
+  orderBy?: string;
+  orderDirection?: string;
 }
 
 export const GET_ME: TypedDocumentNode<GetMeResult, GetMeVariables> = gql`
-  query GetMe($chatsQuery: ChatsInput) {
+  query GetMe(
+    $after: String
+    $first: Int
+    $search: String
+    $orderBy: String
+    $orderDirection: String
+  ) {
     me {
       id
       created_at
@@ -43,7 +47,13 @@ export const GET_ME: TypedDocumentNode<GetMeResult, GetMeVariables> = gql`
       profile_pic
       profile_pic_url
       bio
-      chats(query: $chatsQuery) {
+      chats(
+        after: $after
+        first: $first
+        search: $search
+        orderBy: $orderBy
+        orderDirection: $orderDirection
+      ) {
         edges {
           cursor
           node {

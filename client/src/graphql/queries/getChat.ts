@@ -30,16 +30,20 @@ export interface GetChatData {
 
 export interface GetChatVariables {
   id: string;
-  messagesQuery?: {
-    orderDirection?: string;
-    orderBy?: string;
-    after?: string;
-    first?: number;
-  };
+  after?: string;
+  first?: number;
+  orderDirection?: string;
+  orderBy?: string;
 }
 
 export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
-  query GetChat($id: ID!, $messagesQuery: ChatMessagesInput) {
+  query GetChat(
+    $id: ID!
+    $after: String
+    $first: Int
+    $orderDirection: String
+    $orderBy: String
+  ) {
     chat(id: $id) {
       id
       name
@@ -50,7 +54,12 @@ export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
         discriminator
         profile_pic_url
       }
-      messages(query: $messagesQuery) {
+      messages(
+        after: $after
+        first: $first
+        orderDirection: $orderDirection
+        orderBy: $orderBy
+      ) {
         edges {
           cursor
           node {

@@ -7,14 +7,12 @@ import {
 } from '../../../graphql/queries/getChat';
 
 export default function useChat(
-  chatId: string,
   options?: QueryHookOptions<GetChatResult, GetChatVariables>
 ) {
-  const { data, loading, error, fetchMore } = useQuery(GET_CHAT, {
+  const { data, loading, error, fetchMore, variables } = useQuery(GET_CHAT, {
     ...options,
-    variables: { id: chatId },
     notifyOnNetworkStatusChange: true,
-    skip: !chatId,
+    skip: options?.variables?.id === undefined,
   });
 
   function fetchMoreMessages() {
@@ -24,22 +22,22 @@ export default function useChat(
     if (!canFetchMore) return;
 
     fetchMore({
-      variables: { messagesQuery: { after: endCursor } },
-      updateQuery: (previousResult, { fetchMoreResult }) => {
-        const newEdges = fetchMoreResult?.chat.messages.edges;
-        const newPageInfo = fetchMoreResult?.chat.messages.pageInfo;
-        return {
-          ...previousResult,
-          chat: {
-            ...previousResult.chat,
-            messages: {
-              ...previousResult.chat.messages,
-              edges: [...previousResult.chat.messages.edges, ...newEdges],
-              pageInfo: newPageInfo,
-            },
-          },
-        };
-      },
+      variables: { ...variables, after: endCursor },
+      // updateQuery: (previousResult, { fetchMoreResult }) => {
+      //   const newEdges = fetchMoreResult?.chat.messages.edges;
+      //   const newPageInfo = fetchMoreResult?.chat.messages.pageInfo;
+      //   return {
+      //     ...previousResult,
+      //     chat: {
+      //       ...previousResult.chat,
+      //       messages: {
+      //         ...previousResult.chat.messages,
+      //         edges: [...previousResult.chat.messages.edges, ...newEdges],
+      //         pageInfo: newPageInfo,
+      //       },
+      //     },
+      //   };
+      // },
     });
   }
 

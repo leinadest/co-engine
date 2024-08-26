@@ -5,15 +5,20 @@ import GET_FRIENDS, {
   GetFriendsVariables,
 } from '@/graphql/queries/getFriends';
 
-interface useFriendsArgs
-  extends QueryHookOptions<GetFriendsResult, GetFriendsVariables> {
-  status?: 'online' | 'offline';
-}
-
-export default function useFriends(options?: useFriendsArgs) {
-  const { data, loading, error } = useQuery(GET_FRIENDS, {
+export default function useFriends(
+  options?: QueryHookOptions<GetFriendsResult, GetFriendsVariables>
+) {
+  const { data, loading, error, fetchMore, variables } = useQuery(GET_FRIENDS, {
     ...options,
-    variables: { query: { status: options?.status } },
+    notifyOnNetworkStatusChange: true,
   });
-  return { data: data?.friends, loading, error };
+
+  function handleFetchMore() {
+    const canFetchMore = data?.friends.pageInfo.hasNextPage && !loading;
+    if (!canFetchMore) return;
+    const endCursor = data?.friends.pageInfo.endCursor;
+    fetchMore({ variables: { ...variables, after: endCursor } });
+  }
+
+  return { data: data?.friends, loading, error, fetchMore: handleFetchMore };
 }

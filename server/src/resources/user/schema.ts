@@ -8,6 +8,13 @@ import { type ChatsInput } from '../chat/queries';
 import type User from './model';
 
 const typeDefs = gql`
+  type UserInfo {
+    id: ID!
+    username: String
+    discriminator: String
+    profile_pic_url: String
+  }
+
   type PublicUser {
     id: ID!
     username: String!
@@ -42,7 +49,13 @@ const typeDefs = gql`
     profile_pic: String
     profile_pic_url: String
     bio: String
-    chats(query: ChatsInput): ChatConnection!
+    chats(
+      search: String
+      orderBy: String
+      orderDirection: String
+      after: String
+      first: Int
+    ): ChatConnection!
   }
 
   type UserEdge {
@@ -112,12 +125,8 @@ export const UserFields = gql`
 
 const resolvers = {
   User: {
-    chats: async (
-      _: User,
-      { query }: { query: ChatsInput },
-      { dataSources }: Context
-    ) => {
-      return await dataSources.chatsDB.getChats(query ?? {});
+    chats: async (_: User, args: ChatsInput, { dataSources }: Context) => {
+      return await dataSources.chatsDB.getChats(args);
     },
   },
 };

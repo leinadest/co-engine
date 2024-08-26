@@ -5,9 +5,9 @@ export interface Edge<T> {
 
 interface PageInfo {
   hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  startCursor: string;
-  endCursor: string;
+  hasPreviousPage?: boolean;
+  startCursor?: string;
+  endCursor?: string;
 }
 
 export interface RelayConnection<T> {
@@ -16,8 +16,8 @@ export interface RelayConnection<T> {
   pageInfo: PageInfo;
 }
 
-export interface LimitOffsetResult<T> {
-  data: T[];
+export interface OffsetLimitResult<TItem> {
+  items: TItem[];
   meta: {
     totalCount: number;
     page: number;

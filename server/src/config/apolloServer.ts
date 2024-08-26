@@ -16,6 +16,7 @@ import UsersDataSource from '../resources/user/dataSource';
 import MessagesDataSource from '../resources/message/dataSource';
 import UserFriendRequestsDataSource from '../resources/user_friend_request/dataSource';
 import ChatsDataSource from '../resources/chat/dataSource';
+import UserBlocksDataSource from '../resources/user_block/dataSource';
 
 export interface Context {
   sequelize: Sequelize;
@@ -25,6 +26,7 @@ export interface Context {
     messagesDB: MessagesDataSource;
     friendRequestsDB: UserFriendRequestsDataSource;
     chatsDB: ChatsDataSource;
+    blocksDB: UserBlocksDataSource;
   };
 }
 
@@ -90,6 +92,7 @@ export const expressMiddlewareConfig: WithRequired<
       authService
     );
     const chatsDB = new ChatsDataSource(authService, usersDB);
+    const blocksDB = new UserBlocksDataSource(authService);
 
     return {
       sequelize,
@@ -99,6 +102,7 @@ export const expressMiddlewareConfig: WithRequired<
         messagesDB,
         friendRequestsDB,
         chatsDB,
+        blocksDB,
       },
     };
   },

@@ -1,40 +1,53 @@
 'use client';
 
+import List from '@/components/common/List';
 import Skeleton from '@/components/skeletons/Skeleton';
-import { FriendProps } from '@/features/friends/components/Friend';
-import FriendList from '@/features/friends/components/FriendList';
-import SkeletonFriendList from '@/features/friends/components/SkeletonFriendList';
+import SkeletonList from '@/components/skeletons/SkeletonList';
+import Friend, { FriendProps } from '@/features/friends/components/Friend';
+import SkeletonFriend from '@/features/friends/components/SkeletonFriend';
 import useFriends from '@/features/friends/hooks/useFriends';
 import { snakeToCamel } from '@/utils/helpers';
+import { useEffect } from 'react';
 
 export default function OnlineFriends() {
-  const { data, loading, error } = useFriends({
-    status: 'online',
-    fetchPolicy: 'cache-and-network',
+  const { data, error, fetchMore } = useFriends({
+    variables: { status: 'online' },
   });
 
-  if (error) {
-    throw error;
-  }
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
 
-  if (loading || data === undefined) {
+  if (!data) {
     return (
-      <main className="p-2 pt-4 overflow-auto">
-        <Skeleton type="h5" className="mx-auto w-40" />
-        <SkeletonFriendList />
+      <main className="min-h-0">
+        <SkeletonList
+          top={
+            <Skeleton type="h5" className="mt-4 mb-2 shrink-0 mx-auto w-40" />
+          }
+          skeleton={<SkeletonFriend />}
+          className="p-2"
+        />
       </main>
     );
   }
 
   const totalCount = data.totalCount;
-  const onlineFriends = data.edges
-    .filter((edge) => edge.node.is_online)
-    .map((edge) => snakeToCamel(edge.node)) as FriendProps[];
+  const onlineFriends = data.edges.map((edge) => snakeToCamel(edge.node));
 
   return (
-    <main className="p-2 pt-4 overflow-auto">
-      <h5 className="text-center">Online Friends ({totalCount})</h5>
-      <FriendList friends={onlineFriends} />
+    <main className="min-h-0">
+      <List
+        top={
+          <h5 className="mt-4 mb-2 text-center">
+            Online Friends ({totalCount})
+          </h5>
+        }
+        item={Friend}
+        data={onlineFriends}
+        onEndReached={fetchMore}
+        className="p-2"
+      />
     </main>
   );
 }

@@ -1,5 +1,6 @@
-import SkeletonMessageList from '@/features/messages/components/SkeletonMessageList';
 import SkeletonChatIdentity from './[chatId]/ChatHeader/SkeletonChatIdentity';
+import SkeletonList from '@/components/skeletons/SkeletonList';
+import SkeletonMessage from '@/features/messages/components/SkeletonMessage';
 
 export default function SkeletonChatPage() {
   return (
@@ -8,7 +9,7 @@ export default function SkeletonChatPage() {
         <SkeletonChatIdentity />
       </header>
       <main className="grow p-2 border-t overflow-auto min-w-96">
-        <SkeletonMessageList />
+        <SkeletonList skeleton={<SkeletonMessage />} />
       </main>
       <div className="grow">
         <input

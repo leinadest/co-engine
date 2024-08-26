@@ -7,23 +7,6 @@ import type AuthService from '../../services/authService';
 import { type Context } from '../../config/apolloServer';
 
 const typeDefs = gql`
-  input UsersInput {
-    search: String
-    orderDirection: String
-    orderBy: String
-    after: String
-    first: Int
-  }
-
-  input FriendsInput {
-    status: String
-    search: String
-    orderDirection: String
-    orderBy: String
-    after: String
-    first: Int
-  }
-
   extend type Query {
     """
     Returns the authenticated user.
@@ -33,7 +16,13 @@ const typeDefs = gql`
     """
     Returns all users.
     """
-    users(query: UsersInput): PublicUserConnection!
+    users(
+      search: String
+      orderDirection: String
+      orderBy: String
+      after: String
+      first: Int
+    ): PublicUserConnection!
 
     """
     Returns the user with the specified ID or username and discriminator.
@@ -43,12 +32,14 @@ const typeDefs = gql`
     """
     Returns the friends of the authenticated user.
     """
-    friends(query: FriendsInput): PublicUserConnection!
-
-    """
-    Returns the users blocked by the authenticated user.
-    """
-    blocked(query: UsersInput): PublicUserConnection!
+    friends(
+      after: String
+      first: Int
+      status: String
+      search: String
+      orderDirection: String
+      orderBy: String
+    ): PublicUserConnection!
   }
 `;
 
@@ -123,13 +114,9 @@ const friendsInputSchema = usersInputSchema.shape({
 
 const resolvers = {
   Query: {
-    users: async (
-      _: any,
-      args: { query: UsersInput },
-      { dataSources }: Context
-    ) => {
-      await usersInputSchema.validate(args.query);
-      return await dataSources.usersDB.getUsers(args.query ?? {});
+    users: async (_: any, args: UsersInput, { dataSources }: Context) => {
+      await usersInputSchema.validate(args);
+      return await dataSources.usersDB.getUsers(args);
     },
     user: async (_: any, { id, username, discriminator }: UserInput) => {
       await userInputSchema.validate({ id, username, discriminator });
@@ -167,10 +154,10 @@ const resolvers = {
     },
     friends: async (
       _: any,
-      { query }: { query: FriendsInput },
+      args: FriendsInput,
       { authService, dataSources }: Context
     ) => {
-      await friendsInputSchema.validate(query);
+      await friendsInputSchema.validate(args);
 
       const userId = authService.getUserId();
       if (userId === null) {
@@ -179,23 +166,7 @@ const resolvers = {
         });
       }
 
-      return await dataSources.usersDB.getFriends(query ?? {});
-    },
-    blocked: async (
-      _: any,
-      { query }: { query: UsersInput },
-      { authService, dataSources }: Context
-    ) => {
-      await usersInputSchema.validate(query);
-
-      const userId = authService.getUserId();
-      if (userId === null) {
-        throw new GraphQLError('Not authenticated', {
-          extensions: { code: 'UNAUTHENTICATED' },
-        });
-      }
-
-      return await dataSources.usersDB.getBlocked(query ?? {});
+      return await dataSources.usersDB.getFriends(args);
     },
   },
 };

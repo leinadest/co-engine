@@ -9,7 +9,7 @@ import {
 export default function useMe(
   options?: QueryHookOptions<GetMeResult, GetMeVariables>
 ) {
-  const { data, loading, error, fetchMore } = useQuery(GET_ME, {
+  const { data, loading, error, fetchMore, variables } = useQuery(GET_ME, {
     ...options,
     notifyOnNetworkStatusChange: true,
   });
@@ -21,22 +21,22 @@ export default function useMe(
     if (!canFetchMore) return;
 
     fetchMore({
-      variables: { chatsQuery: { after: endCursor } },
-      updateQuery: (previousResult, { fetchMoreResult }) => {
-        const newEdges = fetchMoreResult?.me.chats.edges;
-        const newPageInfo = fetchMoreResult?.me.chats.pageInfo;
-        return {
-          ...previousResult,
-          me: {
-            ...previousResult.me,
-            chats: {
-              ...previousResult.me.chats,
-              edges: [...previousResult.me.chats.edges, ...newEdges],
-              pageInfo: newPageInfo,
-            },
-          },
-        };
-      },
+      variables: { ...variables, after: endCursor },
+      // updateQuery: (previousResult, { fetchMoreResult }) => {
+      //   const newEdges = fetchMoreResult?.me.chats.edges;
+      //   const newPageInfo = fetchMoreResult?.me.chats.pageInfo;
+      //   return {
+      //     ...previousResult,
+      //     me: {
+      //       ...previousResult.me,
+      //       chats: {
+      //         ...previousResult.me.chats,
+      //         edges: [...previousResult.me.chats.edges, ...newEdges],
+      //         pageInfo: newPageInfo,
+      //       },
+      //     },
+      //   };
+      // },
     });
   }
 

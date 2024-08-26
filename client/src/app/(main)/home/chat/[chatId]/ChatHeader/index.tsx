@@ -10,7 +10,7 @@ interface ChatHeaderProps {
 }
 
 export default function ChatHeader({ chatId }: ChatHeaderProps) {
-  const { data, error } = useChat(chatId);
+  const { data, error } = useChat({ variables: { id: chatId } });
 
   useEffect(() => {
     if (error) throw error;

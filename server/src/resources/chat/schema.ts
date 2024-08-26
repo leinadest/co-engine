@@ -7,20 +7,6 @@ import { type Context } from '../../config/apolloServer';
 import type Chat from './model';
 
 const types = gql`
-  type UserInfo {
-    id: ID!
-    username: String
-    discriminator: String
-    profile_pic_url: String
-  }
-
-  input ChatMessagesInput {
-    orderDirection: String
-    orderBy: String
-    after: String
-    first: Int
-  }
-
   type Chat {
     id: ID!
     creator_id: ID!
@@ -30,7 +16,12 @@ const types = gql`
     last_message_at: DateTime
     last_message: String
     users: [UserInfo!]!
-    messages(query: ChatMessagesInput): MessageConnection!
+    messages(
+      after: String
+      first: Int
+      orderDirection: String
+      orderBy: String
+    ): MessageConnection!
   }
 
   type ChatInfo {
@@ -71,11 +62,11 @@ const resolvers = {
     },
     messages: async (
       chat: Chat,
-      { query }: { query: ChatMessagesInput },
+      args: ChatMessagesInput,
       { dataSources }: Context
     ) => {
       return await dataSources.messagesDB.getMessages({
-        ...query,
+        ...args,
         contextId: chat.id,
         contextType: 'chat',
       });

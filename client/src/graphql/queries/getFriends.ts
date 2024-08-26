@@ -13,22 +13,34 @@ export interface GetFriendsResult {
 }
 
 export interface GetFriendsVariables {
-  query: {
-    status?: string;
-    search?: string;
-    orderDirection?: string;
-    orderBy?: string;
-    after?: string;
-    first?: number;
-  };
+  after?: string;
+  first?: number;
+  status?: string;
+  search?: string;
+  orderDirection?: string;
+  orderBy?: string;
 }
 
 const GET_FRIENDS: TypedDocumentNode<
   GetFriendsResult,
   GetFriendsVariables
 > = gql`
-  query GetFriends($query: FriendsInput) {
-    friends(query: $query) {
+  query GetFriends(
+    $after: String
+    $first: Int
+    $status: String
+    $search: String
+    $orderDirection: String
+    $orderBy: String
+  ) {
+    friends(
+      after: $after
+      first: $first
+      status: $status
+      search: $search
+      orderDirection: $orderDirection
+      orderBy: $orderBy
+    ) {
       edges {
         cursor
         node {

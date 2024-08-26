@@ -6,19 +6,17 @@ import { type Context } from '../../config/apolloServer';
 import { User, type Chat } from '..';
 
 const typeDefs = gql`
-  input ChatsInput {
-    search: String
-    orderBy: String
-    orderDirection: String
-    after: String
-    first: Int
-  }
-
   extend type Query {
     """
     Returns all chats that the authenticated user is in.
     """
-    chats(query: ChatsInput): ChatConnection!
+    chats(
+      after: String
+      first: Int
+      search: String
+      orderBy: String
+      orderDirection: String
+    ): ChatConnection!
 
     """
     Returns a single chat.
@@ -64,10 +62,10 @@ const resolvers = {
   Query: {
     chats: async (
       _: any,
-      { query }: { query: ChatsInput },
+      args: ChatsInput,
       { authService, dataSources }: Context
     ) => {
-      await chatsInputSchema.validate(query);
+      await chatsInputSchema.validate(args);
 
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
@@ -75,7 +73,7 @@ const resolvers = {
         });
       }
 
-      return await dataSources.chatsDB.getChats(query ?? {});
+      return await dataSources.chatsDB.getChats(args);
     },
     chat: async (
       _: any,

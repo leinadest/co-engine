@@ -46,7 +46,7 @@ UserBlock.belongsTo(User, {
   foreignKey: 'user_id',
 });
 UserBlock.belongsTo(User, {
-  as: 'blocked',
+  as: 'blockedUsers',
   foreignKey: 'blocked_user_id',
 });
 
