@@ -31,6 +31,11 @@
             "except": ["./auth"]
           },
           {
+            "target": "./src/features/blocked",
+            "from": "./src/features",
+            "except": ["./blocked"]
+          },
+          {
             "target": "./src/features/chats",
             "from": "./src/features",
             "except": ["./chats"]
@@ -39,6 +44,11 @@
             "target": "./src/features/collabs",
             "from": "./src/features",
             "except": ["./collabs"]
+          },
+          {
+            "target": "./src/features/friendRequests",
+            "from": "./src/features",
+            "except": ["./friendRequests"]
           },
           {
             "target": "./src/features/friends",

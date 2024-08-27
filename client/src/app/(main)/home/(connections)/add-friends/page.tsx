@@ -26,7 +26,7 @@ export default function AddFriends() {
   }
 
   return (
-    <main className="p-4 *:mb-2">
+    <main className="mx-auto p-4 w-full max-w-screen-lg *:mb-2">
       <h5>Add Friends</h5>
       <p>Search by username and discriminator to find users to befriend.</p>
       <form onSubmit={onSubmit} className="flex flex-wrap gap-4">

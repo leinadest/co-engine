@@ -28,7 +28,7 @@ export default function CollabSideBar() {
             <Avatar defaultSrc="/home.png" alt="home" />
           </TrackerLink>
         </li>
-        <hr className="mt-0 mb-2 mx-2 self-stretch border-t-2 border-bgSecondary" />
+        <hr className="mt-0 mb-2 mx-2 self-stretch border-t-2 border-bgSecondary dark:border-bgSecondary-dark" />
         <li>
           <button className="collab relative mx-auto focus:outline-none">
             <Avatar defaultSrc="/add.svg" alt="add" />

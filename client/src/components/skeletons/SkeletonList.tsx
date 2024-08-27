@@ -14,11 +14,13 @@ export default function SkeletonList({
   className,
 }: SkeletonListProps) {
   return (
-    <ul className={className + ' size-full overflow-auto'}>
-      {top}
-      {Array.from({ length }, (_, i) => {
-        return <li key={i}>{skeleton}</li>;
-      })}
-    </ul>
+    <div className="size-full overflow-auto">
+      <ul className={className}>
+        {top}
+        {Array.from({ length }, (_, i) => {
+          return <li key={i}>{skeleton}</li>;
+        })}
+      </ul>
+    </div>
   );
 }

@@ -25,7 +25,7 @@ export default function Avatar({
     <div
       className={
         className +
-        ' flex justify-center items-center size-12 rounded-full bg-bgSecondary'
+        ' flex justify-center items-center size-12 rounded-full bg-bgSecondary dark:bg-bgSecondary-dark'
       }
     >
       <Image src={defaultSrc} alt={alt ?? 'profile'} width={26} height={26} />

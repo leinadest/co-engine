@@ -20,7 +20,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const optionsList = Object.keys(navMap).map((option) => {
     const optionHref = `/home/${navMap[option as keyof typeof navMap]}`;
     const optionClassName = pathname.includes(optionHref)
-      ? 'btn-minimal brightness-95'
+      ? 'btn-minimal brightness-95 dark:brightness-150'
       : 'btn-minimal';
     return (
       <li key={option}>
@@ -33,7 +33,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex flex-col min-w-[480px]">
-      <nav className="p-4 border-b">
+      <nav className="p-4 border-b border-b-border dark:border-b-border-dark">
         <ul className="flex justify-evenly items-center">{optionsList}</ul>
       </nav>
       {children}

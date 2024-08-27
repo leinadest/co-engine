@@ -25,7 +25,7 @@ export default function AllFriends() {
             <Skeleton type="h5" className="mt-4 mb-2 shrink-0 mx-auto w-40" />
           }
           skeleton={<SkeletonFriend />}
-          className="p-2"
+          className="mx-auto p-2 max-w-screen-lg"
         />
       </main>
     );
@@ -44,7 +44,7 @@ export default function AllFriends() {
         item={Friend}
         data={friends}
         onEndReached={fetchMore}
-        className="p-2"
+        className="mx-auto p-2 max-w-screen-lg"
       />
     </main>
   );

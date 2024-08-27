@@ -34,7 +34,7 @@ export default function ChatPage({ params: { chatId } }: ChatPageProps) {
       .reverse() ?? [];
 
   return (
-    <main ref={mainRef} className="grow border-t min-w-96 min-h-0">
+    <main ref={mainRef} className="grow min-w-96 min-h-0">
       {chatQuery.data ? (
         <List
           item={Message}

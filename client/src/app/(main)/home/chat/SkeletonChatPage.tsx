@@ -8,7 +8,7 @@ export default function SkeletonChatPage() {
       <header className="flex items-center p-2 gap-6 overflow-clip">
         <SkeletonChatIdentity />
       </header>
-      <main className="grow p-2 border-t overflow-auto min-w-96">
+      <main className="grow p-2 overflow-auto min-w-96">
         <SkeletonList skeleton={<SkeletonMessage />} />
       </main>
       <div className="grow">

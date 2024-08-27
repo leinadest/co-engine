@@ -9,12 +9,12 @@ export interface UserProps {
 
 export default function User({ profilePicUrl, username }: UserProps) {
   return (
-    <div className="flex items-center gap-2 p-2 bg-bgSecondary">
+    <div className="flex items-center gap-2 p-2 bg-bgSecondary dark:bg-bgSecondary-dark">
       <Link href="/home/settings/profile">
         <Avatar
           src={profilePicUrl}
           defaultSrc={'/person.png'}
-          className="bg-bgSecondaryDark"
+          className="bg-bgSecondaryDark dark:bg-bgSecondaryDark-dark"
         />
       </Link>
       <p className="grow">{username}</p>

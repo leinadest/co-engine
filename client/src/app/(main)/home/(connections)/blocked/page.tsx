@@ -23,6 +23,7 @@ export default function Blocked() {
         <SkeletonList
           top={<Skeleton type="h5" className="mx-auto mt-4 w-40" />}
           skeleton={<SkeletonBlock />}
+          className="mx-auto p-2 max-w-screen-lg"
         />
       </main>
     );
@@ -38,6 +39,7 @@ export default function Blocked() {
         data={blocks}
         getKey={({ blockedUser }) => blockedUser.id}
         onEndReached={fetchMore}
+        className="mx-auto p-2 max-w-screen-lg"
       />
     </main>
   );

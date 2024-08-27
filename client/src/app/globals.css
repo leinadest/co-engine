@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply font-sans bg-bgPrimary text-textPrimary m-0 p-0 min-h-screen;
+    @apply m-0 p-0 min-h-screen font-sans bg-bgPrimary text-textPrimary dark:bg-bgPrimary-dark dark:text-textPrimary-dark;
   }
 
   h1,
@@ -41,7 +41,7 @@
   }
 
   p {
-    @apply text-textSecondary;
+    @apply text-textSecondary dark:text-textSecondary-dark;
   }
 
   button {
@@ -59,7 +59,7 @@
   [type='email'],
   [type='password'],
   textarea {
-    @apply px-2 py-1 rounded-md;
+    @apply px-2 py-1 rounded-md bg-bgSecondary dark:bg-bgSecondary-dark;
   }
 
   img {
@@ -78,6 +78,48 @@
   input::-webkit-file-upload-button {
     @apply mr-4 py-2 px-4 rounded-full border-0 bg-primary text-white cursor-pointer;
   }
+
+  .dark {
+    & .bg-bgPrimary {
+      @apply bg-bgPrimary-dark;
+    }
+
+    & .bg-bgSecondary {
+      @apply bg-bgSecondary-dark;
+    }
+
+    & .bg-bgSecondaryDark {
+      @apply bg-bgSecondaryDark-dark;
+    }
+
+    & .text-textPrimary {
+      @apply text-textPrimary-dark;
+    }
+
+    & .text-textSecondary {
+      @apply text-textSecondary-dark;
+    }
+
+    & .border {
+      @apply border-border-dark;
+    }
+
+    & ::-webkit-scrollbar {
+      @apply bg-bgSecondaryDark-dark;
+    }
+
+    & ::-webkit-scrollbar-thumb {
+      @apply bg-bgSecondary-dark;
+    }
+
+    & .focus-by-brightness {
+      @apply focus-by-brightness-dark;
+    }
+
+    & .focus-by-brighten {
+      @apply focus-by-brighten-dark;
+    }
+  }
 }
 
 @layer components {
@@ -91,11 +133,11 @@
   }
 
   .btn-disabled {
-    @apply bg-bgSecondaryDark text-white px-4 py-2 rounded-md;
+    @apply px-4 py-2 rounded-md bg-bgSecondaryDark text-white dark:bg-bgSecondaryDark-dark dark:text-black;
   }
 
   .btn-minimal {
-    @apply px-4 py-2 rounded-lg bg-bgPrimary focus-by-brightness;
+    @apply px-4 py-2 rounded-lg bg-bgPrimary dark:bg-bgPrimary-dark focus-by-brightness dark:focus-by-brightness-dark;
   }
 
   .container {
@@ -114,7 +156,7 @@
     }
 
     &.secondary input {
-      @apply border-0 bg-bgSecondary;
+      @apply border-0 bg-bgSecondary dark:bg-bgSecondary-dark;
     }
   }
 
@@ -127,42 +169,49 @@
   }
 
   .skeleton {
-    @apply animate-pulse;
+    @apply animate-pulse bg-bgSecondary dark:bg-bgSecondary-dark;
+
+    &.h1,
+    &.h5,
+    &.h6,
+    &.avatar {
+      @apply bg-bgSecondaryDark dark:bg-bgSecondaryDark-dark;
+    }
 
     &.h1 {
-      @apply h-10 bg-bgSecondaryDark;
+      @apply h-10;
     }
 
     &.h5 {
-      @apply h-6 bg-bgSecondaryDark;
+      @apply h-6;
     }
 
     &.h6 {
-      @apply h-5 bg-bgSecondaryDark;
+      @apply h-5;
     }
 
     &.body {
-      @apply h-6 bg-bgSecondary;
+      @apply h-6;
     }
 
     &.body-sm {
-      @apply h-5 bg-bgSecondary;
+      @apply h-5;
     }
 
     &.body-xs {
-      @apply h-4 bg-bgSecondary;
+      @apply h-4;
     }
 
     &.input {
-      @apply h-8 rounded-md bg-bgSecondary;
+      @apply h-8 rounded-md;
     }
 
     &.avatar {
-      @apply w-12 h-12 bg-bgSecondaryDark rounded-full;
+      @apply w-12 h-12 rounded-full;
     }
 
     &.container {
-      @apply p-4 bg-bgSecondary;
+      @apply p-4;
     }
   }
 }
@@ -185,8 +234,16 @@
     @apply focus:outline-none focus:brightness-95 hover:brightness-95;
   }
 
+  .focus-by-brightness-dark {
+    @apply focus:outline-none focus:brightness-150 hover:brightness-150;
+  }
+
   .focus-by-brighten {
     @apply focus:outline-none focus:brightness-[6] hover:brightness-[6];
+  }
+
+  .focus-by-brighten-dark {
+    @apply focus:outline-none focus:brightness-75 hover:brightness-75;
   }
 
   .collab {
@@ -216,7 +273,7 @@
     @apply relative isolate;
 
     &::before {
-      @apply absolute -z-10 top-0 h-36 inset-x-0 content-[''] bg-bgSecondary;
+      @apply absolute -z-10 top-0 h-36 inset-x-0 content-[''] bg-bgSecondary dark:bg-bgSecondary-dark;
     }
   }
 }

@@ -33,7 +33,7 @@ export default function ChatInput({ chatId }: ChatInputProps) {
           type="text"
           name="message"
           placeholder="Enter your message"
-          className="w-full"
+          className="w-full bg-bgSecondary"
           value={input}
           onChange={(event) => setInput(event.target.value)}
         />

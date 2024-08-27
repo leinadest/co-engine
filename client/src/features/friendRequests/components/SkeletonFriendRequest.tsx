@@ -3,7 +3,7 @@ import Skeleton from '@/components/skeletons/Skeleton';
 export default function SkeletonFriendRequest() {
   return (
     <div className="flex items-center gap-2 p-2">
-      <div className="profile-circle"></div>
+      <Skeleton type="avatar" />
       <div>
         <Skeleton type="h5" className="w-40" />
         <Skeleton type="body" className="w-40" />

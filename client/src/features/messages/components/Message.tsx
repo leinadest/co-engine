@@ -57,7 +57,7 @@ export default function Message({
           </Link>
           <p className="text-sm">{timestamp}</p>
         </div>
-        <div className="text-sm">{content}</div>
+        <p className="text-sm">{content}</p>
       </div>
     </div>
   );

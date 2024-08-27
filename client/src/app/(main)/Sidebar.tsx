@@ -32,7 +32,7 @@ export default function Sidebar() {
   const chats = data?.chats.edges.map(({ node }) => snakeToCamel(node));
 
   return (
-    <div className="flex flex-col items-stretch border-r">
+    <div className="flex flex-col items-stretch border-r border-r-border bg-bgPrimary dark:border-r-border-dark">
       <TrackerLink
         href="/home/all-friends"
         className="flex items-center gap-2 p-2 bg-bgPrimary focus-by-brightness"

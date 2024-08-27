@@ -50,7 +50,10 @@ export default function FriendRequests() {
           <Skeleton type="h5" className="w-56" />
         </div>
         <main className="overflow-auto">
-          <SkeletonList skeleton={<SkeletonFriendRequest />} className="p-2" />
+          <SkeletonList
+            skeleton={<SkeletonFriendRequest />}
+            className="mx-auto p-2 max-w-screen-lg"
+          />
         </main>
       </>
     );
@@ -71,7 +74,7 @@ export default function FriendRequests() {
         <button
           onClick={() => setFilter('received')}
           className={`btn-minimal bg-inherit ${
-            filter === 'received' && 'brightness-95'
+            filter === 'received' && 'brightness-95 dark:brightness-150'
           }`}
         >
           Incoming Requests ({totalCountIncoming})
@@ -79,7 +82,7 @@ export default function FriendRequests() {
         <button
           onClick={() => setFilter('sent')}
           className={`btn-minimal bg-inherit ${
-            filter === 'sent' && 'brightness-95'
+            filter === 'sent' && 'brightness-95 dark:brightness-150'
           }`}
         >
           Outgoing Requests ({totalCountOutgoing})
@@ -91,7 +94,7 @@ export default function FriendRequests() {
           data={friendRequests as any[]}
           getKey={({ sender, receiver }) => `${sender.id}${receiver.id}`}
           onEndReached={filteredQuery.fetchMore}
-          className="p-2"
+          className="mx-auto p-2 max-w-screen-lg"
         />
       </main>
     </>
