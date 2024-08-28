@@ -41,7 +41,7 @@
   }
 
   p {
-    @apply text-textSecondary dark:text-textSecondary-dark;
+    @apply text-sm xs:text-base text-textSecondary dark:text-textSecondary-dark;
   }
 
   button {
@@ -165,7 +165,7 @@
   }
 
   .profile-circle {
-    @apply size-12 bg-bgSecondary rounded-full;
+    @apply size-8 xs:size-12 bg-bgSecondary rounded-full;
   }
 
   .skeleton {

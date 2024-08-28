@@ -1,22 +1,35 @@
 'use client';
 
+import CollabSideBar from '@/features/collabs/components/CollabSidebar';
+import Sidebar from './_components/Sidebar';
+import ChatPage from './(main)/chat/[chatId]/page';
+import useLocalStorage from '@/hooks/useLocalStorage';
+import ChatPageLayout from './(main)/chat/[chatId]/layout';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const router = useRouter();
+  const [storage] = useLocalStorage('lastChatId');
+  const [lastChatId, setLastChatId] = useState('');
 
-  useEffect(() => {
-    const lastPath = localStorage.getItem('lastPath');
-    const currentPath = window.location.pathname;
-    if (lastPath && lastPath !== currentPath) {
-      router.replace(lastPath);
-    }
-  }, [router]);
+  useEffect(() => setLastChatId(storage.lastChatId), [storage.lastChatId]);
 
   return (
-    <main>
-      <p className="my-auto text-center">...</p>
-    </main>
+    <div className="grid grid-cols-[40px_minmax(0,1fr)] xs:grid-cols-[80px_minmax(0,1fr)] md:grid-cols-[80px_320px_minmax(0,1fr)] grid-rows-[100%] h-screen">
+      <CollabSideBar />
+      <Sidebar />
+      {lastChatId ? (
+        <div className="hidden md:flex">
+          <ChatPageLayout params={{ chatId: lastChatId }}>
+            <ChatPage params={{ chatId: lastChatId }} />
+          </ChatPageLayout>
+        </div>
+      ) : (
+        <main className="hidden md:flex justify-center items-center">
+          <h1 className="text-6xl text-bgSecondary dark:text-bgSecondary-dark">
+            home
+          </h1>
+        </main>
+      )}
+    </div>
   );
 }

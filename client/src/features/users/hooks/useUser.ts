@@ -1,10 +1,14 @@
 import { QueryHookOptions, useQuery } from '@apollo/client';
 
-import { GET_USER } from '../../../graphql/queries/getUser';
+import {
+  GET_USER,
+  GetUserResult,
+  GetUserVariables,
+} from '../../../graphql/queries/getUser';
 
 export default function useUser(
   userId: string,
-  options?: QueryHookOptions<NoInfer<any>, NoInfer<any>>
+  options?: QueryHookOptions<GetUserResult, GetUserVariables>
 ) {
   const { data, loading, error } = useQuery(GET_USER, {
     ...options,

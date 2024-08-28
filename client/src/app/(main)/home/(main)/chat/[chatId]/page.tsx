@@ -9,18 +9,22 @@ import useMessages from '@/features/messages/hooks/useMessages';
 import List from '@/components/common/List';
 import SkeletonList from '@/components/skeletons/SkeletonList';
 import SkeletonMessage from '@/features/messages/components/SkeletonMessage';
+import useLocalStorage from '@/hooks/useLocalStorage';
 
 interface ChatPageProps {
   params: { chatId: string };
 }
 
 export default function ChatPage({ params: { chatId } }: ChatPageProps) {
+  const [_, setStorage] = useLocalStorage('lastChatId');
   const chatQuery = useChat({
     variables: { id: chatId },
     fetchPolicy: 'cache-and-network',
   });
   const messagesSubscription = useMessages('chat', chatId);
   const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => setStorage({ lastChatId: chatId }), [setStorage, chatId]);
 
   useEffect(() => {
     if (chatQuery.error || messagesSubscription.error) {
@@ -34,7 +38,7 @@ export default function ChatPage({ params: { chatId } }: ChatPageProps) {
       .reverse() ?? [];
 
   return (
-    <main ref={mainRef} className="grow min-w-96 min-h-0">
+    <main ref={mainRef} className="grow min-h-0">
       {chatQuery.data ? (
         <List
           item={Message}

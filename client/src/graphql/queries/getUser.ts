@@ -14,7 +14,7 @@ export interface GetUserResult {
   };
 }
 
-interface GetUserVariables {
+export interface GetUserVariables {
   userId: string;
 }
 

@@ -69,7 +69,7 @@ export default function FriendRequests() {
   );
 
   return (
-    <>
+    <div className="flex flex-col min-h-0">
       <div className="flex justify-evenly items-center p-2 bg-bgSecondary">
         <button
           onClick={() => setFilter('received')}
@@ -97,6 +97,6 @@ export default function FriendRequests() {
           className="mx-auto p-2 max-w-screen-lg"
         />
       </main>
-    </>
+    </div>
   );
 }

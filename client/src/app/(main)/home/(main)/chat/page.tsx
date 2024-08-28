@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 import useDirectChat from '@/features/chats/hooks/useDirectChat';
-import SkeletonChatPage from './SkeletonChatPage';
+import SkeletonChatPage from './_components/SkeletonChatPage';
 import { useEffect } from 'react';
 
 interface ChatPageRouterProps {

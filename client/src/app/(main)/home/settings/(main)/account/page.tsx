@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 
 import useMe from '@/features/users/hooks/useMe';
 import { snakeToCamel } from '@/utils/helpers';
-import AccountForm from './AccountForm';
-import SkeletonAccountForm from './SkeletonAccountForm';
+import AccountForm from './_components/AccountForm';
+import SkeletonAccountForm from './_components/SkeletonAccountForm';
 
 export default function AccountPage() {
   const meQuery = useMe();
@@ -17,7 +17,7 @@ export default function AccountPage() {
   const me = snakeToCamel(meQuery.data);
 
   return (
-    <main className="flex flex-col p-4 bg-bgPrimary">
+    <main className="flex flex-col p-4 h-full bg-bgPrimary">
       <h1 className="my-4 text-center">Account</h1>
       {me ? (
         <AccountForm username={me.username} email={me.email} />

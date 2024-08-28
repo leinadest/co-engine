@@ -38,6 +38,9 @@ const config: Config = {
         '5xl': '64rem',
         '6xl': '72rem',
       },
+      screens: {
+        xs: '480px',
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':

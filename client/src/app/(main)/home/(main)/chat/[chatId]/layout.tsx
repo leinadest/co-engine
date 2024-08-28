@@ -1,7 +1,7 @@
 import React from 'react';
 
-import ChatHeader from './ChatHeader';
-import ChatInput from './ChatInput';
+import ChatHeader from './_components/ChatHeader';
+import ChatInput from './_components/ChatInput';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,9 +10,12 @@ interface LayoutProps {
   };
 }
 
-export default function Layout({ children, params: { chatId } }: LayoutProps) {
+export default function ChatPageLayout({
+  children,
+  params: { chatId },
+}: LayoutProps) {
   return (
-    <div className="flex flex-col h-full">
+    <div className="grow flex flex-col h-full">
       <ChatHeader chatId={chatId} />
       {children}
       <ChatInput chatId={chatId} />

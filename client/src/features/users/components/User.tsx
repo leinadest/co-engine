@@ -19,7 +19,7 @@ export default function User({ profilePicUrl, username }: UserProps) {
       </Link>
       <p className="grow">{username}</p>
       <Link
-        href="/home/settings/account"
+        href="/home/settings"
         className="p-1 rounded-md bg-inherit focus-by-brightness"
       >
         <Image src="/settings.png" alt="settings" width={26} height={26} />

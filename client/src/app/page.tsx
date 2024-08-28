@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import Button from '@/components/common/Button';
-import Header from '@/components/common/Header';
+import Header from '@/app/_components/Header';
 
 export default function Home() {
   return (
@@ -29,7 +29,7 @@ export default function Home() {
       <section className="container">
         <h2 className="text-center mb-4">Drive forward cooperation</h2>
         <div className="flex flex-wrap gap-2">
-          <section className="grow basis-0 rounded-lg p-4 bg-bgSecondary">
+          <section className="grow basis-80 rounded-lg p-4 bg-bgSecondary">
             <h5>Manage your connections</h5>
             <p>
               Access and take care of all your friends, blocked users, and
@@ -43,7 +43,7 @@ export default function Home() {
               className="mt-2"
             />
           </section>
-          <section className="grow basis-0 rounded-lg p-4 bg-bgSecondary">
+          <section className="grow basis-80 rounded-lg p-4 bg-bgSecondary">
             <h5>Communicate with others</h5>
             <p>
               Send messages and chat with friends, collaborators, and begin

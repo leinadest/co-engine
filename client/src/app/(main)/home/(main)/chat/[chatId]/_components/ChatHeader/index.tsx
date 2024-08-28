@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import useChat from '../../../../../../features/chats/hooks/useChat';
+import useChat from '../../../../../../../../features/chats/hooks/useChat';
 import ChatIdentity from './ChatIdentity';
 import SkeletonChatIdentity from './SkeletonChatIdentity';
 

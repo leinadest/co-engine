@@ -25,18 +25,30 @@ export default function CollabSideBar() {
               currentContext ? 'active' : ''
             }`}
           >
-            <Avatar defaultSrc="/home.png" alt="home" />
+            <Avatar
+              defaultSrc="/home.png"
+              alt="home"
+              className="size-8 xs:size-12"
+            />
           </TrackerLink>
         </li>
         <hr className="mt-0 mb-2 mx-2 self-stretch border-t-2 border-bgSecondary dark:border-bgSecondary-dark" />
         <li>
           <button className="collab relative mx-auto focus:outline-none">
-            <Avatar defaultSrc="/add.svg" alt="add" />
+            <Avatar
+              defaultSrc="/add.svg"
+              alt="add"
+              className="size-8 xs:size-12"
+            />
           </button>
         </li>
         <li>
           <button className="collab mx-auto focus:outline-none">
-            <Avatar defaultSrc="/explore.png" alt="explore" />
+            <Avatar
+              defaultSrc="/explore.png"
+              alt="explore"
+              className="size-8 xs:size-12"
+            />
           </button>
         </li>
       </ol>

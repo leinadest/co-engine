@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 
 import useMe from '@/features/users/hooks/useMe';
 import { snakeToCamel } from '@/utils/helpers';
-import ProfileForm from './ProfileForm';
-import SkeletonProfileForm from './SkeletonProfileForm';
+import ProfileForm from './_components/ProfileForm';
+import SkeletonProfileForm from './_components/SkeletonProfileForm';
 
 export default function ProfilePage() {
   const { data, error } = useMe();

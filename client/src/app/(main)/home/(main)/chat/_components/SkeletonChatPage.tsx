@@ -1,4 +1,4 @@
-import SkeletonChatIdentity from './[chatId]/ChatHeader/SkeletonChatIdentity';
+import SkeletonChatIdentity from '../[chatId]/_components/ChatHeader/SkeletonChatIdentity';
 import SkeletonList from '@/components/skeletons/SkeletonList';
 import SkeletonMessage from '@/features/messages/components/SkeletonMessage';
 
