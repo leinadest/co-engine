@@ -1,11 +1,14 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { ErrorBoundary } from 'next/dist/client/components/error-boundary';
+
 import CollabSideBar from '@/features/collabs/components/CollabSidebar';
 import Sidebar from './_components/Sidebar';
 import ChatPage from './(main)/chat/[chatId]/page';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import ChatPageLayout from './(main)/chat/[chatId]/layout';
-import { useEffect, useState } from 'react';
+import Error from '@/app/error';
 
 export default function Home() {
   const [storage] = useLocalStorage('lastChatId');
@@ -19,9 +22,11 @@ export default function Home() {
       <Sidebar />
       {lastChatId ? (
         <div className="hidden md:flex">
-          <ChatPageLayout params={{ chatId: lastChatId }}>
-            <ChatPage params={{ chatId: lastChatId }} />
-          </ChatPageLayout>
+          <ErrorBoundary errorComponent={Error}>
+            <ChatPageLayout params={{ chatId: lastChatId }}>
+              <ChatPage params={{ chatId: lastChatId }} />
+            </ChatPageLayout>
+          </ErrorBoundary>
         </div>
       ) : (
         <main className="hidden md:flex justify-center items-center">

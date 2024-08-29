@@ -150,7 +150,15 @@ const resolvers = {
         });
       }
 
-      return await User.findByPk(userId);
+      const user = await authService.getUser();
+
+      if (user === null) {
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      return user;
     },
     friends: async (
       _: any,

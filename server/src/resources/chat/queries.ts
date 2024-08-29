@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql/error/GraphQLError';
 import * as yup from 'yup';
 
 import { type Context } from '../../config/apolloServer';
-import { User, type Chat } from '..';
+import { Chat, ChatUser, User } from '..';
 
 const typeDefs = gql`
   extend type Query {
@@ -86,7 +86,20 @@ const resolvers = {
         });
       }
 
-      return await dataSources.chatsDB.getChat(id);
+      const chatUserRelation = await ChatUser.findOne<
+        ChatUser & Record<string, any>
+      >({
+        include: { model: Chat },
+        where: { chat_id: id, user_id: authService.getUserId() },
+      });
+
+      if (chatUserRelation === null) {
+        throw new GraphQLError('User is not in the chat', {
+          extensions: { code: 'UNAUTHORIZED' },
+        });
+      }
+
+      return chatUserRelation.chat.toJSON();
     },
     directChat: async (
       _: any,

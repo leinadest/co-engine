@@ -19,13 +19,7 @@ export default function Sidebar({ className }: { className?: string }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (error && error.message === 'Not authenticated') {
-      router.replace('/login');
-      return;
-    }
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
   }, [data, error, router]);
 
   const me = snakeToCamel(data);
