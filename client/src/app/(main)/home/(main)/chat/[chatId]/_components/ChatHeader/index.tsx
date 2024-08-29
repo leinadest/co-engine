@@ -16,12 +16,10 @@ export default function ChatHeader({ chatId }: ChatHeaderProps) {
     if (error) throw error;
   }, [error]);
 
-  const chat = data?.chat;
-
   return (
-    <header className="flex items-center p-2 gap-6 border-b border-b-border dark:border-b-border-dark">
-      {chat ? (
-        <ChatIdentity name={chat.name} picture={chat.picture} />
+    <header className="flex items-center p-2 px-4 gap-6 border-b border-b-border dark:border-b-border-dark">
+      {data ? (
+        <ChatIdentity name={data.name} picture={data.picture} />
       ) : (
         <SkeletonChatIdentity />
       )}

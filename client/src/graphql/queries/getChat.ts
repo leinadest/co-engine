@@ -12,8 +12,8 @@ interface PartialUser {
 interface MessageNode {
   id: string;
   creator: PartialUser;
-  formatted_created_at: string;
-  formatted_edited_at: string | null;
+  created_at: string;
+  edited_at: string | null;
   content: string;
   reactions: Array<{ reactor_id: string; reaction: string }>;
 }
@@ -70,8 +70,8 @@ export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
               discriminator
               profile_pic_url
             }
-            formatted_created_at
-            formatted_edited_at
+            created_at
+            edited_at
             content
             reactions {
               reactor_id

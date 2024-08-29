@@ -10,7 +10,7 @@ export interface GetUserBlocksResult {
       discriminator: string;
       profile_pic_url: string;
     };
-    created_at: Date;
+    created_at: string;
   }>;
 }
 

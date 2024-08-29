@@ -61,6 +61,9 @@ Chat.belongsToMany(User, {
   foreignKey: 'chat_id',
 });
 
+ChatUser.belongsTo(Chat, { foreignKey: 'chat_id' });
+ChatUser.belongsTo(User, { foreignKey: 'user_id' });
+
 export {
   User,
   OAuth2User,

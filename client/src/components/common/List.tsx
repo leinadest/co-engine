@@ -9,19 +9,21 @@ import React, {
 
 interface ListProps {
   top?: ReactNode;
-  item: ComponentType<any>;
-  data: any[];
-  getKey?: (item: any) => string;
+  item?: ComponentType<any>;
+  data?: any[];
+  items?: ReactNode[];
+  keyHandler?: (item: any) => string;
   startAtBottom?: boolean;
   onEndReached?: () => void;
   className?: string;
 }
 
 export default function List({
-  top: heading,
+  top,
   item: Item,
   data,
-  getKey = (item: any) => item.id,
+  items,
+  keyHandler = (itemData: any) => itemData.id,
   startAtBottom,
   onEndReached,
   className,
@@ -68,12 +70,11 @@ export default function List({
       className="size-full overflow-auto"
     >
       <ul ref={listRef} className={className}>
-        {heading}
-        {data.map((itemData) => (
-          <li key={getKey(itemData)}>
-            <Item {...itemData} />
-          </li>
-        ))}
+        {top}
+        {items ??
+          data?.map((itemData) => (
+            <li key={keyHandler(itemData)}>{Item && <Item {...itemData} />}</li>
+          ))}
       </ul>
     </div>
   );

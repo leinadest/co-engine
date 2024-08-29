@@ -1,5 +1,4 @@
 import { useSubscription } from '@apollo/client';
-import { DateTime } from 'luxon';
 
 import { GET_CHAT } from '@/graphql/queries/getChat';
 import { GET_ME } from '@/graphql/queries/getMe';
@@ -20,10 +19,8 @@ export default function useMessages(contextType: string, contextId: string) {
           node: {
             id: Date.now().toString(),
             creator: createdMessage.creator,
-            formatted_created_at: DateTime.fromJSDate(
-              new Date()
-            ).toLocaleString(DateTime.DATETIME_MED),
-            formatted_edited_at: null,
+            created_at: new Date().toISOString(),
+            edited_at: null,
             content: createdMessage.content,
             reactions: [],
           },

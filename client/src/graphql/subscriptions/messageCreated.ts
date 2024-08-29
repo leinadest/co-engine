@@ -11,7 +11,7 @@ export interface MessageCreatedSubscriptionResult {
       discriminator: string;
       profile_pic_url: string;
     };
-    formatted_created_at: string;
+    created_at: string;
     content: string;
   };
 }
@@ -39,7 +39,7 @@ const MESSAGE_CREATED_SUBSCRIPTION: TypedDocumentNode<
         discriminator
         profile_pic_url
       }
-      formatted_created_at
+      created_at
       content
     }
   }

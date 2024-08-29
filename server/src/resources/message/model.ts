@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import { DateTime } from 'luxon';
 
 const MessageSchema = new mongoose.Schema({
   context_type: { type: String, required: true },
@@ -17,21 +16,8 @@ MessageSchema.set('toJSON', {
     returnedObject.context_id = returnedObject.context_id.toString();
     returnedObject.creator_id = returnedObject.creator_id.toString();
 
-    const formatDate = (obj: any, prop: string): void => {
-      obj[`formatted_${prop}`] =
-        obj[prop] === null
-          ? null
-          : DateTime.fromJSDate(obj[prop] as Date).toLocaleString(
-              DateTime.DATETIME_MED
-            );
-    };
-    formatDate(returnedObject, 'created_at');
-    formatDate(returnedObject, 'edited_at');
-
     delete returnedObject.__v;
     delete returnedObject._id;
-    delete returnedObject.created_at;
-    delete returnedObject.edited_at;
   },
 });
 
@@ -48,10 +34,7 @@ export interface IMessage
 }
 
 export interface IMessageJSON
-  extends Omit<IMessage, 'created_at' | 'edited_at'> {
-  formatted_created_at: string;
-  formatted_edited_at: string | null;
-}
+  extends Omit<IMessage, 'created_at' | 'edited_at'> {}
 
 const Message = mongoose.model<IMessage>('Message', MessageSchema);
 

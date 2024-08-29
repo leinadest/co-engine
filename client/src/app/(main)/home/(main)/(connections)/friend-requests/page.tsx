@@ -90,7 +90,7 @@ export default function FriendRequests() {
         <List
           item={FriendRequest}
           data={friendRequests as any[]}
-          getKey={({ sender, receiver }) => `${sender.id}${receiver.id}`}
+          keyHandler={({ sender, receiver }) => `${sender.id}${receiver.id}`}
           onEndReached={filteredQuery.fetchMore}
           className="mx-auto p-2 max-w-screen-lg"
         />

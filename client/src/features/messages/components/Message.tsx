@@ -1,6 +1,8 @@
-import Avatar from '@/components/Avatar';
 import Link from 'next/link';
 import { useState } from 'react';
+
+import Avatar from '@/components/Avatar';
+import { formatTime } from '@/utils/helpers';
 
 export interface MessageProps {
   id: string;
@@ -10,8 +12,8 @@ export interface MessageProps {
     discriminator: string;
     profilePicUrl: string;
   };
-  formattedCreatedAt: string;
-  formattedEditedAt?: string;
+  createdAt: Date;
+  editedAt?: Date;
   content: string;
   reactions: Array<{
     reactorId: string;
@@ -22,16 +24,16 @@ export interface MessageProps {
 export default function Message({
   id,
   creator,
-  formattedCreatedAt,
-  formattedEditedAt,
+  createdAt,
+  editedAt,
   content,
   reactions,
 }: MessageProps) {
   const [showDiscriminator, setShowDiscriminator] = useState(false);
 
-  const timestamp = formattedEditedAt
-    ? `Edited at ${formattedEditedAt}`
-    : formattedCreatedAt;
+  const timestamp = editedAt
+    ? `Edited at ${formatTime(editedAt)}`
+    : formatTime(createdAt);
 
   return (
     <div className="flex px-2 gap-4">
@@ -43,7 +45,7 @@ export default function Message({
         />
       </Link>
       <div className="flex flex-col gap-1">
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
           <Link href={`/home/user/${creator.id}`}>
             <h6
               onMouseOver={() => setShowDiscriminator(true)}

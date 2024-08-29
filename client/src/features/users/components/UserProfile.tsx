@@ -23,7 +23,7 @@ export default function UserProfile({
         src={profilePicUrl}
         defaultSrc="/person.png"
         alt="profile"
-        className="mx-auto mb-2 content-center size-40 bg-bgSecondaryDark *:size-24"
+        className="mx-auto size-40 xs:size-40 bg-bgSecondaryDark *:size-24"
       />
       <h1 className="mb-4 text-center">
         {username}#{discriminator}
@@ -32,7 +32,7 @@ export default function UserProfile({
       <hr className="my-2" />
       <p>{bio ?? 'No bio'}</p>
       <h5 className="mt-4">Member Since</h5>
-      <p>{formatTime(createdAt, DateTime.DATE_MED)}</p>
+      <p>{formatTime(createdAt)}</p>
     </>
   );
 }

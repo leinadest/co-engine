@@ -18,8 +18,8 @@ const typeDefs = gql`
     context_type: String!
     context_id: String!
     creator: User!
-    formatted_created_at: String!
-    formatted_edited_at: String
+    created_at: DateTime!
+    edited_at: DateTime
     content: String!
     reactions: [Reaction]!
   }

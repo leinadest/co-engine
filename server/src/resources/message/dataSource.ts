@@ -29,7 +29,7 @@ class MessagesDataSource {
   async getMessages({
     contextId,
     contextType,
-    orderDirection = 'ASC',
+    orderDirection = 'DESC',
     orderBy = 'created_at',
     after,
     first = 20,

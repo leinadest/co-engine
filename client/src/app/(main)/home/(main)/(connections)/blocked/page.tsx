@@ -39,7 +39,7 @@ export default function Blocked() {
         top={<h5 className="mt-4 text-center">Blocked ({data.totalCount})</h5>}
         item={Block}
         data={blocks}
-        getKey={({ blockedUser }) => blockedUser.id}
+        keyHandler={({ blockedUser }) => blockedUser.id}
         onEndReached={fetchMore}
         className="mx-auto p-2 max-w-screen-lg"
       />

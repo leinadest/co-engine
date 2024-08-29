@@ -82,7 +82,7 @@ export default function ProfileForm({ me }: ProfileFormProps) {
       {errors.bio && <p className="error pt-2">{errors.bio.message}</p>}
 
       <h5 className="mt-4">Member Since</h5>
-      <p className="mb-4">{formatTime(me.createdAt, DateTime.DATE_MED)}</p>
+      <p className="mb-4">{formatTime(me.createdAt)}</p>
 
       <ResetSaveBtns form={form} onSubmit={onSubmit} />
       <Alert setAlert={setAlert} {...alert} />

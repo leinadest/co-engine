@@ -5,7 +5,7 @@ interface CreateMessageData {
     id: string;
     context_type: string;
     context_id: string;
-    formatted_created_at: string;
+    created_at: string;
     content: string;
   };
 }
@@ -27,7 +27,7 @@ const CREATE_MESSAGE: TypedDocumentNode<
       id
       context_type
       context_id
-      formatted_created_at
+      created_at
       content
     }
   }

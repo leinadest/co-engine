@@ -1,4 +1,4 @@
-import { calculateTimeDifference } from '../../../utils/helpers';
+import { formatTimeDifference } from '../../../utils/helpers';
 import TrackerLink from '@/components/TrackerLink';
 import Avatar from '@/components/Avatar';
 
@@ -27,7 +27,7 @@ export default function Chat({
         <div className="grid grid-cols-[1fr_50px] gap-2 items-center">
           <p>{name}</p>
           <p className="text-right text-xs">
-            {calculateTimeDifference(lastMessageAt)}
+            {formatTimeDifference(lastMessageAt)}
           </p>
         </div>
         <p className="text-xs max-w-full truncate">{lastMessage}</p>

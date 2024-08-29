@@ -1,5 +1,4 @@
 import { useMutation } from '@apollo/client';
-import { DateTime } from 'luxon';
 
 import CREATE_MESSAGE from '@/graphql/mutations/createMessage';
 import { GET_ME } from '@/graphql/queries/getMe';
@@ -25,10 +24,8 @@ export default function useCreateMessage() {
             discriminator: meQuery.me.discriminator,
             profile_pic_url: meQuery.me.profile_pic_url,
           },
-          formatted_created_at: DateTime.fromJSDate(new Date()).toLocaleString(
-            DateTime.DATETIME_MED
-          ),
-          formatted_edited_at: null,
+          created_at: new Date().toISOString(),
+          edited_at: null,
           content: createdMessage.content,
           reactions: [],
         },
