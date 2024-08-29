@@ -20,7 +20,7 @@ class UserFriendRequestsDataSource {
   async getFriendRequests({
     type = 'received',
     after,
-    first = 10,
+    first = 20,
     orderBy = 'created_at',
     orderDirection = 'DESC',
   }: {
@@ -41,9 +41,7 @@ class UserFriendRequestsDataSource {
         where: { id: { [Op.notIn]: blockedUserIds } },
         attributes: ['id', 'username', 'discriminator', 'profile_pic_url'],
       };
-      where = {
-        receiver_id: this.authService.getUserId(),
-      };
+      where = { receiver_id: this.authService.getUserId() };
     }
 
     if (type === 'sent') {
@@ -52,9 +50,7 @@ class UserFriendRequestsDataSource {
         as: 'receiver',
         attributes: ['id', 'username', 'discriminator', 'profile_pic_url'],
       };
-      where = {
-        sender_id: this.authService.getUserId(),
-      };
+      where = { sender_id: this.authService.getUserId() };
     }
 
     let paginationWhere: WhereOptions<any> = {};
@@ -62,7 +58,6 @@ class UserFriendRequestsDataSource {
     if (after !== undefined) {
       const op = orderDirection === 'DESC' ? Op.lt : Op.gt;
       const cursor = decodeCursor(after);
-      // console.log(JSON.stringify(cursor, null, 2));
       paginationWhere = {
         [Op.and]: [
           {
@@ -101,7 +96,6 @@ class UserFriendRequestsDataSource {
     ]);
 
     const edges = friendRequests.map((friendRequest) => ({
-      ...(console.log(friendRequest.created_at), {}),
       cursor: encodeCursor({
         [orderBy]: friendRequest[orderBy],
         sender_id: friendRequest.sender_id,

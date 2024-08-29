@@ -14,7 +14,7 @@ export default class UserBlocksDataSource {
 
   async getUserBlocks({
     after,
-    first = 10,
+    first = 20,
     orderBy = 'created_at',
     orderDirection = 'DESC',
     search,

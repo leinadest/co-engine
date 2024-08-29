@@ -27,7 +27,17 @@ export default function List({
   className,
 }: ListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
   const [endReached, setEndReached] = useState<'top' | 'bottom'>();
+
+  useLayoutEffect(() => {
+    if (!listRef.current || !scrollRef.current || !onEndReached) return;
+    const scrollHeight = listRef.current.scrollHeight;
+    const availableScrollHeight = scrollRef.current.clientHeight;
+    if (scrollHeight <= availableScrollHeight) {
+      onEndReached();
+    }
+  });
 
   useLayoutEffect(() => {
     if (!startAtBottom || !scrollRef.current || endReached === 'top') {
@@ -57,7 +67,7 @@ export default function List({
       onScroll={onScroll}
       className="size-full overflow-auto"
     >
-      <ul className={className}>
+      <ul ref={listRef} className={className}>
         {heading}
         {data.map((itemData) => (
           <li key={getKey(itemData)}>

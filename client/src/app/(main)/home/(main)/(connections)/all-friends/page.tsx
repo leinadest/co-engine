@@ -11,7 +11,9 @@ import SkeletonFriend from '@/features/friends/components/SkeletonFriend';
 import List from '@/components/common/List';
 
 export default function AllFriends() {
-  const { data, error, fetchMore } = useFriends();
+  const { data, error, fetchMore } = useFriends({
+    fetchPolicy: 'cache-and-network',
+  });
 
   useEffect(() => {
     if (error) throw error;

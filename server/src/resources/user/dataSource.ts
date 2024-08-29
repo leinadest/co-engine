@@ -49,7 +49,7 @@ class UsersDataSource {
     orderBy = 'username',
     orderDirection = 'ASC',
     after,
-    first = 10,
+    first = 20,
   }: {
     search?: string;
     orderBy?: string;
@@ -119,7 +119,7 @@ class UsersDataSource {
     orderBy = 'username',
     orderDirection = 'ASC',
     after,
-    first = 10,
+    first = 20,
   }: {
     status?: 'online' | 'offline';
     search?: string;
@@ -208,7 +208,7 @@ class UsersDataSource {
 
   async getBlocked({
     after,
-    first = 10,
+    first = 20,
     orderBy = 'blocked_at',
     orderDirection = 'DESC',
     search,

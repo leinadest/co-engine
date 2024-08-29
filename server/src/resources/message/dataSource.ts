@@ -29,10 +29,10 @@ class MessagesDataSource {
   async getMessages({
     contextId,
     contextType,
-    orderDirection = 'DESC',
+    orderDirection = 'ASC',
     orderBy = 'created_at',
     after,
-    first = 10,
+    first = 20,
   }: {
     contextId: string | number;
     contextType: string;
@@ -41,7 +41,7 @@ class MessagesDataSource {
     after?: string;
     first?: number;
   }): Promise<RelayConnection<IMessage>> {
-    // Initialize query for the next messages to paginate after the cursor
+    // Initialize query for messages following after
     const op = orderDirection === 'DESC' ? '$lt' : '$gt';
     const cursor = after !== undefined ? decodeCursor(after) : undefined;
     const query =

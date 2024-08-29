@@ -11,7 +11,9 @@ import { snakeToCamel } from '@/utils/helpers';
 import List from '@/components/common/List';
 
 export default function Blocked() {
-  const { data, loading, error, fetchMore } = useUserBlocks();
+  const { data, loading, error, fetchMore } = useUserBlocks({
+    fetchPolicy: 'cache-and-network',
+  });
 
   useEffect(() => {
     if (error) throw error;

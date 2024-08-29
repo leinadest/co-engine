@@ -22,7 +22,7 @@ class ChatsDataSource {
     orderBy = 'last_message_at',
     orderDirection = 'DESC',
     after,
-    first = 10,
+    first = 20,
   }: {
     search?: string;
     orderBy?: string;

@@ -33,9 +33,8 @@ export default function ChatPage({ params: { chatId } }: ChatPageProps) {
   }, [chatQuery.data, chatQuery.error, messagesSubscription.error]);
 
   const messages =
-    chatQuery.data?.chat.messages.edges
-      .map(({ node }) => snakeToCamel(node))
-      .reverse() ?? [];
+    chatQuery.data?.chat.messages.edges.map(({ node }) => snakeToCamel(node)) ??
+    [];
 
   return (
     <main ref={mainRef} className="grow min-h-0">

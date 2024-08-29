@@ -13,14 +13,12 @@ import { useEffect, useState } from 'react';
 export default function FriendRequests() {
   const meQuery = useMe();
   const incomingRequestsQuery = useFriendRequests({
-    variables: {
-      type: 'received',
-    },
+    variables: { type: 'received' },
+    fetchPolicy: 'cache-and-network',
   });
   const outgoingRequestsQuery = useFriendRequests({
-    variables: {
-      type: 'sent',
-    },
+    variables: { type: 'sent' },
+    fetchPolicy: 'cache-and-network',
   });
   const [filter, setFilter] = useState<'received' | 'sent'>('received');
 
