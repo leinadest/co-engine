@@ -15,7 +15,7 @@ export default function ChatPageLayout({
   params: { chatId },
 }: LayoutProps) {
   return (
-    <div className="grow flex flex-col h-full">
+    <div className="grow flex flex-col h-full bg-bgPrimary">
       <ChatHeader chatId={chatId} />
       {children}
       <ChatInput chatId={chatId} />

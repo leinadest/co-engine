@@ -14,7 +14,7 @@ export default function Home() {
   useEffect(() => setLastChatId(storage.lastChatId), [storage.lastChatId]);
 
   return (
-    <div className="grid grid-cols-[40px_minmax(0,1fr)] xs:grid-cols-[80px_minmax(0,1fr)] md:grid-cols-[80px_320px_minmax(0,1fr)] grid-rows-[100%] h-screen">
+    <div className="grid grid-cols-[40px_minmax(0,1fr)] xs:grid-cols-[80px_minmax(0,1fr)] md:grid-cols-[80px_320px_minmax(0,1fr)] grid-rows-[100%] h-screen bg-bgPrimary">
       <CollabSideBar />
       <Sidebar />
       {lastChatId ? (

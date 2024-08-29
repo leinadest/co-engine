@@ -16,12 +16,8 @@ export interface RelayConnection<T> {
   pageInfo: PageInfo;
 }
 
-export interface OffsetLimitResult<TItem> {
-  items: TItem[];
-  meta: {
-    totalCount: number;
-    page: number;
-    pageSize: number;
-    totalPages: number;
-  };
+export interface APIError {
+  message: string;
+  code: string;
+  stack: string;
 }

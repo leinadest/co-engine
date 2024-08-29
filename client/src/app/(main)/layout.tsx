@@ -6,9 +6,7 @@ import ThemeProvider from '../_providers/themeProvider';
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <ClientSideApolloProvider>
-      <ThemeProvider>
-        <div className="dark">{children}</div>
-      </ThemeProvider>
+      <ThemeProvider>{children}</ThemeProvider>
     </ClientSideApolloProvider>
   );
 }
