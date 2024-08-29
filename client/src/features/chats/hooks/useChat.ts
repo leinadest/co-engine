@@ -17,29 +17,13 @@ export default function useChat(
 
   function fetchMoreMessages() {
     const canFetchMore = data?.chat.messages.pageInfo.hasNextPage && !loading;
-    const endCursor = data?.chat.messages.pageInfo.endCursor;
-
     if (!canFetchMore) return;
 
+    const endCursor = data?.chat.messages.pageInfo.endCursor;
     fetchMore({
       variables: { ...variables, after: endCursor },
-      // updateQuery: (previousResult, { fetchMoreResult }) => {
-      //   const newEdges = fetchMoreResult?.chat.messages.edges;
-      //   const newPageInfo = fetchMoreResult?.chat.messages.pageInfo;
-      //   return {
-      //     ...previousResult,
-      //     chat: {
-      //       ...previousResult.chat,
-      //       messages: {
-      //         ...previousResult.chat.messages,
-      //         edges: [...previousResult.chat.messages.edges, ...newEdges],
-      //         pageInfo: newPageInfo,
-      //       },
-      //     },
-      //   };
-      // },
     });
   }
 
-  return { data, loading, error, fetchMoreMessages };
+  return { data: data?.chat, loading, error, fetchMoreMessages };
 }

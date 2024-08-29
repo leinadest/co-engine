@@ -32,11 +32,6 @@ const validationSchema = yup.object().shape({
 });
 
 export default function LogInForm({ formValues }: { formValues?: FormValues }) {
-  const [error, setError] = useState(null);
-  if (error) {
-    throw error;
-  }
-
   const form = useForm({
     defaultValues: {
       email: '',
@@ -46,27 +41,24 @@ export default function LogInForm({ formValues }: { formValues?: FormValues }) {
   });
 
   useEffect(() => {
-    if (formValues) {
-      form.reset(formValues);
-    }
+    if (formValues) form.reset(formValues);
   }, [formValues, form]);
 
-  const { logIn } = useAuth();
+  const { logIn, data, error } = useAuth();
   const router = useRouter();
 
-  function onSubmit({ email, password }: FormValues) {
-    logIn({ email, password })
-      .then(() => {
-        router.push('/home');
-      })
-      .catch((err) => {
-        (err as any).formValues = form.getValues();
-        setError(err);
-      });
-  }
+  useEffect(() => {
+    if (error) {
+      const newError = { ...error, formValues: form.getValues() };
+      throw newError;
+    }
+    if (!error && data) {
+      router.push('home');
+    }
+  }, [error, form, router, data]);
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
+    <form onSubmit={form.handleSubmit(logIn)}>
       <InputField
         label="Email"
         name="email"
@@ -84,7 +76,6 @@ export default function LogInForm({ formValues }: { formValues?: FormValues }) {
       <button
         disabled={form.formState.isSubmitting}
         className="btn mt-8 w-full"
-        style={{ marginTop: 8 }}
       >
         Log in
       </button>

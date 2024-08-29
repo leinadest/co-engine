@@ -14,7 +14,6 @@ export interface BlockUserVariables {
 const BLOCK_USER: TypedDocumentNode<BlockUserResult, BlockUserVariables> = gql`
   mutation BlockUser($userId: ID!) {
     blockUser(userId: $userId) {
-      blocked_user_id
       created_at
     }
   }

@@ -1,75 +1,9 @@
 import { useState } from 'react';
-import {
-  ApolloError,
-  gql,
-  TypedDocumentNode,
-  useMutation,
-} from '@apollo/client';
+import { ApolloError, useMutation } from '@apollo/client';
 
 import AuthStorage from '../stores/authStorage';
-
-interface SignUpResult {
-  createUser: {
-    created_at: Date;
-  };
-}
-
-interface SignUpVariables {
-  user: {
-    username: string;
-    email: string;
-    password: string;
-  };
-}
-
-const SIGN_UP: TypedDocumentNode<SignUpResult, SignUpVariables> = gql`
-  mutation SignUp($user: CreateUserInput) {
-    createUser(user: $user) {
-      created_at
-    }
-  }
-`;
-
-interface LogInResult {
-  authenticate: {
-    accessToken: string;
-    expiresAt: string;
-    user: {
-      id: string;
-      email: string;
-      username: string;
-      discriminator: string;
-      created_at: string;
-      profile_pic: string;
-      bio: string;
-    };
-  };
-}
-
-interface LogInVariables {
-  credentials: {
-    email: string;
-    password: string;
-  };
-}
-
-const LOG_IN: TypedDocumentNode<LogInResult, LogInVariables> = gql`
-  mutation LogIn($credentials: AuthenticateInput) {
-    authenticate(credentials: $credentials) {
-      accessToken
-      expiresAt
-      user {
-        id
-        email
-        username
-        discriminator
-        created_at
-        profile_pic
-        bio
-      }
-    }
-  }
-`;
+import LOG_IN from '@/graphql/mutations/logIn';
+import SIGN_UP from '@/graphql/mutations/signUp';
 
 export default function useAuth() {
   const [signUpMutate] = useMutation(SIGN_UP);

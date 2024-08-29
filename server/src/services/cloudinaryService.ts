@@ -28,40 +28,27 @@ export async function uploadImage({
   url: string;
 }> {
   const options = { use_filename: true, filename, mimetype, encoding };
-  try {
-    const result = await new Promise<{ public_id: string; url: string }>(
-      (resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          options,
-          (error, result) => {
-            if (error !== undefined) {
-              reject(error);
-            }
-            if (result !== undefined) {
-              resolve(result);
-            }
+  const result = await new Promise<{ public_id: string; url: string }>(
+    (resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        options,
+        (error, result) => {
+          if (error !== undefined) {
+            reject(error);
           }
-        );
-        createReadStream().pipe(stream);
-      }
-    );
-    console.log(result);
-    return { publicId: result.public_id, url: result.url };
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+          if (result !== undefined) {
+            resolve(result);
+          }
+        }
+      );
+      createReadStream().pipe(stream);
+    }
+  );
+  return { publicId: result.public_id, url: result.url };
 }
 
 export async function deleteImage(publicId: string): Promise<any> {
-  try {
-    const result = await cloudinary.uploader.destroy(publicId);
-    console.log(result);
-    return result;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  return await cloudinary.uploader.destroy(publicId);
 }
 
 export function createImageTag(publicId: string, transformation = {}): string {
