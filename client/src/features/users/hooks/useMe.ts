@@ -20,24 +20,7 @@ export default function useMe(
 
     if (!canFetchMore) return;
 
-    fetchMore({
-      variables: { ...variables, after: endCursor },
-      // updateQuery: (previousResult, { fetchMoreResult }) => {
-      //   const newEdges = fetchMoreResult?.me.chats.edges;
-      //   const newPageInfo = fetchMoreResult?.me.chats.pageInfo;
-      //   return {
-      //     ...previousResult,
-      //     me: {
-      //       ...previousResult.me,
-      //       chats: {
-      //         ...previousResult.me.chats,
-      //         edges: [...previousResult.me.chats.edges, ...newEdges],
-      //         pageInfo: newPageInfo,
-      //       },
-      //     },
-      //   };
-      // },
-    });
+    fetchMore({ variables: { ...variables, after: endCursor } });
   }
 
   return { data: data?.me, loading, error, fetchMoreChats };

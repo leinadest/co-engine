@@ -35,7 +35,7 @@ export default function Alert({
     <div
       className={`fixed top-4 right-4 p-4 rounded shadow-lg text-white transition-opacity ${
         type === 'success' ? 'bg-success' : 'bg-error'
-      } ${visible ? '' : 'opacity-0'}`}
+      } ${visible ? '' : 'pointer-events-none opacity-0'}`}
       role="alert"
     >
       <span>{message}</span>

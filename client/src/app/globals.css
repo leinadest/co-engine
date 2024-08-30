@@ -13,7 +13,7 @@
   h4,
   h5,
   h6 {
-    @apply font-bold;
+    @apply font-bold dark:text-textPrimary-dark;
   }
 
   h1 {
@@ -55,11 +55,9 @@
     @apply outline-none;
   }
 
-  input[type='text'],
-  [type='email'],
-  [type='password'],
+  input,
   textarea {
-    @apply px-2 py-1 rounded-md bg-bgSecondary dark:bg-bgSecondary-dark;
+    @apply px-2 py-1 rounded-md bg-bgSecondary text-textSecondary dark:bg-bgSecondary-dark dark:text-textSecondary-dark;
   }
 
   img {
@@ -244,6 +242,10 @@
 
   .focus-by-brighten-dark {
     @apply focus:outline-none focus:brightness-75 hover:brightness-75;
+  }
+
+  .absolute-center {
+    @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
   }
 
   .collab {

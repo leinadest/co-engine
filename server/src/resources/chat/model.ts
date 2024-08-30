@@ -33,8 +33,6 @@ class Chat extends Model {
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: 'Untitled chat',
     },
     picture: {
       type: DataTypes.STRING,

@@ -1,12 +1,12 @@
-import { Op, type Transaction } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
+import { GraphQLError } from 'graphql';
 
 import type AuthService from '../../services/authService';
 import { type RelayConnection } from '../../utils/types';
 import type UsersDataSource from '../user/dataSource';
 import { Chat, ChatUser, User } from '..';
 import { decodeCursor, encodeCursor } from '../../utils/pagination';
-import { GraphQLError } from 'graphql';
-import { transaction } from '../../utils/api';
+import sequelize from '../../config/sequelize';
 
 class ChatsDataSource {
   private readonly authService: AuthService;
@@ -127,45 +127,53 @@ class ChatsDataSource {
     return await chat.toJSON();
   }
 
-  async getOrCreateDirectChat(user: User, otherUser: User): Promise<Chat> {
-    const findOrCreateChat = async (transaction: Transaction): Promise<any> => {
-      const [chat, created] = await Chat.findOrCreate({
-        include: {
-          model: User,
-          as: 'users',
-          where: { [Op.and]: [{ id: user.id }, { id: otherUser.id }] },
-          attributes: ['id', 'username', 'discriminator', 'profile_pic_url'],
-        },
-        where: {
-          [Op.or]: [
-            { name: `${user.username} & ${otherUser.username}` },
-            { name: `${otherUser.username} & ${user.username}` },
-          ],
-        },
-        defaults: {
-          name: `${user.username} & ${otherUser.username}`,
-          creator_id: user.id,
-        },
-        transaction,
-      });
-
-      if (created) {
-        await ChatUser.bulkCreate(
-          [
-            { user_id: user.id, chat_id: chat.id },
-            { user_id: otherUser.id, chat_id: chat.id },
-          ],
-          { transaction }
-        );
-      }
-
-      return chat.toJSON();
-    };
-
-    return await transaction({
-      run: findOrCreateChat,
-      errorMessage: 'getOrCreateDirectChat transaction failed',
+  async getOrCreateDirectChat(
+    userId: string,
+    otherUserId: string
+  ): Promise<Chat> {
+    const chats = await Chat.findAll<Chat & Record<string, any>>({
+      include: {
+        model: User,
+        as: 'users',
+        where: { id: { [Op.in]: [userId, otherUserId] } },
+        through: { attributes: [] },
+        attributes: [],
+      },
+      where: { creator_id: { [Op.in]: [userId, otherUserId] } },
+      group: ['chat.id'],
+      having: Sequelize.literal(
+        'COUNT(DISTINCT "users"."id") = 2 AND COUNT(DISTINCT "users"."id") = (SELECT COUNT(*) FROM "chat_users" WHERE "chat_users"."chat_id" = "chat"."id")'
+      ),
     });
+
+    if (chats[0] !== null) {
+      return await chats[0].toJSON();
+    }
+
+    let transaction;
+    try {
+      transaction = await sequelize.transaction();
+
+      const newChat = await Chat.create(
+        { creator_id: userId },
+        { transaction }
+      );
+      await ChatUser.bulkCreate(
+        [
+          { user_id: userId, chat_id: newChat.id },
+          { user_id: otherUserId, chat_id: newChat.id },
+        ],
+        { transaction }
+      );
+
+      await transaction.commit();
+      return await newChat.toJSON();
+    } catch (err: any) {
+      await transaction?.rollback();
+      throw new GraphQLError('getOrCreateDirectChat transaction failed', {
+        originalError: err,
+      });
+    }
   }
 }
 

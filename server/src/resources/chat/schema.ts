@@ -24,17 +24,9 @@ const types = gql`
     ): MessageConnection!
   }
 
-  type ChatInfo {
-    id: ID!
-    name: String
-    picture: String
-    last_message_at: DateTime
-    last_message: String
-  }
-
   type ChatEdge {
     cursor: String!
-    node: ChatInfo!
+    node: Chat!
   }
 
   type ChatConnection {

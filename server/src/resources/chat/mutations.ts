@@ -8,9 +8,9 @@ import { Chat, ChatUser, User } from '../';
 export const typeDefs = gql`
   extend type Mutation {
     """
-    Creates a new chat.
+    Creates a new chat with the specified user.
     """
-    createChat(name: String, picture: String): Chat
+    createChat(username: String, discriminator: String): Chat
 
     """
     Deletes a chat.
@@ -29,25 +29,25 @@ export const typeDefs = gql`
   }
 `;
 
-const createChatSchema = yup
-  .object()
-  .optional()
-  .shape({
-    name: yup
-      .string()
-      .min(1, 'Chat name must be at least 1 character long')
-      .max(30, 'Chat name must be at most 30 characters long'),
-    picture: yup.string(),
-  });
+interface CreateChatInput {
+  username: string;
+  discriminator: string;
+}
+
+const createChatSchema = yup.object().shape({
+  username: yup.string().trim(),
+  discriminator: yup.string().trim(),
+});
 
 export const resolvers = {
   Mutation: {
     createChat: async (
       _: any,
-      { name, picture }: { name: string; picture: string },
+      args: CreateChatInput,
       { authService, sequelize }: Context
     ) => {
-      await createChatSchema.validate({ name, picture });
+      const validArgs = await createChatSchema.validate(args);
+      const { username, discriminator } = validArgs;
 
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
@@ -55,20 +55,36 @@ export const resolvers = {
         });
       }
 
+      const otherUser = await User.findOne({
+        where: { username, discriminator },
+      });
+      if (otherUser === null) {
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
       try {
         return await sequelize.transaction(async (transaction) => {
           const chat = await Chat.create(
-            { name, picture, creator_id: authService.getUserId() },
+            { creator_id: authService.getUserId() },
             { transaction }
           );
-          await ChatUser.create(
-            { chat_id: chat.id, user_id: authService.getUserId() },
+          await ChatUser.bulkCreate(
+            [
+              { chat_id: chat.id, user_id: authService.getUserId() },
+              { chat_id: chat.id, user_id: otherUser.id },
+            ],
             { transaction }
           );
           return chat;
         });
       } catch (err: any) {
-        throw new GraphQLError(err.message as string, {
+        const message =
+          err.name === 'SequelizeUniqueConstraintError'
+            ? 'User cannot start a chat with themselves'
+            : (err.message as string);
+        throw new GraphQLError(message, {
           extensions: { code: 'BAD_USER_INPUT' },
         });
       }
@@ -141,8 +157,6 @@ export const resolvers = {
           extensions: { code: 'NOT_FOUND' },
         });
       }
-
-      // TODO: Implement blocked validation
 
       const [chatUser, isCreated] = await ChatUser.findOrCreate({
         where: { chat_id: chatId, user_id: userId },

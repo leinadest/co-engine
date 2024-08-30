@@ -7,12 +7,12 @@ import {
 } from '../../../graphql/queries/getUser';
 
 export default function useUser(
-  userId: string,
+  userId?: string,
   options?: QueryHookOptions<GetUserResult, GetUserVariables>
 ) {
   const { data, loading, error } = useQuery(GET_USER, {
     ...options,
-    variables: { userId },
+    ...(userId && { variables: { userId } }),
     skip: !userId,
   });
   return { data, loading, error };

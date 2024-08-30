@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql/error/GraphQLError';
 import * as yup from 'yup';
 
 import { type Context } from '../../config/apolloServer';
-import { Chat, ChatUser, User } from '..';
+import { Chat, ChatUser } from '..';
 
 const typeDefs = gql`
   extend type Query {
@@ -95,7 +95,7 @@ const resolvers = {
 
       if (chatUserRelation === null) {
         throw new GraphQLError('User is not in the chat', {
-          extensions: { code: 'UNAUTHORIZED' },
+          extensions: { code: 'FORBIDDEN' },
         });
       }
 
@@ -106,24 +106,18 @@ const resolvers = {
       { userId }: { userId: string },
       { authService, dataSources }: Context
     ): Promise<Chat | null> => {
-      const [user, otherUser] = await Promise.all([
-        authService.getUser(),
-        User.findByPk(userId),
-      ]);
+      const authUserId = authService.getUserId();
 
-      if (user === null) {
+      if (authUserId === null) {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
       }
 
-      if (otherUser === null) {
-        throw new GraphQLError('User not found', {
-          extensions: { code: 'NOT_FOUND' },
-        });
-      }
-
-      return await dataSources.chatsDB.getOrCreateDirectChat(user, otherUser);
+      return await dataSources.chatsDB.getOrCreateDirectChat(
+        authUserId,
+        userId
+      );
     },
   },
 };

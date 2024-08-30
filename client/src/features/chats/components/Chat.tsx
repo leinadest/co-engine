@@ -4,10 +4,11 @@ import Avatar from '@/components/Avatar';
 
 export interface ChatProps {
   id: string;
-  lastMessage: string;
-  lastMessageAt: string;
+  lastMessage?: string;
+  lastMessageAt?: string;
   name: string;
-  picture: string;
+  src: string;
+  defaultSrc: string;
 }
 
 export default function Chat({
@@ -15,22 +16,27 @@ export default function Chat({
   lastMessage,
   lastMessageAt,
   name,
-  picture,
+  src,
+  defaultSrc,
 }: ChatProps) {
   return (
     <TrackerLink
       href={`/home/chat/${id}`}
       className="grid grid-cols-[48px_minmax(0,1fr)] gap-2 px-2 py-1 bg-bgPrimary dark:bg-bgPrimary-dark focus-by-brightness"
     >
-      <Avatar src={picture} defaultSrc={'/chat.png'} />
+      <Avatar src={src} defaultSrc={defaultSrc || '/chat.png'} />
       <div className="flex flex-col justify-center">
-        <div className="grid grid-cols-[1fr_50px] gap-2 items-center">
-          <p>{name}</p>
-          <p className="text-right text-xs">
-            {formatTimeDifference(lastMessageAt)}
-          </p>
+        <div className="grid grid-cols-[1fr_40px] gap-2 items-center">
+          <p className="max-w-full truncate">{name}</p>
+          {lastMessageAt && (
+            <p className="text-right text-xs">
+              {formatTimeDifference(lastMessageAt)}
+            </p>
+          )}
         </div>
-        <p className="text-xs max-w-full truncate">{lastMessage}</p>
+        {lastMessage && (
+          <p className="text-xs max-w-full truncate">{lastMessage}</p>
+        )}
       </div>
     </TrackerLink>
   );

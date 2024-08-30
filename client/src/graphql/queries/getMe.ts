@@ -14,10 +14,16 @@ export interface GetMeResult {
     bio: string;
     chats: RelayConnection<{
       id: string;
-      name: string;
-      picture: string;
-      last_message_at: string;
-      last_message: string;
+      name?: string;
+      picture?: string;
+      last_message_at?: string;
+      last_message?: string;
+      users: Array<{
+        id: string;
+        username: string;
+        discriminator: string;
+        profile_pic_url: string;
+      }>;
     }>;
   };
 }
@@ -62,6 +68,12 @@ export const GET_ME: TypedDocumentNode<GetMeResult, GetMeVariables> = gql`
             picture
             last_message_at
             last_message
+            users {
+              id
+              username
+              discriminator
+              profile_pic_url
+            }
           }
         }
         pageInfo {
