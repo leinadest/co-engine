@@ -20,12 +20,20 @@ export const typeDefs = gql`
     """
     Adds a user to a chat.
     """
-    addUserToChat(chatId: ID!, userId: ID!): ChatUser
+    addUserToChat(
+      chatId: ID!
+      username: String
+      discriminator: String
+    ): ChatUser
 
     """
     Removes a user from a chat.
     """
-    removeUserFromChat(chatId: ID!, userId: ID!): ChatUser
+    removeUserFromChat(
+      chatId: ID!
+      username: String
+      discriminator: String
+    ): ChatUser
   }
 `;
 
@@ -34,10 +42,26 @@ interface CreateChatInput {
   discriminator: string;
 }
 
+interface AddUserToChatInput {
+  chatId: string;
+  username: string;
+  discriminator: string;
+}
+
+interface RemoveUserFromChatInput extends AddUserToChatInput {}
+
 const createChatSchema = yup.object().shape({
   username: yup.string().trim(),
   discriminator: yup.string().trim(),
 });
+
+const addUserToChatSchema = yup.object().shape({
+  chatId: yup.string().trim(),
+  username: yup.string().trim(),
+  discriminator: yup.string().trim(),
+});
+
+const removeUserFromChatSchema = addUserToChatSchema;
 
 export const resolvers = {
   Mutation: {
@@ -93,7 +117,7 @@ export const resolvers = {
     deleteChat: async (
       _: any,
       { chatId }: { chatId: string },
-      { authService, sequelize }: Context
+      { authService }: Context
     ) => {
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
@@ -120,31 +144,25 @@ export const resolvers = {
         });
       }
 
-      try {
-        return await sequelize.transaction(async (transaction) => {
-          await Chat.destroy({ where: { id: chatId }, transaction });
-          await ChatUser.destroy({ where: { chat_id: chatId }, transaction });
-          return chat;
-        });
-      } catch (err: any) {
-        throw new GraphQLError(err.message as string, {
-          extensions: { code: 'BAD_USER_INPUT' },
-        });
-      }
+      await Chat.destroy({ where: { id: chatId } });
+      return chat;
     },
 
     addUserToChat: async (
       _: any,
-      { chatId, userId }: { chatId: string; userId: string },
+      args: AddUserToChatInput,
       { authService }: Context
     ) => {
+      const { chatId, username, discriminator } =
+        await addUserToChatSchema.validate(args);
+
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' },
         });
       }
 
-      const user = await User.findByPk(userId);
+      const user = await User.findOne({ where: { username, discriminator } });
       if (user === null) {
         throw new GraphQLError('User not found', {
           extensions: { code: 'NOT_FOUND' },
@@ -159,8 +177,8 @@ export const resolvers = {
       }
 
       const [chatUser, isCreated] = await ChatUser.findOrCreate({
-        where: { chat_id: chatId, user_id: userId },
-        defaults: { chat_id: chatId, user_id: userId },
+        where: { chat_id: chatId, user_id: user.id },
+        defaults: { chat_id: chatId, user_id: user.id },
       });
       if (!isCreated) {
         throw new GraphQLError('User already in chat', {
@@ -173,9 +191,12 @@ export const resolvers = {
 
     removeUserFromChat: async (
       _: any,
-      { chatId, userId }: { chatId: string; userId: string },
+      args: RemoveUserFromChatInput,
       { authService }: Context
     ) => {
+      const { chatId, username, discriminator } =
+        await removeUserFromChatSchema.validate(args);
+
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {
           extensions: { code: 'UNAUTHENTICATED' },
@@ -189,9 +210,17 @@ export const resolvers = {
         });
       }
 
+      const user = await User.findOne({ where: { username, discriminator } });
+      if (user === null) {
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
       const userIsCreator =
         chat.creator_id.toString() === authService.getUserId();
-      const userIsRemovingOtherUser = userId !== authService.getUserId();
+      const userIsRemovingOtherUser =
+        user.id.toString() !== authService.getUserId();
       if (!userIsCreator && userIsRemovingOtherUser) {
         throw new GraphQLError(
           'Only the creator can remove other users from the chat',
@@ -202,13 +231,14 @@ export const resolvers = {
       }
 
       const chatUser = await ChatUser.findOne({
-        where: { chat_id: chatId, user_id: userId },
+        where: { chat_id: chatId, user_id: user.id },
       });
       if (chatUser === null) {
         throw new GraphQLError('User not found in chat', {
           extensions: { code: 'NOT_FOUND' },
         });
       }
+
       await chatUser.destroy();
       return chatUser;
     },

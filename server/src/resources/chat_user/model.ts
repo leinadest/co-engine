@@ -15,6 +15,8 @@ class ChatUser extends Model {
         model: 'chats',
         key: 'id',
       },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     user_id: {
       type: DataTypes.INTEGER,
@@ -24,6 +26,8 @@ class ChatUser extends Model {
         model: 'users',
         key: 'id',
       },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
   };
 }

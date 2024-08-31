@@ -12,7 +12,7 @@ export default function useChat(
   const { data, loading, error, fetchMore, variables } = useQuery(GET_CHAT, {
     ...options,
     notifyOnNetworkStatusChange: true,
-    skip: options?.variables?.id === undefined,
+    skip: !options?.variables?.id,
   });
 
   function fetchMoreMessages() {

@@ -4,7 +4,7 @@ export default function useLocalStorage(
   keys: string | string[],
   initialValues?: any | Record<string, any>
 ) {
-  const [items, setItems] = useState<Record<string, any>>(() => {
+  const [storage, setStorage] = useState<Record<string, any>>(() => {
     const normalizedKeys = typeof keys === 'string' ? [keys] : keys;
     const normalizedInitialValues = normalizedKeys.reduce<Record<string, any>>(
       (acc, key) => {
@@ -29,12 +29,12 @@ export default function useLocalStorage(
     }
   });
 
-  const handleSetItems = useCallback((values: Record<string, any>) => {
-    setItems((items) => ({ ...items, ...values }));
+  const handleSetStorage = useCallback((values: Record<string, any>) => {
+    setStorage((storage) => ({ ...storage, ...values }));
     Object.entries(values).forEach(([key, value]) => {
       window.localStorage.setItem(key, JSON.stringify(value));
     });
   }, []);
 
-  return [items, handleSetItems] as const;
+  return { storage, setStorage: handleSetStorage };
 }

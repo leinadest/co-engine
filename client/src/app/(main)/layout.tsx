@@ -1,12 +1,12 @@
 'use client';
 
-import ClientSideApolloProvider from '../_providers/apolloProvider';
-import ThemeProvider from '../_providers/themeProvider';
+import ClientApolloProvider from '../_providers/ClientApolloProvider';
+import ThemeProvider from '../_providers/ThemeProvider';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <ClientSideApolloProvider>
+    <ClientApolloProvider>
       <ThemeProvider>{children}</ThemeProvider>
-    </ClientSideApolloProvider>
+    </ClientApolloProvider>
   );
 }

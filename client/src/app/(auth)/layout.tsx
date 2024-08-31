@@ -1,11 +1,11 @@
-import ClientSideApolloProvider from '../_providers/apolloProvider';
+import ClientApolloProvider from '../_providers/ClientApolloProvider';
 import Header from '@/app/_components/Header';
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <ClientSideApolloProvider>
+    <ClientApolloProvider>
       <Header />
       {children}
-    </ClientSideApolloProvider>
+    </ClientApolloProvider>
   );
 }

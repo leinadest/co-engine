@@ -4,7 +4,7 @@ import { createApolloClient } from '@/config/apolloClient';
 import { ApolloProvider } from '@apollo/client';
 import { ReactNode } from 'react';
 
-export default function ClientSideApolloProvider({
+export default function ClientApolloProvider({
   children,
 }: {
   children: ReactNode;

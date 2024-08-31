@@ -11,7 +11,7 @@ import ChatPageLayout from './(main)/chat/[chatId]/layout';
 import Error from '@/app/error';
 
 export default function Home() {
-  const [storage] = useLocalStorage('lastChatId');
+  const { storage } = useLocalStorage('lastChatId');
   const [lastChatId, setLastChatId] = useState('');
 
   useEffect(() => setLastChatId(storage.lastChatId), [storage.lastChatId]);
@@ -23,7 +23,7 @@ export default function Home() {
       {lastChatId ? (
         <div className="hidden md:flex">
           <ErrorBoundary errorComponent={Error}>
-            <ChatPageLayout params={{ chatId: lastChatId }}>
+            <ChatPageLayout>
               <ChatPage params={{ chatId: lastChatId }} />
             </ChatPageLayout>
           </ErrorBoundary>

@@ -1,34 +1,40 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useContext, useEffect, useState } from 'react';
 
 import useCreateMessage from '@/features/messages/hooks/useCreateMessage';
+import { ChatContext } from '../_providers/ChatContextProvider';
+import Alert, { AlertState } from '@/components/common/Alert';
 
-interface ChatInputProps {
-  chatId: string;
-}
+export default function ChatInput() {
+  const { createMessage, error } = useCreateMessage();
+  const [alert, setAlert] = useState<AlertState>({ visible: false });
 
-export default function ChatInput({ chatId }: ChatInputProps) {
-  const { createMessage } = useCreateMessage();
+  useEffect(() => {
+    if (error) {
+      setAlert({
+        visible: true,
+        type: 'error',
+        message: `Error: ${error.message || 'Something went wrong'}`,
+      });
+    }
+  }, [error]);
+
+  const { chatId } = useContext(ChatContext);
   const [input, setInput] = useState<string>('');
-  const [error, setError] = useState<Error | null>();
 
   function onSubmit(event: FormEvent) {
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
     const message = formData.get('message') as string;
-    createMessage('chat', chatId, message)
-      .then(() => {
-        setInput('');
-        setError(null);
-      })
-      .catch((err) => setError(err));
+    createMessage('chat', chatId, message).then(() => {
+      setInput('');
+    });
   }
 
   return (
-    <div className="flex items-center p-4">
-      <form onSubmit={onSubmit} className="grow">
-        {error && <p className="error my-2">{error.message}</p>}
+    <>
+      <form onSubmit={onSubmit} className="relative flex items-center p-4">
         <input
           type="text"
           name="message"
@@ -38,6 +44,7 @@ export default function ChatInput({ chatId }: ChatInputProps) {
           onChange={(event) => setInput(event.target.value)}
         />
       </form>
-    </div>
+      <Alert setAlert={setAlert} {...alert} />
+    </>
   );
 }

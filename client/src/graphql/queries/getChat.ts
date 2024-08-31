@@ -21,6 +21,7 @@ interface MessageNode {
 export interface GetChatData {
   chat: {
     id: string;
+    creator_id: string;
     name: string;
     picture: string;
     users: PartialUser[];
@@ -46,6 +47,7 @@ export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
   ) {
     chat(id: $id) {
       id
+      creator_id
       name
       picture
       users {
