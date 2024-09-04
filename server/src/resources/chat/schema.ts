@@ -15,7 +15,7 @@ const types = gql`
     picture: String
     last_message_at: DateTime
     last_message: String
-    users: [UserInfo!]!
+    users: [PublicUser!]!
     messages(
       after: String
       first: Int

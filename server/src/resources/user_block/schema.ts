@@ -7,8 +7,8 @@ import { type Context } from '../../config/apolloServer';
 
 const types = gql`
   type UserBlock {
-    user: UserInfo!
-    blocked_user: UserInfo!
+    user: PublicUser!
+    blocked_user: PublicUser!
     created_at: DateTime!
   }
 

@@ -1,16 +1,16 @@
 'use client';
 
 import * as yup from 'yup';
-import { DateTime } from 'luxon';
 import { useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 
 import { formatTime } from '@/utils/helpers';
-import useEditMe from '@/features/users/hooks/useEditMe';
 import Alert, { AlertState } from '@/components/common/Alert';
 import PreviewPictureUploader from './PreviewPictureUploader';
 import ResetSaveBtns from '@/components/form/ResetSaveBtns';
+import useUploadMe from '@/features/users/hooks/useUploadMe';
+import useUpdateMe from '@/features/users/hooks/useUpdateMe';
 
 interface FormValues {
   profilePic?: File;
@@ -42,30 +42,35 @@ export default function ProfileForm({ me }: ProfileFormProps) {
   });
   const errors = form.formState.errors;
 
-  const { editMe, ...editMeResult } = useEditMe();
+  const { uploadMe, data: uploadData, error: uploadError } = useUploadMe();
+  const { updateMe, data: updateData, error: updateError } = useUpdateMe();
   const [alert, setAlert] = useState<AlertState>({ visible: false });
 
   function onSubmit({ profilePic, bio }: FormValues) {
-    editMe({ profilePic, bio });
+    uploadMe({ profilePic });
+    updateMe({ bio });
   }
 
   useEffect(() => {
-    if (editMeResult.error) {
+    const error = uploadError || updateError;
+    if (error) {
       setAlert({
         visible: true,
         type: 'error',
-        message: editMeResult.error.message,
+        message: `$Error: ${error.message || 'Something went wrong'}`,
       });
     }
-    if (!editMeResult.error && editMeResult.data) {
+    if ((!error && uploadData) || updateData) {
       setAlert({
         visible: true,
         type: 'success',
         message: 'Profile successfully updated',
       });
-      form.reset({ bio: editMeResult.data.editMe.bio });
     }
-  }, [editMeResult.error, editMeResult.data, form]);
+    if (!error && updateData) {
+      form.reset({ bio: updateData.bio });
+    }
+  }, [uploadError, uploadData, updateError, updateData, form]);
 
   return (
     <form className="flex flex-col h-full">

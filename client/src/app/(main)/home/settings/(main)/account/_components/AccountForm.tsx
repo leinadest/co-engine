@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 
 import InputField from '@/components/form/InputField';
-import useEditMe from '@/features/users/hooks/useEditMe';
+import useUpdateMe from '@/features/users/hooks/useUpdateMe';
 import Alert, { AlertState } from '@/components/common/Alert';
 import ResetSaveBtns from '@/components/form/ResetSaveBtns';
 
@@ -38,10 +38,10 @@ export default function AccountForm({ username, email }: FormValues) {
     resolver: yupResolver(validationSchema),
   });
 
-  const { editMe, data, error } = useEditMe();
+  const { updateMe, data, error } = useUpdateMe();
 
   function onSubmit({ username, email }: FormValues) {
-    editMe({ username, email });
+    updateMe({ username, email });
   }
 
   const [alert, setAlert] = useState<AlertState>({ visible: false });

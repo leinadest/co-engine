@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply m-0 p-0 min-h-screen font-sans bg-bgPrimary text-textPrimary dark:bg-bgPrimary-dark dark:text-textPrimary-dark;
+    @apply m-0 p-0 min-h-screen font-sans text-sm xs:text-base bg-bgPrimary text-textPrimary dark:bg-bgPrimary-dark dark:text-textPrimary-dark;
   }
 
   h1,
@@ -33,7 +33,7 @@
   }
 
   h5 {
-    @apply text-base;
+    @apply text-sm xs:text-base;
   }
 
   h6 {
@@ -166,6 +166,22 @@
     @apply size-8 xs:size-12 bg-bgSecondary rounded-full;
   }
 
+  .online {
+    @apply relative;
+
+    &::before {
+      @apply absolute content-[''] bottom-0 right-0 size-3 xs:size-4 border-2 border-bgPrimary dark:border-bgPrimary-dark rounded-full bg-success;
+    }
+  }
+
+  .offline {
+    @apply relative;
+
+    &::before {
+      @apply absolute content-[''] bottom-0 right-0 size-3 xs:size-4 border-2 border-bgPrimary dark:border-bgPrimary-dark rounded-full bg-bgSecondaryDark;
+    }
+  }
+
   .skeleton {
     @apply animate-pulse bg-bgSecondary dark:bg-bgSecondary-dark;
 
@@ -257,7 +273,7 @@
     }
 
     &::before {
-      @apply absolute -left-2 inset-y-1/3 rounded-3xl w-4 content-[''] bg-primary;
+      @apply absolute -left-3 xs:-left-2 inset-y-1/3 rounded-3xl w-4 content-[''] bg-primary;
       @apply transition-all duration-200 ease-in-out;
     }
 

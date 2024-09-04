@@ -49,10 +49,10 @@ export default function ChatHeader() {
     <header className="flex wrap-none items-center p-2 px-4 gap-2 border-b border-b-border dark:border-b-border-dark first:*:mr-auto">
       {otherUsers.length === 1 ? (
         <Link href={`/home/user/${otherUsers[0].id}`}>
-          <ChatIdentity name={name} src={src} defaultSrc={defaultSrc} />
+          <ChatIdentity {...chat} name={name} otherUser={otherUsers[0]} />
         </Link>
       ) : (
-        <ChatIdentity name={name} />
+        <ChatIdentity {...chat} name={name} />
       )}
       {chat.creatorId === me.id && (
         <>

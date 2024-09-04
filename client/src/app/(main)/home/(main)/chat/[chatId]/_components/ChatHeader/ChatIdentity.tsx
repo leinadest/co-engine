@@ -1,19 +1,38 @@
+import { useEffect, useState } from 'react';
+
 import Avatar from '@/components/Avatar';
+import useUserUpdated from '@/features/users/hooks/useUserUpdated';
+import { snakeToCamel } from '@/utils/helpers';
 
 interface ChatIdentityProps {
-  src?: string;
-  defaultSrc?: string;
+  otherUser?: any;
   name: string;
 }
 
-export default function ChatIdentity({
-  src,
-  defaultSrc,
-  name,
-}: ChatIdentityProps) {
+export default function ChatIdentity({ otherUser, name }: ChatIdentityProps) {
+  const [directUser, setDirectUser] = useState(otherUser);
+  const userUpdatedSub = useUserUpdated({
+    variables: { userIds: directUser ? [directUser.id] : [] },
+  });
+
+  useEffect(() => {
+    if (!userUpdatedSub.data) return;
+    const newDirectUser = snakeToCamel(userUpdatedSub.data);
+    setDirectUser(newDirectUser);
+  }, [userUpdatedSub.data]);
+
   return (
     <div className="flex items-center gap-2">
-      <Avatar src={src} defaultSrc={defaultSrc || '/chat.png'} alt="chat" />
+      {directUser ? (
+        <Avatar
+          src={directUser?.profilePicUrl}
+          defaultSrc={'/person.png'}
+          alt="chat"
+          status={directUser.isOnline ? 'online' : 'offline'}
+        />
+      ) : (
+        <Avatar defaultSrc="/chat.png" alt="chat" />
+      )}
       <h5>{name}</h5>
     </div>
   );

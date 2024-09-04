@@ -11,7 +11,7 @@ interface LayoutProps {
 export default function ChatPageLayout({ children }: LayoutProps) {
   return (
     <ChatContextProvider>
-      <div className="grow flex flex-col h-full bg-bgPrimary">
+      <div className="grow flex flex-col size-full bg-bgPrimary">
         <ChatHeader />
         {children}
         <ChatInput />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import Skeleton from '@/components/skeletons/Skeleton';
 import Friend, { FriendProps } from '@/features/friends/components/Friend';
@@ -9,15 +9,33 @@ import { snakeToCamel } from '@/utils/helpers';
 import SkeletonList from '@/components/skeletons/SkeletonList';
 import SkeletonFriend from '@/features/friends/components/SkeletonFriend';
 import List from '@/components/common/List';
+import useUserUpdated from '@/features/users/hooks/useUserUpdated';
 
 export default function AllFriends() {
   const { data, error, fetchMore } = useFriends({
     fetchPolicy: 'cache-and-network',
   });
+  const [friends, setFriends] = useState<any[]>([]);
 
   useEffect(() => {
     if (error) throw error;
-  }, [error]);
+    if (!data) return;
+    setFriends(data.edges.map((edge) => snakeToCamel(edge.node)));
+  }, [error, data]);
+
+  const userUpdatedSub = useUserUpdated({
+    variables: { userIds: friends.map((friend) => friend.id) },
+  });
+
+  useEffect(() => {
+    if (!userUpdatedSub.data) return;
+    const updatedFriend = snakeToCamel(userUpdatedSub.data);
+    setFriends((oldFriends) =>
+      oldFriends.map((friend) =>
+        friend.id === updatedFriend.id ? updatedFriend : friend
+      )
+    );
+  }, [userUpdatedSub.data]);
 
   if (!data) {
     return (
@@ -32,8 +50,6 @@ export default function AllFriends() {
       </main>
     );
   }
-
-  const friends = data.edges.map((edge) => snakeToCamel(edge.node));
 
   return (
     <main className="min-h-0">

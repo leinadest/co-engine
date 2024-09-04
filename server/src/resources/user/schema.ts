@@ -3,18 +3,12 @@ import { merge } from 'lodash';
 
 import queries from './queries';
 import mutations from './mutations';
+import subscriptions from './subscriptions';
 import { type Context } from '../../config/apolloServer';
 import { type ChatsInput } from '../chat/queries';
 import type User from './model';
 
 const typeDefs = gql`
-  type UserInfo {
-    id: ID!
-    username: String
-    discriminator: String
-    profile_pic_url: String
-  }
-
   type PublicUser {
     id: ID!
     username: String!
@@ -132,6 +126,16 @@ const resolvers = {
 };
 
 export default {
-  typeDefs: [typeDefs, queries.typeDefs, mutations.typeDefs],
-  resolvers: merge(resolvers, queries.resolvers, mutations.resolvers),
+  typeDefs: [
+    typeDefs,
+    queries.typeDefs,
+    mutations.typeDefs,
+    subscriptions.typeDefs,
+  ],
+  resolvers: merge(
+    resolvers,
+    queries.resolvers,
+    mutations.resolvers,
+    subscriptions.resolvers
+  ),
 };

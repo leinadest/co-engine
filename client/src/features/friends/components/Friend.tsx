@@ -26,7 +26,12 @@ export default function Friend({
   return (
     <div className="flex items-center gap-2 p-2">
       <Link href={`/home/user/${id}`}>
-        <Avatar src={profilePicUrl} defaultSrc={'/person.png'} alt="friend" />
+        <Avatar
+          src={profilePicUrl}
+          defaultSrc={'/person.png'}
+          alt="friend"
+          status={isOnline ? 'online' : 'offline'}
+        />
       </Link>
       <div className="mr-auto">
         <Link

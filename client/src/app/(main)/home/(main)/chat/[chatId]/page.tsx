@@ -20,7 +20,6 @@ interface ChatPageProps {
 
 export default function ChatPage({ params: { chatId } }: ChatPageProps) {
   const { setChatId } = useContext(ChatContext);
-
   useEffect(() => setChatId(chatId), [setChatId, chatId]);
 
   const { setStorage } = useLocalStorage('lastChatId');

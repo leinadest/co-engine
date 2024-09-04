@@ -73,7 +73,7 @@ export function createApolloClient() {
           const useUploadLink =
             definition.kind === 'OperationDefinition' &&
             definition.operation === 'mutation' &&
-            definition.name?.value === 'EditMe';
+            definition.name?.value === 'UploadMe';
           return useUploadLink;
         },
         uploadLink,

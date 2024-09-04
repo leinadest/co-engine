@@ -29,7 +29,7 @@ export default class UserBlocksDataSource {
     const include: Includeable = {
       model: User,
       as: 'blockedUsers',
-      attributes: ['id', 'username', 'discriminator', 'profile_pic_url'],
+      attributes: { exclude: ['email'] },
     };
 
     if (search !== undefined) {

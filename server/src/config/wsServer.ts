@@ -10,6 +10,8 @@ import UsersDataSource from '../resources/user/dataSource';
 import UserFriendRequestsDataSource from '../resources/user_friend_request/dataSource';
 import AuthService from '../services/authService';
 import sequelize from './sequelize';
+import { pubsub } from './apolloServer';
+import { User } from '../resources';
 
 const createWsServer = (httpServer: http.Server): Disposable => {
   const wsServer = new WebSocketServer({
@@ -42,6 +44,26 @@ const createWsServer = (httpServer: http.Server): Disposable => {
             chatsDB,
           },
         };
+      },
+      async onConnect(ctx) {
+        const accessToken = ctx.connectionParams?.authToken as string;
+        const authService = new AuthService(accessToken ?? '');
+        const userId = authService.getUserId();
+        const [, affectedUsers] = await User.update(
+          { is_online: true },
+          { where: { id: userId }, returning: true }
+        );
+        await pubsub.publish('userUpdated', { userUpdated: affectedUsers[0] });
+      },
+      async onDisconnect(ctx) {
+        const accessToken = ctx.connectionParams?.authToken as string;
+        const authService = new AuthService(accessToken ?? '');
+        const userId = authService.getUserId();
+        const [, affectedUsers] = await User.update(
+          { is_online: false },
+          { where: { id: userId }, returning: true }
+        );
+        await pubsub.publish('userUpdated', { userUpdated: affectedUsers[0] });
       },
     },
     wsServer

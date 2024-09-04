@@ -23,6 +23,7 @@ export interface GetMeResult {
         username: string;
         discriminator: string;
         profile_pic_url: string;
+        is_online: boolean;
       }>;
     }>;
   };
@@ -73,6 +74,7 @@ export const GET_ME: TypedDocumentNode<GetMeResult, GetMeVariables> = gql`
               username
               discriminator
               profile_pic_url
+              is_online
             }
           }
         }

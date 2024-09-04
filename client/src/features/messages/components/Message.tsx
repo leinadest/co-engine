@@ -44,7 +44,7 @@ export default function Message({
           alt="user"
         />
       </Link>
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 min-w-0">
         <div className="flex items-center gap-4">
           <Link href={`/home/user/${creator.id}`}>
             <h6
@@ -59,7 +59,7 @@ export default function Message({
           </Link>
           <p className="text-sm">{timestamp}</p>
         </div>
-        <p className="text-sm">{content}</p>
+        <p className="text-sm break-words">{content}</p>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { type FileUpload } from 'graphql-upload/processRequest.js';
 
 import { User } from '../';
 import AuthService from '../../services/authService';
-import { type Context } from '../../config/apolloServer';
+import { pubsub, type Context } from '../../config/apolloServer';
 import { deleteImage, uploadImage } from '../../services/cloudinaryService';
 
 const typeDefs = gql`
@@ -16,11 +16,16 @@ const typeDefs = gql`
     password: String!
   }
 
-  input EditMeInput {
+  input UpdateMeInput {
     username: String
     email: String
-    profilePic: Upload
+    isOnline: Boolean
+    lastLoginAt: DateTime
     bio: String
+  }
+
+  input UploadMeInput {
+    profilePic: Upload
   }
 
   input AuthenticateInput {
@@ -41,9 +46,14 @@ const typeDefs = gql`
     createUser(user: CreateUserInput!): User
 
     """
-    Edit a user's account information.
+    Update a user's information.
     """
-    editMe(edit: EditMeInput!): User
+    updateMe(update: UpdateMeInput!): User
+
+    """
+    Upload a user's information.
+    """
+    uploadMe(upload: UploadMeInput!): User
 
     """
     Generates a new access token, if provided credentials (username and password) match any registered user.
@@ -60,12 +70,19 @@ interface CreateUserInput {
   };
 }
 
-interface EditMeInput {
-  edit: {
+interface UpdateMeInput {
+  update: {
     username?: string;
     email?: string;
-    profilePic?: Promise<FileUpload>;
+    isOnline?: boolean;
+    lastLoginAt?: Date;
     bio?: string;
+  };
+}
+
+interface UploadMeInput {
+  upload: {
+    profilePic: Promise<FileUpload>;
   };
 }
 
@@ -105,8 +122,8 @@ const createUserInputSchema = yup.object().shape({
   }),
 });
 
-const editMeInputSchema = yup.object().shape({
-  edit: yup.object().shape({
+const updateMeInputSchema = yup.object().shape({
+  update: yup.object().shape({
     username: yup
       .string()
       .optional()
@@ -124,14 +141,20 @@ const editMeInputSchema = yup.object().shape({
         /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
         'Email must be a valid email'
       ),
-    profilePic: yup
-      .mixed<Promise<FileUpload> | any>()
-      .test('isFile', 'Profile picture must be a file', async (value) => {
-        const file = await value;
-        return value === undefined || 'filename' in file;
-      }),
+    isOnline: yup.boolean().optional(),
+    lastLoginAt: yup.date().optional(),
+
     bio: yup.string().max(200, 'Bio cannot be longer than 200 characters'),
   }),
+});
+
+const uploadMeInputSchema = yup.object().shape({
+  profilePic: yup
+    .mixed<Promise<FileUpload> | any>()
+    .test('isFile', 'Profile picture must be a file', async (value) => {
+      const file = await value;
+      return value === undefined || 'filename' in file;
+    }),
 });
 
 const authenticateInputSchema = yup.object().shape({
@@ -171,11 +194,41 @@ const resolvers = {
         password_hash: passwordHash,
       });
     },
-    editMe: async (_: any, args: EditMeInput, { authService }: Context) => {
-      const validArgs = await editMeInputSchema.validate(args);
+    updateMe: async (_: any, args: UpdateMeInput, { authService }: Context) => {
+      const validArgs = await updateMeInputSchema.validate(args);
       const {
-        edit: { username, email, profilePic, bio },
+        update: { isOnline, username, email, lastLoginAt, bio },
       } = validArgs;
+
+      const user = await authService.getUser();
+      if (user === null) {
+        throw new GraphQLError('Not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      const [affectedCount, affectedUsers] = await User.update(
+        {
+          username,
+          email,
+          is_online: isOnline,
+          last_login_at: lastLoginAt,
+          bio,
+        },
+        { where: { id: user.id }, returning: true }
+      );
+      if (affectedCount === 0) {
+        throw new GraphQLError('User not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+
+      await pubsub.publish('userUpdated', { userUpdated: affectedUsers[0] });
+
+      return affectedUsers[0];
+    },
+    uploadMe: async (_: any, args: UploadMeInput, { authService }: Context) => {
+      const { profilePic } = await uploadMeInputSchema.validate(args);
 
       const user = await authService.getUser();
       if (user === null) {
@@ -199,11 +252,8 @@ const resolvers = {
 
       const [affectedCount, affectedUsers] = await User.update(
         {
-          username,
-          email,
           profile_pic: profilePicId,
           profile_pic_url: profilePicUrl,
-          bio,
         },
         { where: { id: user.id }, returning: true }
       );

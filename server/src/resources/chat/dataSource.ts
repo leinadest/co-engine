@@ -78,6 +78,7 @@ class ChatsDataSource {
         model: User,
         as: 'users',
         where: { id: userId },
+        attributes: [],
       },
       where: {
         ...where,
@@ -114,7 +115,7 @@ class ChatsDataSource {
       include: {
         model: User,
         as: 'users',
-        attributes: ['id', 'username', 'discriminator', 'profile_pic_url'],
+        attributes: { exclude: ['email'] },
       },
     })) as unknown as (Chat & { users: User[] }) | null;
 

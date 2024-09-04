@@ -15,6 +15,7 @@ export default function User({ profilePicUrl, username }: UserProps) {
           src={profilePicUrl}
           defaultSrc={'/person.png'}
           className="bg-bgSecondaryDark dark:bg-bgSecondaryDark-dark"
+          status={'online'}
         />
       </Link>
       <p className="grow">{username}</p>

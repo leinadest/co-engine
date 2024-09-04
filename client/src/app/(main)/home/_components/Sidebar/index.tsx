@@ -6,14 +6,14 @@ import { useRouter } from 'next/navigation';
 import { snakeToCamel } from '@/utils/helpers';
 import TrackerLink from '@/components/TrackerLink';
 import Avatar from '@/components/Avatar';
-import List from '@/components/common/List';
 import SkeletonList from '@/components/skeletons/SkeletonList';
-import SkeletonChat from '@/features/chats/components/SkeletonChat';
+import SkeletonChat from '@/app/(main)/home/_components/Sidebar/SkeletonChat';
 import useMe from '@/features/users/hooks/useMe';
 import User from '@/features/users/components/User';
 import SkeletonUser from '@/features/users/components/SkeletonUser';
-import Chat, { ChatProps } from '@/features/chats/components/Chat';
 import AddChatBtn from './AddChatBtn';
+import List from '@/components/common/List';
+import Chat, { ChatProps } from '@/app/(main)/home/_components/Sidebar/Chat';
 
 export default function Sidebar({ className }: { className?: string }) {
   const { data, error, fetchMoreChats } = useMe();
@@ -25,23 +25,9 @@ export default function Sidebar({ className }: { className?: string }) {
 
   const me = snakeToCamel(data);
 
-  const chats = data?.chats.edges.map(({ node }) => {
-    const chat = snakeToCamel(node);
+  const chats = me?.chats.edges.map(({ node: chat }: any) => {
     const otherUsers = chat.users.filter((user: any) => user.id !== me.id);
-
-    const name =
-      chat.name ??
-      otherUsers
-        .slice(0, 3)
-        .map((user: any) => user.username)
-        .join(', ')
-        .concat(otherUsers.length > 3 ? '...' : '') ??
-      'Empty Chat';
-    const src =
-      otherUsers.length === 1 && (otherUsers[0].profilePicUrl ?? null);
-    const defaultSrc = otherUsers.length === 1 && '/person.png';
-
-    return { ...chat, name, src, defaultSrc };
+    return { ...chat, otherUsers };
   });
 
   return (

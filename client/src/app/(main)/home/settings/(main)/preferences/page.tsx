@@ -7,7 +7,7 @@ import * as yup from 'yup';
 
 import ResetSaveBtns from '@/components/form/ResetSaveBtns';
 import ToggleField from '@/components/form/ToggleField';
-import { ThemeContext } from '@/app/_providers/ThemeProvider';
+import { ThemeContext } from '@/app/(main)/_providers/ThemeProvider';
 
 interface FormValues {
   darkMode: boolean;

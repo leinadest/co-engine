@@ -82,6 +82,14 @@ User.beforeCreate(async (user) => {
   user.discriminator = usernameCount.toString();
 });
 
+User.beforeUpdate(async (updatedUser) => {
+  if (updatedUser.previous('username') === updatedUser.username) return;
+  const usernameCount = await User.count({
+    where: { username: updatedUser.username },
+  });
+  updatedUser.discriminator = usernameCount.toString();
+});
+
 User.beforeBulkCreate(async (users) => {
   const record: Record<string, undefined | number> = {};
   for (const user of users) {
