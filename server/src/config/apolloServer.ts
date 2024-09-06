@@ -6,11 +6,12 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 import { type ExpressMiddlewareOptions } from '@apollo/server/express4';
 import { type WithRequired } from '@apollo/utils.withrequired';
 import { type Sequelize } from 'sequelize';
-import { PubSub } from 'graphql-subscriptions';
+import { PostgresPubSub } from 'graphql-pg-subscriptions';
+import { Client } from 'pg';
 
 import sequelize from './sequelize';
 import AuthService from '../services/authService';
-import { NODE_ENV } from './environment';
+import { NODE_ENV, POSTGRES_URL } from './environment';
 import schema from '../schema';
 import UsersDataSource from '../resources/user/dataSource';
 import MessagesDataSource from '../resources/message/dataSource';
@@ -108,4 +109,8 @@ export const expressMiddlewareConfig: WithRequired<
   },
 };
 
-export const pubsub = new PubSub();
+const client = new Client({ connectionString: POSTGRES_URL });
+
+client.connect();
+
+export const pubsub = new PostgresPubSub({ client });

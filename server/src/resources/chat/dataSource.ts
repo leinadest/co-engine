@@ -132,7 +132,7 @@ class ChatsDataSource {
     userId: string,
     otherUserId: string
   ): Promise<Chat> {
-    const chats = await Chat.findAll<Chat & Record<string, any>>({
+    const chats = await Chat.findAll({
       include: {
         model: User,
         as: 'users',
@@ -147,7 +147,7 @@ class ChatsDataSource {
       ),
     });
 
-    if (chats[0] !== null) {
+    if (chats.length !== 0) {
       return await chats[0].toJSON();
     }
 

@@ -23,6 +23,7 @@
     "debug": "^4.3.5",
     "dotenv": "^16.4.5",
     "graphql": "^16.9.0",
+    "graphql-pg-subscriptions": "^3.2.5",
     "graphql-subscriptions": "^2.0.0",
     "graphql-tag": "^2.12.6",
     "graphql-upload": "^15.0.2",
