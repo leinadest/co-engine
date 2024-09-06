@@ -6,6 +6,8 @@ interface PartialUser {
   id: string;
   username: string;
   discriminator: string;
+  display_name: string;
+  is_online: boolean;
   profile_pic_url: string;
 }
 
@@ -54,6 +56,8 @@ export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
         id
         username
         discriminator
+        display_name
+        is_online
         profile_pic_url
       }
       messages(
@@ -70,6 +74,8 @@ export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
               id
               username
               discriminator
+              display_name
+              is_online
               profile_pic_url
             }
             created_at

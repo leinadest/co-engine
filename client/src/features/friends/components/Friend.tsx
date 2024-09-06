@@ -9,6 +9,7 @@ export interface FriendProps {
   id: string;
   username: string;
   discriminator: string;
+  displayName: string;
   lastLoginAt: string;
   isOnline: boolean;
   profilePicUrl: string;
@@ -18,11 +19,12 @@ export default function Friend({
   id,
   username,
   discriminator,
+  displayName,
   lastLoginAt,
   isOnline,
   profilePicUrl,
 }: FriendProps) {
-  const [showDiscriminator, setShowDiscriminator] = useState(false);
+  const [showName, setShowName] = useState(false);
   return (
     <div className="flex items-center gap-2 p-2">
       <Link href={`/home/user/${id}`}>
@@ -36,13 +38,15 @@ export default function Friend({
       <div className="mr-auto">
         <Link
           href={`/home/user/${id}`}
-          onMouseOver={() => setShowDiscriminator(true)}
-          onMouseLeave={() => setShowDiscriminator(false)}
+          onMouseOver={() => setShowName(true)}
+          onMouseLeave={() => setShowName(false)}
         >
           <h5>
-            {username}
-            {showDiscriminator && (
-              <span className="font-normal">#{discriminator}</span>
+            {displayName}
+            {showName && (
+              <span className="ml-2 font-normal">
+                {username}#{discriminator}
+              </span>
             )}
           </h5>
         </Link>

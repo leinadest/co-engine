@@ -5,6 +5,7 @@ export interface GetUserResult {
     id: string;
     username: string;
     discriminator: string;
+    display_name: string;
     created_at: string;
     last_login_at: string;
     is_online: boolean;
@@ -24,6 +25,7 @@ export const GET_USER: TypedDocumentNode<GetUserResult, GetUserVariables> = gql`
       id
       username
       discriminator
+      display_name
       created_at
       last_login_at
       is_online

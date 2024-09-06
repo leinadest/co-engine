@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  body {
+  :root {
     @apply m-0 p-0 min-h-screen font-sans text-sm xs:text-base bg-bgPrimary text-textPrimary dark:bg-bgPrimary-dark dark:text-textPrimary-dark;
   }
 

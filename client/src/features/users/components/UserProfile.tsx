@@ -1,19 +1,22 @@
 import Avatar from '@/components/Avatar';
 import { formatTime } from '@/utils/helpers';
-import { DateTime } from 'luxon';
 
 interface UserProfileProps {
   profilePicUrl?: string;
+  displayName: string;
   username: string;
   discriminator: string;
+  is_online: boolean;
   bio?: string;
   createdAt: string;
 }
 
 export default function UserProfile({
   profilePicUrl,
+  displayName,
   username,
   discriminator,
+  is_online,
   bio,
   createdAt,
 }: UserProfileProps) {
@@ -23,11 +26,13 @@ export default function UserProfile({
         src={profilePicUrl}
         defaultSrc="/person.png"
         alt="profile"
-        className="mx-auto size-40 xs:size-40 bg-bgSecondaryDark *:size-24"
+        status={is_online ? 'online' : 'offline'}
+        className="mx-auto size-40 xs:size-40 bg-bgSecondaryDark first:*:size-24 before:size-10 "
       />
-      <h1 className="mb-4 text-center">
+      <h1 className="text-center">{displayName}</h1>
+      <h5 className="mb-4 text-center">
         {username}#{discriminator}
-      </h1>
+      </h5>
       <h5>About Me</h5>
       <hr className="my-2" />
       <p>{bio ?? 'No bio'}</p>

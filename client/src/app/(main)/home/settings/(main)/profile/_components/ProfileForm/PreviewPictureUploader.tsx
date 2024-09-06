@@ -27,7 +27,8 @@ export default function PreviewPictureUploader({ me, form }: PreviewProps) {
           src={preview}
           defaultSrc={'/person.png'}
           alt="profile preview"
-          className="size-40 xs:size-40 bg-bgSecondaryDark *:size-24"
+          status="online"
+          className="size-40 xs:size-40 bg-bgSecondaryDark first:*:size-24 xs:first:*:size-24 before:size-10"
         />
         <button
           type="button"

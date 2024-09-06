@@ -19,6 +19,7 @@ const typeDefs = gql`
   input UpdateMeInput {
     username: String
     email: String
+    displayName: String
     isOnline: Boolean
     lastLoginAt: DateTime
     bio: String
@@ -74,6 +75,7 @@ interface UpdateMeInput {
   update: {
     username?: string;
     email?: string;
+    displayName?: string;
     isOnline?: boolean;
     lastLoginAt?: Date;
     bio?: string;
@@ -141,6 +143,11 @@ const updateMeInputSchema = yup.object().shape({
         /^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/,
         'Email must be a valid email'
       ),
+    displayName: yup
+      .string()
+      .optional()
+      .min(3, 'Display name must be between 3 and 30 characters long')
+      .max(30, 'Display name must be between 3 and 30 characters long'),
     isOnline: yup.boolean().optional(),
     lastLoginAt: yup.date().optional(),
 
@@ -149,12 +156,14 @@ const updateMeInputSchema = yup.object().shape({
 });
 
 const uploadMeInputSchema = yup.object().shape({
-  profilePic: yup
-    .mixed<Promise<FileUpload> | any>()
-    .test('isFile', 'Profile picture must be a file', async (value) => {
-      const file = await value;
-      return value === undefined || 'filename' in file;
-    }),
+  upload: yup.object().shape({
+    profilePic: yup
+      .mixed<Promise<FileUpload> | any>()
+      .test('isFile', 'Profile picture must be a file', async (value) => {
+        const file = await value;
+        return value === undefined || 'filename' in file;
+      }),
+  }),
 });
 
 const authenticateInputSchema = yup.object().shape({
@@ -195,10 +204,9 @@ const resolvers = {
       });
     },
     updateMe: async (_: any, args: UpdateMeInput, { authService }: Context) => {
-      const validArgs = await updateMeInputSchema.validate(args);
       const {
-        update: { isOnline, username, email, lastLoginAt, bio },
-      } = validArgs;
+        update: { username, email, displayName, isOnline, lastLoginAt, bio },
+      } = await updateMeInputSchema.validate(args);
 
       const user = await authService.getUser();
       if (user === null) {
@@ -207,28 +215,21 @@ const resolvers = {
         });
       }
 
-      const [affectedCount, affectedUsers] = await User.update(
-        {
-          username,
-          email,
-          is_online: isOnline,
-          last_login_at: lastLoginAt,
-          bio,
-        },
-        { where: { id: user.id }, returning: true }
-      );
-      if (affectedCount === 0) {
-        throw new GraphQLError('User not found', {
-          extensions: { code: 'NOT_FOUND' },
-        });
-      }
+      user.username = username ?? user.username;
+      user.email = email ?? user.email;
+      user.display_name = displayName ?? user.display_name;
+      user.is_online = isOnline ?? user.is_online;
+      user.last_login_at = lastLoginAt ?? user.last_login_at;
+      user.bio = bio ?? user.bio;
 
-      await pubsub.publish('userUpdated', { userUpdated: affectedUsers[0] });
+      await pubsub.publish('userUpdated', { userUpdated: user });
 
-      return affectedUsers[0];
+      return await user.save();
     },
     uploadMe: async (_: any, args: UploadMeInput, { authService }: Context) => {
-      const { profilePic } = await uploadMeInputSchema.validate(args);
+      const {
+        upload: { profilePic },
+      } = await uploadMeInputSchema.validate(args);
 
       const user = await authService.getUser();
       if (user === null) {
@@ -236,9 +237,6 @@ const resolvers = {
           extensions: { code: 'UNAUTHENTICATED' },
         });
       }
-
-      let profilePicId: string | undefined;
-      let profilePicUrl: string | undefined;
 
       if (profilePic !== undefined && user.profile_pic !== null) {
         await deleteImage(user.profile_pic);
@@ -246,24 +244,11 @@ const resolvers = {
       if (profilePic !== undefined) {
         const fileUpload = (await profilePic) as FileUpload;
         const { publicId, url } = await uploadImage(fileUpload);
-        profilePicId = publicId;
-        profilePicUrl = url;
+        user.profile_pic = publicId;
+        user.profile_pic_url = url;
       }
 
-      const [affectedCount, affectedUsers] = await User.update(
-        {
-          profile_pic: profilePicId,
-          profile_pic_url: profilePicUrl,
-        },
-        { where: { id: user.id }, returning: true }
-      );
-      if (affectedCount === 0) {
-        throw new GraphQLError('User not found', {
-          extensions: { code: 'NOT_FOUND' },
-        });
-      }
-
-      return affectedUsers[0];
+      return await user.save();
     },
     authenticate: async (_parentValue: any, args: AuthenticateInput) => {
       const validArgs = await authenticateInputSchema.validate(args, {

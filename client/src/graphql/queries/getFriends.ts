@@ -6,6 +6,7 @@ export interface GetFriendsResult {
     id: string;
     username: string;
     discriminator: string;
+    display_name: string;
     last_login_at: string;
     is_online: boolean;
     profile_pic_url: string;
@@ -47,6 +48,7 @@ const GET_FRIENDS: TypedDocumentNode<
           id
           username
           discriminator
+          display_name
           last_login_at
           is_online
           profile_pic_url

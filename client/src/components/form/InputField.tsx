@@ -1,10 +1,11 @@
 import { UseFormReturn } from 'react-hook-form';
+import { twMerge } from 'tailwind-merge';
 
 interface InputFieldProps {
   label: string;
   name: string;
   type: string;
-  placeholder: string;
+  placeholder?: string;
   className?: string;
   form: UseFormReturn<any, any, undefined>;
 }
@@ -19,14 +20,9 @@ export default function InputField({
 }: InputFieldProps) {
   const error = form.formState.errors[name]?.message;
   return (
-    <div className={`form-group ${className ?? ''}`}>
+    <div className={twMerge('form-group', className)}>
       <label>{label}</label>
-      <input
-        type={type}
-        placeholder={placeholder}
-        {...form.register(name)}
-        className="border"
-      />
+      <input type={type} placeholder={placeholder} {...form.register(name)} />
       {error && <p className="error">{error as string}</p>}
     </div>
   );

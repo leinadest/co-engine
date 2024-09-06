@@ -10,6 +10,7 @@ export interface MessageProps {
     id: string;
     username: string;
     discriminator: string;
+    displayName: string;
     profilePicUrl: string;
   };
   createdAt: Date;
@@ -29,7 +30,7 @@ export default function Message({
   content,
   reactions,
 }: MessageProps) {
-  const [showDiscriminator, setShowDiscriminator] = useState(false);
+  const [showName, setShowName] = useState(false);
 
   const timestamp = editedAt
     ? `Edited at ${formatTime(editedAt)}`
@@ -48,12 +49,14 @@ export default function Message({
         <div className="flex items-center gap-4">
           <Link href={`/home/user/${creator.id}`}>
             <h6
-              onMouseOver={() => setShowDiscriminator(true)}
-              onMouseLeave={() => setShowDiscriminator(false)}
+              onMouseOver={() => setShowName(true)}
+              onMouseLeave={() => setShowName(false)}
             >
-              {creator.username}
-              {showDiscriminator && (
-                <span className="font-normal">#{creator.discriminator}</span>
+              {creator.displayName}
+              {showName && (
+                <span className="ml-2 font-normal">
+                  {creator.username}#{creator.discriminator}
+                </span>
               )}
             </h6>
           </Link>

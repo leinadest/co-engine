@@ -5,6 +5,7 @@ export interface UpdateMeResult {
     email: string;
     username: string;
     discriminator: string;
+    display_name: string;
     bio: string;
   };
 }
@@ -13,6 +14,7 @@ export interface UpdateMeVariables {
   update: {
     username?: string;
     email?: string;
+    displayName?: string;
     isOnline?: boolean;
     bio?: string;
   };
@@ -24,6 +26,7 @@ const UPDATE_ME: TypedDocumentNode<UpdateMeResult, UpdateMeVariables> = gql`
       email
       username
       discriminator
+      display_name
       bio
     }
   }

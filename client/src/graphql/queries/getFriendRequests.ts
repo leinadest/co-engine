@@ -7,12 +7,14 @@ export interface GetFriendRequestsResult {
       id: string;
       username: string;
       discriminator: string;
+      display_name: string;
       profile_pic_url: string;
     };
     receiver: {
       id: string;
       username: string;
       discriminator: string;
+      display_name: string;
       profile_pic_url: string;
     };
     created_at: string;
@@ -53,12 +55,14 @@ const GET_FRIEND_REQUESTS: TypedDocumentNode<
             id
             username
             discriminator
+            display_name
             profile_pic_url
           }
           receiver {
             id
             username
             discriminator
+            display_name
             profile_pic_url
           }
           created_at

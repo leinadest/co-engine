@@ -54,7 +54,7 @@ export default function Sidebar({ className }: { className?: string }) {
             data={chats as ChatProps[]}
             onEndReached={fetchMoreChats}
           />
-          <User profilePicUrl={me.profilePicUrl} username={me.username} />
+          <User me={me} />
         </>
       ) : (
         <>

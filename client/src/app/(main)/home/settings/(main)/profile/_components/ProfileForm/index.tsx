@@ -5,15 +5,17 @@ import { useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 
-import { formatTime } from '@/utils/helpers';
+import { formatTime, snakeToCamel } from '@/utils/helpers';
 import Alert, { AlertState } from '@/components/common/Alert';
 import PreviewPictureUploader from './PreviewPictureUploader';
 import ResetSaveBtns from '@/components/form/ResetSaveBtns';
 import useUploadMe from '@/features/users/hooks/useUploadMe';
 import useUpdateMe from '@/features/users/hooks/useUpdateMe';
+import InputField from '@/components/form/InputField';
 
 interface FormValues {
   profilePic?: File;
+  displayName?: string;
   bio?: string;
 }
 
@@ -25,10 +27,12 @@ const validationSchema = yup.object().shape({
       'Profile picture must be a file',
       (value) => !value || value instanceof File
     ),
-  bio: yup
+  displayName: yup
     .string()
-    .optional()
-    .max(200, 'Bio cannot be longer than 200 characters'),
+    .trim()
+    .min(3, 'Display name must be between 3 and 30 characters long')
+    .max(30, 'Display name must be between 3 and 30 characters long'),
+  bio: yup.string().max(200, 'Bio cannot be longer than 200 characters'),
 });
 
 interface ProfileFormProps {
@@ -37,18 +41,22 @@ interface ProfileFormProps {
 
 export default function ProfileForm({ me }: ProfileFormProps) {
   const form = useForm({
-    defaultValues: { bio: me.bio ?? 'No bio' },
+    defaultValues: { displayName: me.displayName, bio: me.bio ?? 'No bio' },
     resolver: yupResolver(validationSchema),
   });
-  const errors = form.formState.errors;
+  const { errors, dirtyFields } = form.formState;
 
   const { uploadMe, data: uploadData, error: uploadError } = useUploadMe();
   const { updateMe, data: updateData, error: updateError } = useUpdateMe();
   const [alert, setAlert] = useState<AlertState>({ visible: false });
 
-  function onSubmit({ profilePic, bio }: FormValues) {
-    uploadMe({ profilePic });
-    updateMe({ bio });
+  function onSubmit({ profilePic, displayName, bio }: FormValues) {
+    if (dirtyFields.profilePic) {
+      uploadMe({ profilePic });
+    }
+    if (dirtyFields.displayName || dirtyFields.bio) {
+      updateMe({ displayName, bio });
+    }
   }
 
   useEffect(() => {
@@ -60,29 +68,35 @@ export default function ProfileForm({ me }: ProfileFormProps) {
         message: `$Error: ${error.message || 'Something went wrong'}`,
       });
     }
-    if ((!error && uploadData) || updateData) {
+    if (!error && (uploadData || updateData)) {
       setAlert({
         visible: true,
         type: 'success',
         message: 'Profile successfully updated',
       });
-    }
-    if (!error && updateData) {
-      form.reset({ bio: updateData.bio });
+      form.reset(form.getValues());
     }
   }, [uploadError, uploadData, updateError, updateData, form]);
 
   return (
     <form className="flex flex-col h-full">
       <PreviewPictureUploader me={me} form={form} />
-      <h1 className="text-center mb-4">
+      <h5 className="text-center mb-4">
         {me.username}#{me.discriminator}
-      </h1>
+      </h5>
+
+      <InputField
+        form={form}
+        label="Display Name"
+        name="displayName"
+        type="text"
+        className="first:*:font-bold gap-1"
+      />
 
       <h5>About Me</h5>
       <textarea
         {...form.register('bio')}
-        className="resize-none size-full max-h-40 bg-bgSecondary"
+        className="resize-none size-full min-w-0 max-h-40 bg-bgSecondary"
       />
       {errors.bio && <p className="error pt-2">{errors.bio.message}</p>}
 

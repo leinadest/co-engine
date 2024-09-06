@@ -16,6 +16,7 @@ const typeDefs = gql`
     created_at: DateTime!
     last_login_at: DateTime
     is_online: Boolean!
+    display_name: String!
     profile_pic: String
     profile_pic_url: String
     bio: String
@@ -40,6 +41,7 @@ const typeDefs = gql`
     created_at: DateTime!
     last_login_at: DateTime
     is_online: Boolean!
+    display_name: String!
     profile_pic: String
     profile_pic_url: String
     bio: String
@@ -71,6 +73,7 @@ export const PublicUserFields = gql`
     created_at
     last_login_at
     is_online
+    display_name
     profile_pic
     profile_pic_url
     bio
@@ -88,6 +91,7 @@ export const PublicUserConnectionFields = gql`
         created_at
         last_login_at
         is_online
+        display_name
         profile_pic
         profile_pic_url
         bio
@@ -111,6 +115,7 @@ export const UserFields = gql`
     created_at
     last_login_at
     is_online
+    display_name
     profile_pic
     profile_pic_url
     bio

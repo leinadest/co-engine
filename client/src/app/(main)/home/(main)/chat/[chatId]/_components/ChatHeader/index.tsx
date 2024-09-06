@@ -1,7 +1,7 @@
 'use client';
 
 import { useContext, useEffect } from 'react';
-import useChat from '../../../../../../../../features/chats/hooks/useChat';
+import useChat from '@/features/chats/hooks/useChat';
 import ChatIdentity from './ChatIdentity';
 import SkeletonChatIdentity from './SkeletonChatIdentity';
 import { snakeToCamel } from '@/utils/helpers';
@@ -38,21 +38,19 @@ export default function ChatHeader() {
     chat.name ??
     otherUsers
       .slice(0, 3)
-      .map((user: any) => user.username)
+      .map((user: any) => user.displayName)
       .join(', ')
       .concat(otherUsers.length > 3 ? '...' : '') ??
     'Empty Chat';
-  const src = otherUsers[0]?.profilePicUrl;
-  const defaultSrc = otherUsers.length === 1 ? '/person.png' : undefined;
 
   return (
     <header className="flex wrap-none items-center p-2 px-4 gap-2 border-b border-b-border dark:border-b-border-dark first:*:mr-auto">
       {otherUsers.length === 1 ? (
         <Link href={`/home/user/${otherUsers[0].id}`}>
-          <ChatIdentity {...chat} name={name} otherUser={otherUsers[0]} />
+          <ChatIdentity name={name} otherUser={otherUsers[0]} />
         </Link>
       ) : (
-        <ChatIdentity {...chat} name={name} />
+        <ChatIdentity name={name} />
       )}
       {chat.creatorId === me.id && (
         <>

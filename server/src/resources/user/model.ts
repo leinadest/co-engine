@@ -34,6 +34,9 @@ class User extends Model {
     discriminator: {
       type: DataTypes.STRING,
     },
+    display_name: {
+      type: DataTypes.STRING,
+    },
     email: {
       type: DataTypes.STRING,
       unique: true,
@@ -80,6 +83,8 @@ User.beforeCreate(async (user) => {
     where: { username: user.username },
   });
   user.discriminator = usernameCount.toString();
+  user.display_name =
+    user.display_name ?? `${user.username}#${user.discriminator}`;
 });
 
 User.beforeUpdate(async (updatedUser) => {
@@ -88,6 +93,9 @@ User.beforeUpdate(async (updatedUser) => {
     where: { username: updatedUser.username },
   });
   updatedUser.discriminator = usernameCount.toString();
+  updatedUser.display_name =
+    updatedUser.display_name ??
+    `${updatedUser.username}#${updatedUser.discriminator}`;
 });
 
 User.beforeBulkCreate(async (users) => {
@@ -102,6 +110,8 @@ User.beforeBulkCreate(async (users) => {
 
     const totalUsernameCount = storedUsernameCount + incomingUsernameCount;
     user.discriminator = totalUsernameCount.toString();
+    user.display_name =
+      user.display_name ?? `${user.username}#${user.discriminator}`;
   }
 });
 

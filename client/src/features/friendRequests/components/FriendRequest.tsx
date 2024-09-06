@@ -10,12 +10,14 @@ export interface FriendRequestProps {
     id: string;
     username: string;
     discriminator: string;
+    displayName: string;
     profilePicUrl: string;
   };
   receiver: {
     id: string;
     username: string;
     discriminator: string;
+    displayName: string;
     profilePicUrl: string;
   };
   createdAt: string;
@@ -27,7 +29,7 @@ export default function FriendRequest({
   receiver,
   createdAt,
 }: FriendRequestProps) {
-  const [showDiscriminator, setShowDiscriminator] = useState(false);
+  const [showName, setShowName] = useState(false);
   const { acceptFriendRequest, deleteFriendRequest } = useEndFriendRequest();
 
   const incoming = userId === receiver.id;
@@ -46,13 +48,15 @@ export default function FriendRequest({
       <div className="mr-auto">
         <Link
           href={`/home/user/${otherUser.id}`}
-          onMouseOver={() => setShowDiscriminator(true)}
-          onMouseLeave={() => setShowDiscriminator(false)}
+          onMouseOver={() => setShowName(true)}
+          onMouseLeave={() => setShowName(false)}
         >
           <h5>
-            {otherUser.username}
-            {showDiscriminator && (
-              <span className="font-normal">#{otherUser.discriminator}</span>
+            {otherUser.displayName}
+            {showName && (
+              <span className="ml-2 font-normal">
+                {otherUser.username}#{otherUser.discriminator}
+              </span>
             )}
           </h5>
         </Link>

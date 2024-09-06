@@ -40,7 +40,7 @@ export default function Chat({
     name ??
     otherUsers
       .slice(0, 3)
-      .map((user: any) => user.username)
+      .map((user: any) => user.displayName)
       .join(', ')
       .concat(otherUsers.length > 3 ? '...' : '') ??
     'Empty Chat';

@@ -51,8 +51,10 @@ export const GET_ME: TypedDocumentNode<GetMeResult, GetMeVariables> = gql`
       email
       username
       discriminator
+      display_name
       profile_pic
       profile_pic_url
+      is_online
       bio
       chats(
         after: $after
@@ -73,6 +75,7 @@ export const GET_ME: TypedDocumentNode<GetMeResult, GetMeVariables> = gql`
               id
               username
               discriminator
+              display_name
               profile_pic_url
               is_online
             }

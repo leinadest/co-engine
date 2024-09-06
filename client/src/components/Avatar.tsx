@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { twMerge } from 'tailwind-merge';
 
 interface AvatarProps {
   src?: string;
@@ -21,11 +22,15 @@ export default function Avatar({
       alt={alt ?? 'profile'}
       width={100}
       height={100}
-      className={`${className} ${status} profile-circle`}
+      className={twMerge('profile-circle', status, className)}
     />
   ) : (
     <div
-      className={`${className} ${status} flex justify-center items-center size-8 xs:size-12 rounded-full bg-bgSecondary dark:bg-bgSecondary-dark`}
+      className={twMerge(
+        'flex justify-center items-center size-8 xs:size-12 rounded-full bg-bgSecondary dark:bg-bgSecondary-dark',
+        status,
+        className
+      )}
     >
       <Image
         src={defaultSrc}

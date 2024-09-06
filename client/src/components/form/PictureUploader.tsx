@@ -48,7 +48,7 @@ export default function PictureUploader({
         type="file"
         accept="image/*"
         onChange={handleFileChange}
-        className="mb-4"
+        className="mb-4 bg-bgPrimary"
       />
       {preview ? (
         <Image
