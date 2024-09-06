@@ -18,6 +18,8 @@ const typeDefs = gql`
     """
     users(
       search: String
+      contextType: String
+      contextId: String
       orderDirection: String
       orderBy: String
       after: String
@@ -45,10 +47,12 @@ const typeDefs = gql`
 
 interface UsersInput {
   search?: string;
-  orderDirection?: string;
-  orderBy?: string;
+  contextType?: 'chat' | 'channel';
+  contextId?: string;
   after?: string;
   first?: number;
+  orderDirection?: string;
+  orderBy?: string;
 }
 
 interface UserInput {
@@ -66,6 +70,16 @@ const usersInputSchema = yup
   .optional()
   .shape({
     search: yup.string().trim(),
+    contextType: yup
+      .string()
+      .trim()
+      .oneOf(['chat', 'channel'], 'contextType must be either chat or channel'),
+    contextId: yup.string().trim(),
+    after: yup.string().trim(),
+    first: yup
+      .number()
+      .integer('First must be an integer')
+      .min(1, 'First must be at least 1'),
     orderDirection: yup
       .string()
       .trim()
@@ -77,11 +91,6 @@ const usersInputSchema = yup
         ['username', 'created_at'],
         'Order by must be username or created_at'
       ),
-    after: yup.string().trim(),
-    first: yup
-      .number()
-      .integer('First must be an integer')
-      .min(1, 'First must be at least 1'),
   });
 
 const userInputSchema = yup.object().shape({

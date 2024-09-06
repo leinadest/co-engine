@@ -6,7 +6,7 @@ interface UserProfileProps {
   displayName: string;
   username: string;
   discriminator: string;
-  is_online: boolean;
+  isOnline: boolean;
   bio?: string;
   createdAt: string;
 }
@@ -16,7 +16,7 @@ export default function UserProfile({
   displayName,
   username,
   discriminator,
-  is_online,
+  isOnline,
   bio,
   createdAt,
 }: UserProfileProps) {
@@ -26,7 +26,7 @@ export default function UserProfile({
         src={profilePicUrl}
         defaultSrc="/person.png"
         alt="profile"
-        status={is_online ? 'online' : 'offline'}
+        status={isOnline ? 'online' : 'offline'}
         className="mx-auto size-40 xs:size-40 bg-bgSecondaryDark first:*:size-24 before:size-10 "
       />
       <h1 className="text-center">{displayName}</h1>

@@ -48,7 +48,7 @@ export default function Chat({
   return (
     <TrackerLink
       href={`/home/chat/${id}`}
-      className="grid grid-cols-[48px_minmax(0,1fr)] gap-2 px-2 py-1 bg-bgPrimary dark:bg-bgPrimary-dark focus-by-brightness"
+      className="grid grid-cols-[48px_minmax(0,1fr)] gap-2 px-4 py-1 bg-bgPrimary dark:bg-bgPrimary-dark focus-by-brightness"
     >
       {directUser ? (
         <Avatar

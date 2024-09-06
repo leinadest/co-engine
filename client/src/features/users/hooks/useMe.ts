@@ -1,4 +1,4 @@
-import { QueryHookOptions, useQuery } from '@apollo/client';
+import { QueryHookOptions, useApolloClient, useQuery } from '@apollo/client';
 
 import {
   GET_ME,
@@ -9,6 +9,8 @@ import {
 export default function useMe(
   options?: QueryHookOptions<GetMeResult, GetMeVariables>
 ) {
+  const client = useApolloClient();
+
   const { data, loading, error, fetchMore, variables } = useQuery(GET_ME, {
     ...options,
     notifyOnNetworkStatusChange: true,

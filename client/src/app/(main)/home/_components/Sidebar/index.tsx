@@ -9,8 +9,8 @@ import Avatar from '@/components/Avatar';
 import SkeletonList from '@/components/skeletons/SkeletonList';
 import SkeletonChat from '@/app/(main)/home/_components/Sidebar/SkeletonChat';
 import useMe from '@/features/users/hooks/useMe';
-import User from '@/features/users/components/User';
-import SkeletonUser from '@/features/users/components/SkeletonUser';
+import Client from '@/features/users/components/Client';
+import SkeletonClient from '@/features/users/components/SkeletonClient';
 import AddChatBtn from './AddChatBtn';
 import List from '@/components/common/List';
 import Chat, { ChatProps } from '@/app/(main)/home/_components/Sidebar/Chat';
@@ -36,7 +36,7 @@ export default function Sidebar({ className }: { className?: string }) {
     >
       <TrackerLink
         href="/home/all-friends"
-        className="flex items-center gap-2 p-2 bg-bgPrimary focus-by-brightness"
+        className="flex items-center gap-2 px-4 py-2 bg-bgPrimary focus-by-brightness"
       >
         <Avatar defaultSrc={'/connections.png'} alt="connections" />
         <p>Connections</p>
@@ -44,7 +44,7 @@ export default function Sidebar({ className }: { className?: string }) {
       <input
         type="text"
         placeholder="Search"
-        className="m-2 px-2 rounded-md bg-bgSecondary"
+        className="mx-4 my-2 px-2 rounded-md bg-bgSecondary"
       />
       <AddChatBtn />
       {data ? (
@@ -54,12 +54,12 @@ export default function Sidebar({ className }: { className?: string }) {
             data={chats as ChatProps[]}
             onEndReached={fetchMoreChats}
           />
-          <User me={me} />
+          <Client me={me} />
         </>
       ) : (
         <>
           <SkeletonList skeleton={<SkeletonChat />} />
-          <SkeletonUser />
+          <SkeletonClient />
         </>
       )}
     </div>

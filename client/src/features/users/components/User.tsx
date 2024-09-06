@@ -1,29 +1,55 @@
-import Avatar from '@/components/Avatar';
-import Image from 'next/image';
 import Link from 'next/link';
 
+import Avatar from '@/components/Avatar';
+import Image from 'next/image';
+import useMe from '../hooks/useMe';
+import { useEffect } from 'react';
+
 export interface UserProps {
-  me: any;
+  id: string;
+  displayName: string;
+  profilePicUrl: string;
+  isOnline: boolean;
 }
 
-export default function User({ me }: UserProps) {
+export default function User({
+  id,
+  displayName,
+  profilePicUrl,
+  isOnline,
+}: UserProps) {
+  const { data: me, error } = useMe();
+
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
   return (
-    <div className="flex items-center gap-2 p-2 bg-bgSecondary dark:bg-bgSecondary-dark">
-      <Link href="/home/settings/profile">
+    <div className="flex items-center gap-2 px-4 py-1 bg-bgSecondary dark:bg-bgSecondary-dark">
+      <Link href={`/home/user/${id}`}>
         <Avatar
-          src={me.profilePicUrl}
+          src={profilePicUrl}
           defaultSrc={'/person.png'}
           className="bg-bgSecondaryDark dark:bg-bgSecondaryDark-dark"
-          status={'online'}
+          status={isOnline ? 'online' : 'offline'}
         />
       </Link>
-      <p className="grow">{me.displayName}</p>
-      <Link
-        href="/home/settings"
-        className="p-1 rounded-md bg-inherit focus-by-brightness"
-      >
-        <Image src="/settings.png" alt="settings" width={26} height={26} />
+      <Link href={`/home/user/${id}`} className="grow truncate">
+        {displayName}
       </Link>
+      {me?.id !== id && (
+        <Link
+          href={`/home/chat?userId=${id}`}
+          className="p-2 rounded-md bg-inherit focus-by-brightness"
+        >
+          <Image
+            src={'/chat_bubble.png'}
+            alt="direct chat"
+            width={26}
+            height={26}
+          />
+        </Link>
+      )}
     </div>
   );
 }

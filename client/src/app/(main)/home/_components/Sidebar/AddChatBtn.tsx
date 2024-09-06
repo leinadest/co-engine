@@ -68,7 +68,7 @@ export default function AddChatBtn() {
 
   return (
     <>
-      <div className="flex justify-between items-center p-2 text-bold">
+      <div className="flex justify-between items-center px-4 py-2 text-bold">
         <p>Direct Chats</p>
         <button
           onClick={() => setShowDialog(!showDialog)}

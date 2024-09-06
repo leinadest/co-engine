@@ -21,7 +21,7 @@ export default function UserPage({ params: { userId } }: UserPageProps) {
   const [alert, setAlert] = useState<AlertState>({ visible: false });
 
   const meQuery = useMe();
-  const userQuery = useUser(userId);
+  const userQuery = useUser(userId, { fetchPolicy: 'network-only' });
 
   useEffect(() => {
     if (meQuery.error || userQuery.error) {
@@ -103,7 +103,10 @@ export default function UserPage({ params: { userId } }: UserPageProps) {
           </button>
         </div>
       )}
-      <UserProfile {...user} />
+      <UserProfile
+        {...user}
+        isOnline={user.id === me.id ? true : user.isOnline}
+      />
       <Alert {...alert} setAlert={setAlert} />
     </main>
   );

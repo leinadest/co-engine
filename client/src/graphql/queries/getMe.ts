@@ -9,8 +9,10 @@ export interface GetMeResult {
     email: string;
     username: string;
     discriminator: string;
+    display_name: string;
     profile_pic: string;
     profile_pic_url: string;
+    is_online: boolean;
     bio: string;
     chats: RelayConnection<{
       id: string;
@@ -22,6 +24,7 @@ export interface GetMeResult {
         id: string;
         username: string;
         discriminator: string;
+        display_name: string;
         profile_pic_url: string;
         is_online: boolean;
       }>;

@@ -24,7 +24,10 @@ export default function Home() {
         <div className="hidden md:flex">
           <ErrorBoundary errorComponent={Error}>
             <ChatPageLayout>
-              <ChatPage params={{ chatId: lastChatId }} />
+              <ChatPage
+                params={{ chatId: lastChatId }}
+                className="sm:grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px]"
+              />
             </ChatPageLayout>
           </ErrorBoundary>
         </div>

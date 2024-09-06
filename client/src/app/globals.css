@@ -221,7 +221,7 @@
     }
 
     &.avatar {
-      @apply w-12 h-12 rounded-full;
+      @apply min-w-12 max-w-12 min-h-12 max-h-12 rounded-full;
     }
 
     &.container {

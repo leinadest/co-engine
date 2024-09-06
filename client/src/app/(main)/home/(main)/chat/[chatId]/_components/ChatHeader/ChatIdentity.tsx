@@ -35,7 +35,7 @@ export default function ChatIdentity({ otherUser, name }: ChatIdentityProps) {
       ) : (
         <Avatar defaultSrc="/chat.png" alt="chat" />
       )}
-      <h5>{name}</h5>
+      <h5 className="truncate">{name}</h5>
     </div>
   );
 }

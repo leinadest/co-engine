@@ -1,4 +1,9 @@
-import { type FindOptions, Op, type WhereOptions } from 'sequelize';
+import {
+  type FindOptions,
+  type Includeable,
+  Op,
+  type WhereOptions,
+} from 'sequelize';
 
 import type AuthService from '../../services/authService';
 import { Chat, User, UserBlock } from '..';
@@ -46,39 +51,78 @@ class UsersDataSource {
 
   async getUsers({
     search,
-    orderBy = 'username',
-    orderDirection = 'ASC',
+    contextType,
+    contextId,
     after,
     first = 20,
+    orderBy = 'username',
+    orderDirection = 'ASC',
   }: {
     search?: string;
-    orderBy?: string;
-    orderDirection?: string;
+    contextType?: 'chat' | 'channel';
+    contextId?: string;
     after?: string;
     first?: number;
+    orderBy?: string;
+    orderDirection?: string;
   }): Promise<RelayConnection<User>> {
-    // Initialize query for the next messages to paginate after the cursor
-    const op = orderDirection === 'DESC' ? Op.lt : Op.gt;
+    // Initialize filter by association
+    let include: Includeable | undefined;
 
-    let where = {};
-    if (search !== undefined) {
-      where = { username: { [Op.substring]: search } };
+    if (contextType === 'chat' && contextId !== undefined) {
+      include = {
+        model: Chat,
+        as: 'chats',
+        where: { id: contextId },
+        attributes: [],
+      };
     }
+
+    // Initialize filter
+    const where: any = {};
+
+    if (search !== undefined) {
+      where.username = { [Op.substring]: search };
+    }
+
+    // Initialize filter for rows after the cursor
+    let whereAfter: any = {};
+
     if (after !== undefined) {
-      where = { ...where, [orderBy]: { [op]: decodeCursor(after) } };
+      const op = orderDirection === 'DESC' ? Op.lt : Op.gt;
+      const cursor = decodeCursor(after) as Record<string, any>;
+      whereAfter = {
+        [Op.and]: [
+          {
+            [Op.or]: [
+              {
+                [orderBy]: { [op]: cursor[orderBy] },
+              },
+              {
+                [orderBy]: cursor[orderBy],
+                id: { [op]: cursor.id },
+              },
+            ],
+          },
+        ],
+      };
     }
 
     // Execute query
     const users = await User.findAll({
-      where,
+      include,
+      where: { ...where, ...whereAfter },
       attributes: { exclude: ['password_hash', 'email'] },
-      order: [[orderBy, orderDirection]],
+      order: [
+        [orderBy, orderDirection],
+        ['id', orderDirection],
+      ],
       limit: first,
     });
 
     // Generate edges and page info
     const edges = users.map((user) => ({
-      cursor: encodeCursor(user[orderBy]),
+      cursor: encodeCursor({ [orderBy]: user[orderBy], id: user.id }),
       node: user.toJSON(),
     }));
 
