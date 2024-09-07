@@ -82,7 +82,7 @@ class UsersDataSource {
     const where: any = {};
 
     if (search !== undefined) {
-      where.username = { [Op.substring]: search };
+      where.display_name = { [Op.substring]: search };
     }
 
     // Initialize filter for rows after the cursor
@@ -143,7 +143,7 @@ class UsersDataSource {
         as: 'chats',
         where: { id: chatId },
       },
-      attributes: { exclude: ['email'] },
+      attributes: { exclude: ['email', 'password_hash'] },
     });
     return usersOfChat;
   }
@@ -173,12 +173,12 @@ class UsersDataSource {
     first?: number;
   }): Promise<RelayConnection<User>> {
     // Initialize query for filtering down to the target dataset
-    let filterWhere: WhereOptions<User> = {};
+    const filterWhere: WhereOptions<User> = {};
     if (status !== undefined) {
       filterWhere.is_online = status === 'online';
     }
     if (search !== undefined) {
-      filterWhere = { username: { [Op.substring]: search } };
+      filterWhere.display_name = { [Op.substring]: search };
     }
 
     // Initialize query for the next messages to paginate after the cursor

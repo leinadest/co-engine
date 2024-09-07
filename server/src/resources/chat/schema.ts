@@ -17,6 +17,7 @@ const types = gql`
     last_message: String
     users: [PublicUser!]!
     messages(
+      search: String
       after: String
       first: Int
       orderDirection: String
@@ -41,10 +42,11 @@ const types = gql`
 `;
 
 interface ChatMessagesInput {
-  orderDirection?: 'ASC' | 'DESC';
-  orderBy?: '_id' | 'created_at';
+  search?: string;
   after?: string;
   first?: number;
+  orderDirection?: 'ASC' | 'DESC';
+  orderBy?: '_id' | 'created_at';
 }
 
 const resolvers = {

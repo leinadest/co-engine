@@ -3,35 +3,29 @@ import Message, { MessageProps } from '@/features/messages/components/Message';
 import { RelayConnection } from '@/types/api';
 import { snakeToCamel } from '@/utils/helpers';
 import TimeDivider from './TimeDivider';
-import SkeletonList from '@/components/skeletons/SkeletonList';
-import SkeletonMessage from '@/features/messages/components/SkeletonMessage';
 
 interface ChatDisplayProps {
-  data: RelayConnection<MessageProps>;
+  data: MessageProps[];
   fetchMoreMessages: () => void;
 }
 
 function ChatDisplay({ data, fetchMoreMessages }: ChatDisplayProps) {
-  const edges = data.edges.toReversed();
-
-  const messages = edges.map(({ node }, idx) => {
-    const msg = snakeToCamel(node);
-
+  const messages = data.map((message, idx) => {
     const item = (
-      <li key={msg.id}>
-        <Message {...msg} />
+      <li key={message.id}>
+        <Message {...message} />
       </li>
     );
 
-    if (idx === edges.length - 1) {
+    if (idx === data.length - 1) {
       return item;
     }
 
-    const nextMsg = snakeToCamel(edges[idx + 1].node);
-    const msgDate = new Date(msg.createdAt);
+    const nextMsg = snakeToCamel(data[idx + 1]);
+    const messageDate = new Date(message.createdAt);
     const nextMsgDate = new Date(nextMsg.createdAt);
 
-    if (msgDate.getDate() === nextMsgDate.getDate()) {
+    if (messageDate.getDate() === nextMsgDate.getDate()) {
       return item;
     }
 

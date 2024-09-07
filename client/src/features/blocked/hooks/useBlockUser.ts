@@ -14,5 +14,5 @@ export default function useBlockUser(
     return mutate({ variables: { userId } });
   }
 
-  return { blockUser, data, loading, error };
+  return { blockUser, data: data?.blockUser, loading, error };
 }

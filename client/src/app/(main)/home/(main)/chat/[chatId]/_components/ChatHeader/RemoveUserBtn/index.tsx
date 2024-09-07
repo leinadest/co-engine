@@ -13,7 +13,7 @@ export default function RemoveUserBtn() {
     <>
       <button
         onClick={() => setShowDialog(!showDialog)}
-        className="p-2 rounded-md bg-bgPrimary focus-by-brightness"
+        className="p-2 rounded-md min-w-max bg-bgPrimary focus-by-brightness"
       >
         <Image
           src="/person_remove.png"

@@ -10,7 +10,7 @@ export default function LeaveBtn() {
     <>
       <button
         onClick={() => setShowDialog(!showDialog)}
-        className="p-2 rounded-md bg-bgPrimary focus-by-brightness"
+        className="p-2 min-w-max rounded-md bg-bgPrimary focus-by-brightness"
       >
         <Image src="/door_open.png" alt="leave chat" width={26} height={26} />
       </button>

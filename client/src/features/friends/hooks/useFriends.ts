@@ -4,14 +4,28 @@ import GET_FRIENDS, {
   GetFriendsResult,
   GetFriendsVariables,
 } from '@/graphql/queries/getFriends';
+import { useEffect, useState } from 'react';
+import { snakeToCamel } from '@/utils/helpers';
+import { RelayConnection } from '@/types/api';
 
 export default function useFriends(
   options?: QueryHookOptions<GetFriendsResult, GetFriendsVariables>
 ) {
-  const { data, loading, error, fetchMore, variables } = useQuery(GET_FRIENDS, {
-    ...options,
-    notifyOnNetworkStatusChange: true,
-  });
+  const [friends, setFriends] = useState<RelayConnection<any>>();
+
+  const { data, loading, error, refetch, fetchMore, variables } = useQuery(
+    GET_FRIENDS,
+    {
+      ...options,
+      notifyOnNetworkStatusChange: true,
+    }
+  );
+
+  useEffect(() => {
+    if (data) {
+      setFriends(snakeToCamel(data.friends));
+    }
+  }, [data]);
 
   function handleFetchMore() {
     const canFetchMore = data?.friends.pageInfo.hasNextPage && !loading;
@@ -20,5 +34,12 @@ export default function useFriends(
     fetchMore({ variables: { ...variables, after: endCursor } });
   }
 
-  return { data: data?.friends, loading, error, fetchMore: handleFetchMore };
+  return {
+    data: friends,
+    setData: setFriends,
+    loading,
+    error,
+    refetch,
+    fetchMore: handleFetchMore,
+  };
 }

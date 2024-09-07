@@ -2,6 +2,7 @@ import { gql, TypedDocumentNode } from '@apollo/client';
 
 export interface RemoveUserFromChatResult {
   removeUserFromChat: {
+    user_id: string;
     chat_id: string;
   };
 }
@@ -26,6 +27,7 @@ const REMOVE_USER_FROM_CHAT: TypedDocumentNode<
       username: $username
       discriminator: $discriminator
     ) {
+      user_id
       chat_id
     }
   }

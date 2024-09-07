@@ -8,6 +8,7 @@ export interface GetUserBlocksResult {
       id: string;
       username: string;
       discriminator: string;
+      display_name: string;
       profile_pic_url: string;
     };
     created_at: string;
@@ -15,11 +16,11 @@ export interface GetUserBlocksResult {
 }
 
 export interface GetUserBlocksVariables {
+  search?: string;
   after?: string;
   first?: number;
   orderDirection?: string;
   orderBy?: string;
-  search?: string;
 }
 
 const GET_USER_BLOCKS: TypedDocumentNode<
@@ -27,18 +28,18 @@ const GET_USER_BLOCKS: TypedDocumentNode<
   GetUserBlocksVariables
 > = gql`
   query GetUserBlocks(
+    $search: String
     $after: String
     $first: Int
     $orderBy: String
     $orderDirection: String
-    $search: String
   ) {
     userBlocks(
+      search: $search
       after: $after
       first: $first
       orderBy: $orderBy
       orderDirection: $orderDirection
-      search: $search
     ) {
       edges {
         cursor
@@ -47,6 +48,7 @@ const GET_USER_BLOCKS: TypedDocumentNode<
             id
             username
             discriminator
+            display_name
             profile_pic_url
           }
           created_at

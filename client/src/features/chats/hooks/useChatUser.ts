@@ -10,6 +10,7 @@ import REMOVE_USER_FROM_CHAT, {
   RemoveUserFromChatVariables,
 } from '@/graphql/mutations/removeUserFromChat';
 import { GET_ME } from '@/graphql/queries/getMe';
+import GET_USERS from '@/graphql/queries/getUsers';
 
 export default function useChatUser() {
   const [mutateAdd] = useMutation(ADD_USER_TO_CHAT);
@@ -29,6 +30,28 @@ export default function useChatUser() {
           },
         };
       });
+
+      cache.updateQuery(
+        {
+          query: GET_USERS,
+          variables: {
+            contextType: 'chat',
+            contextId: data.removeUserFromChat.chat_id,
+          },
+        },
+        (prevData) => {
+          if (!prevData) return prevData;
+          const newEdges = prevData.users.edges.filter(
+            ({ node: user }) => user.id !== data.removeUserFromChat.user_id
+          );
+          return {
+            users: {
+              edges: newEdges,
+              pageInfo: prevData.users.pageInfo,
+            },
+          };
+        }
+      );
     },
   });
 

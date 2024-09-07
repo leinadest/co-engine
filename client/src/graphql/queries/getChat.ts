@@ -33,6 +33,7 @@ export interface GetChatData {
 
 export interface GetChatVariables {
   id: string;
+  search?: string;
   after?: string;
   first?: number;
   orderDirection?: string;
@@ -42,6 +43,7 @@ export interface GetChatVariables {
 export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
   query GetChat(
     $id: ID!
+    $search: String
     $after: String
     $first: Int
     $orderDirection: String
@@ -61,6 +63,7 @@ export const GET_CHAT: TypedDocumentNode<GetChatData, GetChatVariables> = gql`
         profile_pic_url
       }
       messages(
+        search: $search
         after: $after
         first: $first
         orderDirection: $orderDirection

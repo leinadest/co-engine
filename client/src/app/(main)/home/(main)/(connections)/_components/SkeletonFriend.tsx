@@ -4,7 +4,7 @@ import Skeleton from '@/components/skeletons/Skeleton';
 
 export default function SkeletonFriend() {
   return (
-    <div className="flex items-center gap-2 p-2">
+    <div className="flex items-center gap-2 px-4 py-2">
       <Skeleton type="avatar" />
       <div className="mr-auto">
         <Skeleton type="h5" className="w-40" />

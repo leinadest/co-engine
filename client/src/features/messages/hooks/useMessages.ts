@@ -14,17 +14,6 @@ export default function useMessages(contextType: string, contextId: string) {
         if (!data.data) return;
 
         const createdMessage = data.data.messageCreated;
-        const createdMessageCache = {
-          cursor: 'temp',
-          node: {
-            id: Date.now().toString(),
-            creator: createdMessage.creator,
-            created_at: new Date().toISOString(),
-            edited_at: null,
-            content: createdMessage.content,
-            reactions: [],
-          },
-        };
 
         cache.updateQuery(
           {
@@ -33,13 +22,25 @@ export default function useMessages(contextType: string, contextId: string) {
           },
           (oldData) => {
             if (!oldData) return;
+
+            const newEdge = {
+              cursor: 'temp',
+              node: {
+                id: Date.now().toString(),
+                creator: { ...createdMessage.creator, is_online: true },
+                created_at: new Date().toISOString(),
+                edited_at: null,
+                content: createdMessage.content,
+                reactions: [],
+              },
+            };
+
             return {
-              ...oldData,
               chat: {
                 ...oldData.chat,
                 messages: {
                   ...oldData.chat.messages,
-                  edges: [createdMessageCache, ...oldData.chat.messages.edges],
+                  edges: [newEdge, ...oldData.chat.messages.edges],
                 },
               },
             };

@@ -10,6 +10,7 @@ const typeDefs = gql`
     Returns the friend requests of the authenticated user.
     """
     userFriendRequests(
+      search: String
       type: String
       after: String
       first: Int
@@ -20,6 +21,7 @@ const typeDefs = gql`
 `;
 
 interface UserFriendRequestsInput {
+  search?: string;
   type?: string;
   after?: string;
   first?: number;
@@ -28,6 +30,7 @@ interface UserFriendRequestsInput {
 }
 
 const userFriendRequestInputSchema = yup.object().shape({
+  search: yup.string().trim(),
   type: yup
     .string()
     .trim()

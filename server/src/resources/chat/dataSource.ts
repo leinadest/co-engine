@@ -115,7 +115,7 @@ class ChatsDataSource {
       include: {
         model: User,
         as: 'users',
-        attributes: { exclude: ['email'] },
+        attributes: { exclude: ['email', 'password_hash'] },
       },
     })) as unknown as (Chat & { users: User[] }) | null;
 

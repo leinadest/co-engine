@@ -10,24 +10,25 @@ const typeDefs = gql`
     Returns the user blocks of the authenticated user.
     """
     userBlocks(
+      search: String
       after: String
       first: Int
       orderBy: String
       orderDirection: String
-      search: String
     ): UserBlockConnection!
   }
 `;
 
 interface UserBlocksInput {
+  search?: string;
   after?: string;
   first?: number;
   orderBy?: string;
   orderDirection?: string;
-  search?: string;
 }
 
 const userBlocksInputSchema = yup.object().shape({
+  search: yup.string().trim(),
   after: yup.string().trim(),
   first: yup
     .number()
@@ -44,7 +45,6 @@ const userBlocksInputSchema = yup.object().shape({
     .string()
     .trim()
     .oneOf(['ASC', 'DESC'], 'orderDirection must be ASC or DESC'),
-  search: yup.string().trim(),
 });
 
 const resolvers = {

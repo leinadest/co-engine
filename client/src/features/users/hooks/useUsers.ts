@@ -8,10 +8,14 @@ import GET_USERS, {
 export default function useUsers(
   options?: QueryHookOptions<GetUsersResult, GetUsersVariables>
 ) {
-  const { data, loading, error, fetchMore, variables } = useQuery(GET_USERS, {
-    ...options,
-    notifyOnNetworkStatusChange: true,
-  });
+  const { data, loading, error, refetch, fetchMore, variables } = useQuery(
+    GET_USERS,
+    {
+      ...options,
+      notifyOnNetworkStatusChange: true,
+      skip: !options?.variables,
+    }
+  );
 
   function handleFetchMore() {
     const canFetchMore = data?.users.pageInfo.hasNextPage && !loading;
@@ -20,5 +24,11 @@ export default function useUsers(
     fetchMore({ variables: { ...variables, after: endCursor } });
   }
 
-  return { data: data?.users, loading, error, fetchMore: handleFetchMore };
+  return {
+    data: data?.users,
+    loading,
+    error,
+    refetch,
+    fetchMore: handleFetchMore,
+  };
 }

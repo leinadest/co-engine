@@ -1,4 +1,4 @@
-import { QueryHookOptions, useApolloClient, useQuery } from '@apollo/client';
+import { QueryHookOptions, useQuery } from '@apollo/client';
 
 import {
   GET_ME,
@@ -9,21 +9,20 @@ import {
 export default function useMe(
   options?: QueryHookOptions<GetMeResult, GetMeVariables>
 ) {
-  const client = useApolloClient();
-
-  const { data, loading, error, fetchMore, variables } = useQuery(GET_ME, {
-    ...options,
-    notifyOnNetworkStatusChange: true,
-  });
+  const { data, loading, error, refetch, fetchMore, variables } = useQuery(
+    GET_ME,
+    {
+      ...options,
+      notifyOnNetworkStatusChange: true,
+    }
+  );
 
   function fetchMoreChats() {
     const canFetchMore = data?.me.chats.pageInfo.hasNextPage && !loading;
-    const endCursor = data?.me.chats.pageInfo.endCursor;
-
     if (!canFetchMore) return;
-
+    const endCursor = data?.me.chats.pageInfo.endCursor;
     fetchMore({ variables: { ...variables, after: endCursor } });
   }
 
-  return { data: data?.me, loading, error, fetchMoreChats };
+  return { data: data?.me, loading, error, refetch, fetchMoreChats };
 }

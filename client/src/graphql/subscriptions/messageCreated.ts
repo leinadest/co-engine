@@ -9,6 +9,7 @@ export interface MessageCreatedSubscriptionResult {
       id: string;
       username: string;
       discriminator: string;
+      display_name: string;
       profile_pic_url: string;
     };
     created_at: string;
@@ -37,6 +38,7 @@ const MESSAGE_CREATED_SUBSCRIPTION: TypedDocumentNode<
         id
         username
         discriminator
+        display_name
         profile_pic_url
       }
       created_at

@@ -1,7 +1,8 @@
-import gql from 'graphql-tag';
-import type AuthService from '../../services/authService';
-import { UserBlock, UserFriendship } from '..';
 import { GraphQLError } from 'graphql';
+import gql from 'graphql-tag';
+
+import type AuthService from '../../services/authService';
+import { User, UserBlock, UserFriendship } from '..';
 import sequelize from '../../config/sequelize';
 import { Op } from 'sequelize';
 
@@ -76,6 +77,11 @@ const resolvers = {
       }
 
       const userBlock = await UserBlock.findOne({
+        include: {
+          model: User,
+          as: 'blockedUsers',
+          attributes: { exclude: ['email, password_hash'] },
+        },
         where: {
           user_id: authService.getUserId(),
           blocked_user_id: userId,
@@ -91,7 +97,7 @@ const resolvers = {
 
       await userBlock.destroy();
 
-      return userBlock;
+      return { ...userBlock, blocked_user: userBlock.blockedUsers };
     },
   },
 };

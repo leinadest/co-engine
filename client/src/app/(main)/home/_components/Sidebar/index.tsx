@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import { snakeToCamel } from '@/utils/helpers';
 import TrackerLink from '@/components/TrackerLink';
@@ -14,14 +14,22 @@ import SkeletonClient from '@/features/users/components/SkeletonClient';
 import AddChatBtn from './AddChatBtn';
 import List from '@/components/common/List';
 import Chat, { ChatProps } from '@/app/(main)/home/_components/Sidebar/Chat';
+import Search from '@/components/Search';
 
 export default function Sidebar({ className }: { className?: string }) {
-  const { data, error, fetchMoreChats } = useMe();
-  const router = useRouter();
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  const { data, error, refetch, fetchMoreChats } = useMe({
+    variables: { search: debouncedSearch },
+  });
+
+  useEffect(() => {
+    refetch({ search: debouncedSearch });
+  }, [refetch, debouncedSearch]);
 
   useEffect(() => {
     if (error) throw error;
-  }, [data, error, router]);
+  }, [data, error]);
 
   const me = snakeToCamel(data);
 
@@ -32,7 +40,10 @@ export default function Sidebar({ className }: { className?: string }) {
 
   return (
     <div
-      className={`${className} flex flex-col items-stretch min-h-0 border-r border-r-border bg-bgPrimary dark:border-r-border-dark`}
+      className={twMerge(
+        'relative flex flex-col items-stretch min-h-0 border-r border-r-border bg-bgPrimary dark:border-r-border-dark',
+        className
+      )}
     >
       <TrackerLink
         href="/home/all-friends"
@@ -41,12 +52,14 @@ export default function Sidebar({ className }: { className?: string }) {
         <Avatar defaultSrc={'/connections.png'} alt="connections" />
         <p>Connections</p>
       </TrackerLink>
-      <input
-        type="text"
-        placeholder="Search"
-        className="mx-4 my-2 px-2 rounded-md bg-bgSecondary"
+
+      <Search
+        setDebouncedSearch={setDebouncedSearch}
+        placeholder="Search chats"
       />
+
       <AddChatBtn />
+
       {data ? (
         <>
           <List

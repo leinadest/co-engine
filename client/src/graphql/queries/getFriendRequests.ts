@@ -22,6 +22,7 @@ export interface GetFriendRequestsResult {
 }
 
 export interface GetFriendRequestsVariables {
+  search?: string;
   type?: 'sent' | 'received';
   orderBy?: string;
   orderDirection?: string;
@@ -34,6 +35,7 @@ const GET_FRIEND_REQUESTS: TypedDocumentNode<
   GetFriendRequestsVariables
 > = gql`
   query GetFriendRequests(
+    $search: String
     $after: String
     $first: Int
     $orderBy: String
@@ -41,6 +43,7 @@ const GET_FRIEND_REQUESTS: TypedDocumentNode<
     $type: String
   ) {
     userFriendRequests(
+      search: $search
       after: $after
       first: $first
       orderBy: $orderBy

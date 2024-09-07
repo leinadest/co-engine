@@ -11,7 +11,7 @@ export default function useFriendRequests(
     GetFriendRequestsVariables
   >
 ) {
-  const { data, loading, error, fetchMore, variables } = useQuery(
+  const { data, loading, error, refetch, fetchMore, variables } = useQuery(
     GET_FRIEND_REQUESTS,
     {
       ...options,
@@ -32,6 +32,7 @@ export default function useFriendRequests(
     data: data?.userFriendRequests,
     loading,
     error,
+    refetch,
     fetchMore: handleFetchMore,
   };
 }

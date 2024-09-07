@@ -8,8 +8,8 @@ import { type Context } from '../../config/apolloServer';
 
 const typeDefs = gql`
   type UserFriendRequest {
-    sender: User!
-    receiver: User!
+    sender: PublicUser!
+    receiver: PublicUser!
     created_at: DateTime!
   }
 

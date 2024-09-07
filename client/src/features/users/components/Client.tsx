@@ -20,9 +20,15 @@ export default function Client({ me }: ClientProps) {
       <p className="grow truncate">{me.displayName}</p>
       <Link
         href="/home/settings"
-        className="p-1 rounded-md bg-inherit focus-by-brightness"
+        className="p-2 rounded-md bg-inherit focus-by-brightness"
       >
-        <Image src="/settings.png" alt="settings" width={26} height={26} />
+        <Image
+          src="/settings.png"
+          alt="settings"
+          width={26}
+          height={26}
+          className="min-w-[26px] min-h-[26px]"
+        />
       </Link>
     </div>
   );

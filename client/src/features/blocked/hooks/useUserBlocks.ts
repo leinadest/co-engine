@@ -8,7 +8,7 @@ import GET_USER_BLOCKS, {
 export default function useUserBlocks(
   options?: QueryHookOptions<GetUserBlocksResult, GetUserBlocksVariables>
 ) {
-  const { data, loading, error, fetchMore, variables } = useQuery(
+  const { data, loading, error, refetch, fetchMore, variables } = useQuery(
     GET_USER_BLOCKS,
     {
       ...options,
@@ -27,6 +27,7 @@ export default function useUserBlocks(
     data: data?.userBlocks,
     loading,
     error,
+    refetch,
     fetchMore: handleFetchMore,
   };
 }

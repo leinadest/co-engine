@@ -12,7 +12,7 @@ export default function SkeletonClient() {
         alt="settings"
         width={26}
         height={26}
-        className="mr-1"
+        className="mr-2"
       />
     </div>
   );

@@ -13,39 +13,40 @@ export default class UserBlocksDataSource {
   }
 
   async getUserBlocks({
+    search,
     after,
     first = 20,
     orderBy = 'created_at',
     orderDirection = 'DESC',
-    search,
   }: {
+    search?: string;
     after?: string;
     first?: number;
     orderBy?: string;
     orderDirection?: string;
-    search?: string;
   }): Promise<RelayConnection<any>> {
-    // Set include
+    // Include the blocked user in the user block
     const include: Includeable = {
       model: User,
       as: 'blockedUsers',
-      attributes: { exclude: ['email'] },
+      attributes: { exclude: ['email', 'password_hash'] },
     };
 
+    // Filter for search on the blocked user's display name
     if (search !== undefined) {
-      include.where = { username: { [Op.iLike]: `%${search}%` } };
+      include.where = { display_name: { [Op.substring]: search } };
     }
 
-    // Set where
+    // Filter for user blocks made by current user
     const where: WhereOptions<any> = { user_id: this.authService.getUserId() };
 
-    // Set paginationWhere
-    let paginationWhere: WhereOptions<any> = {};
+    // Filter for rows after the cursor
+    let whereAfter: WhereOptions<any> = {};
 
     if (after !== undefined) {
       const cursor = decodeCursor(after);
       const op = orderDirection === 'DESC' ? Op.lt : Op.gt;
-      paginationWhere = {
+      whereAfter = {
         [Op.and]: [
           {
             [Op.or]: [
@@ -65,7 +66,7 @@ export default class UserBlocksDataSource {
       UserBlock.count({ include, where }),
       UserBlock.findAll({
         include,
-        where: { ...where, ...paginationWhere },
+        where: { ...where, ...whereAfter },
         order: [
           [orderBy, orderDirection],
           ['blocked_user_id', orderDirection],

@@ -37,7 +37,7 @@ export default function FriendRequest({
   const tag = incoming ? 'Incoming Friend Request' : 'Outgoing Friend Request';
 
   return (
-    <div className="flex items-center gap-2 p-2">
+    <div className="flex items-center gap-2 px-4 py-2">
       <Link href={`/home/user/${otherUser.id}`}>
         <Avatar
           src={otherUser.profilePicUrl}

@@ -8,6 +8,7 @@ class User extends Model {
   declare created_at: Date;
   declare username: string;
   declare discriminator: string;
+  declare display_name: string;
   declare email: string;
   declare password_hash: string;
   declare last_login_at: Date;

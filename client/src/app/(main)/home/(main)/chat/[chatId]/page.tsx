@@ -1,20 +1,20 @@
 'use client';
 
 import { useContext, useEffect } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 import useChat from '@/features/chats/hooks/useChat';
-import { MessageProps } from '@/features/messages/components/Message';
 import useMessages from '@/features/messages/hooks/useMessages';
 import useLocalStorage from '@/hooks/useLocalStorage';
 import ChatDisplay from './_components/ChatDisplay';
-import { RelayConnection } from '@/types/api';
 import { ChatContext } from './_providers/ChatContextProvider';
 import ChatHeader from './_components/ChatHeader';
 import ChatInput from './_components/ChatInput';
 import ChatUsersDisplay from './_components/ChatUsersDisplay';
 import SkeletonList from '@/components/skeletons/SkeletonList';
 import SkeletonMessage from '@/features/messages/components/SkeletonMessage';
-import { twMerge } from 'tailwind-merge';
+import { snakeToCamel } from '@/utils/helpers';
+import useUserBlocks from '@/features/blocked/hooks/useUserBlocks';
 
 interface ChatPageProps {
   params: {
@@ -33,20 +33,37 @@ export default function ChatPage({
   const { setStorage } = useLocalStorage('lastChatId');
   useEffect(() => setStorage({ lastChatId: chatId }), [setStorage, chatId]);
 
+  const { messageSearch } = useContext(ChatContext);
+
   const chatQuery = useChat({
-    variables: { id: chatId },
+    variables: { id: chatId, search: messageSearch },
     fetchPolicy: 'cache-and-network',
   });
   const messagesSubscription = useMessages('chat', chatId);
+  const userBlocksQuery = useUserBlocks();
 
   useEffect(() => {
-    const error = chatQuery.error || messagesSubscription.error;
+    const error =
+      chatQuery.error || messagesSubscription.error || userBlocksQuery.error;
     if (error) throw error;
-  }, [chatQuery.data, chatQuery.error, messagesSubscription.error]);
+  }, [
+    chatQuery.data,
+    chatQuery.error,
+    messagesSubscription.error,
+    userBlocksQuery.error,
+  ]);
 
-  const messages = chatQuery.data?.messages as
-    | RelayConnection<MessageProps>
-    | undefined;
+  const blockedUserIds = userBlocksQuery.data?.edges.reduce<
+    Record<string, any>
+  >((acc, { node: userBlock }: any) => {
+    acc[snakeToCamel(userBlock).blockedUser.id as string] = true;
+    return acc;
+  }, {});
+
+  const messages = chatQuery.data?.messages.edges
+    .map(({ node: message }) => snakeToCamel(message))
+    .filter((message) => !blockedUserIds || !blockedUserIds[message.creator.id])
+    .reverse() as any[] | undefined;
 
   return (
     <div
@@ -55,7 +72,7 @@ export default function ChatPage({
         className
       )}
     >
-      <div className="flex flex-col bg-bgPrimary">
+      <div className="relative flex flex-col bg-bgPrimary">
         <ChatHeader />
         {messages ? (
           <ChatDisplay

@@ -9,21 +9,22 @@ import {
 export default function useChat(
   options?: QueryHookOptions<GetChatResult, GetChatVariables>
 ) {
-  const { data, loading, error, fetchMore, variables } = useQuery(GET_CHAT, {
-    ...options,
-    notifyOnNetworkStatusChange: true,
-    skip: !options?.variables?.id,
-  });
+  const { data, loading, error, refetch, fetchMore, variables } = useQuery(
+    GET_CHAT,
+    {
+      ...options,
+      notifyOnNetworkStatusChange: true,
+      skip: !options?.variables?.id,
+    }
+  );
 
   function fetchMoreMessages() {
     const canFetchMore = data?.chat.messages.pageInfo.hasNextPage && !loading;
     if (!canFetchMore) return;
 
     const endCursor = data?.chat.messages.pageInfo.endCursor;
-    fetchMore({
-      variables: { ...variables, after: endCursor },
-    });
+    fetchMore({ variables: { ...variables, after: endCursor } });
   }
 
-  return { data: data?.chat, loading, error, fetchMoreMessages };
+  return { data: data?.chat, loading, error, refetch, fetchMoreMessages };
 }

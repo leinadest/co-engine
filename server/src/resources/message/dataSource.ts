@@ -29,22 +29,31 @@ class MessagesDataSource {
   async getMessages({
     contextId,
     contextType,
-    orderDirection = 'DESC',
-    orderBy = 'created_at',
+    search,
     after,
     first = 20,
+    orderDirection = 'DESC',
+    orderBy = 'created_at',
   }: {
     contextId: string | number;
     contextType: string;
-    orderDirection?: 'ASC' | 'DESC';
-    orderBy?: '_id' | 'created_at';
+    search?: string;
     after?: string;
     first?: number;
+    orderDirection?: 'ASC' | 'DESC';
+    orderBy?: '_id' | 'created_at';
   }): Promise<RelayConnection<IMessage>> {
-    // Initialize query for messages following after
+    // Query for messages with contents matching search
+    const searchQuery =
+      search !== undefined
+        ? { content: { $regex: search, $options: 'i' } }
+        : {};
+
+    // Query for messages after cursor
     const op = orderDirection === 'DESC' ? '$lt' : '$gt';
     const cursor = after !== undefined ? decodeCursor(after) : undefined;
-    const query =
+
+    const paginationQuery =
       cursor !== undefined
         ? {
             $or: [
@@ -57,19 +66,21 @@ class MessagesDataSource {
           }
         : {};
 
-    // Initialize query for filtering messages from blocked users
+    // Query for messages from users not blocked
     const unblockedMessagesQuery = await this.getUnblockedMessagesQuery();
 
     // Execute query
     const direction = orderDirection === 'ASC' ? 1 : -1;
+
     const messages = await Message.find({
       context_id: contextId,
       context_type: contextType,
-      $and: [query, unblockedMessagesQuery],
+      $and: [searchQuery, paginationQuery, unblockedMessagesQuery],
     })
       .sort({ [orderBy]: direction, _id: direction })
       .limit(first);
 
+    // Return paginated results
     const edges = messages.map((message) => ({
       cursor: encodeCursor({ _id: message._id, [orderBy]: message[orderBy] }),
       node: message.toJSON(),
