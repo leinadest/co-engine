@@ -1,3 +1,5 @@
+import { twMerge } from 'tailwind-merge';
+
 interface SkeletonProps {
   type?:
     | 'h1'
@@ -14,9 +16,5 @@ interface SkeletonProps {
 }
 
 export default function Skeleton({ type, className, children }: SkeletonProps) {
-  return (
-    <div className={`skeleton ${className ?? ''} ${type ?? ''}`}>
-      {children}
-    </div>
-  );
+  return <div className={twMerge('skeleton', type, className)}>{children}</div>;
 }

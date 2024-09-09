@@ -79,7 +79,7 @@ export default function ProfileForm({ me }: ProfileFormProps) {
   }, [uploadError, uploadData, updateError, updateData, form]);
 
   return (
-    <form className="flex flex-col h-full">
+    <form className="flex flex-col mx-auto h-full max-w-screen-lg">
       <PreviewPictureUploader me={me} form={form} />
       <h5 className="text-center mb-4">
         {me.username}#{me.discriminator}

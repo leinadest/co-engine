@@ -17,26 +17,22 @@ export default function Home() {
   useEffect(() => setLastChatId(storage.lastChatId), [storage.lastChatId]);
 
   return (
-    <div className="grid grid-cols-[40px_minmax(0,1fr)] xs:grid-cols-[80px_minmax(0,1fr)] md:grid-cols-[80px_320px_minmax(0,1fr)] grid-rows-[100%] h-screen bg-bgPrimary">
+    <div className="flex h-screen bg-bgPrimary">
       <CollabSideBar />
-      <Sidebar />
+      <Sidebar
+        isCollapsed={false}
+        className="sm:flex-none max-w-full sm:max-w-80"
+      />
       {lastChatId ? (
-        <div className="hidden md:flex">
-          <ErrorBoundary errorComponent={Error}>
-            <ChatPageLayout>
-              <ChatPage
-                params={{ chatId: lastChatId }}
-                className="sm:grid-cols-1 lg:grid-cols-[minmax(0,1fr)_280px]"
-              />
-            </ChatPageLayout>
-          </ErrorBoundary>
-        </div>
+        <ErrorBoundary errorComponent={Error}>
+          <ChatPageLayout>
+            <ChatPage params={{ chatId: lastChatId }} className="min-w-0 " />
+          </ChatPageLayout>
+        </ErrorBoundary>
       ) : (
-        <main className="hidden md:flex justify-center items-center">
-          <h1 className="text-6xl text-bgSecondary dark:text-bgSecondary-dark">
-            home
-          </h1>
-        </main>
+        <h1 className="m-auto text-6xl text-bgSecondary dark:text-bgSecondary-dark">
+          home
+        </h1>
       )}
     </div>
   );

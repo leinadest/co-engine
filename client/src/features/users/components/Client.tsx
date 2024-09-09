@@ -19,7 +19,7 @@ export default function Client({ me }: ClientProps) {
       </Link>
       <p className="grow truncate">{me.displayName}</p>
       <Link
-        href="/home/settings"
+        href="/home/settings/account"
         className="p-2 rounded-md bg-inherit focus-by-brightness"
       >
         <Image

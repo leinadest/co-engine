@@ -10,6 +10,7 @@ import { snakeToCamel } from '@/utils/helpers';
 import SkeletonUser from '@/features/users/components/SkeletonUser';
 import Skeleton from '@/components/skeletons/Skeleton';
 import Search from '@/components/Search';
+import CollapseWrapper from '@/components/wrappers/CollapseWrapper';
 
 export default function ChatUsersDisplay({
   className,
@@ -34,44 +35,38 @@ export default function ChatUsersDisplay({
     refetch({ search: debouncedSearch });
   }, [refetch, debouncedSearch]);
 
-  if (!data) {
-    return (
-      <div className="flex flex-col bg-bgSecondary">
-        <Search
-          setDebouncedSearch={setDebouncedSearch}
-          placeholder="Search users"
-          className="first:*:bg-bgPrimary"
-        />
-        <SkeletonList
-          top={
-            <div className="py-5 bg-bgSecondary">
-              <Skeleton type="h5" className="mx-auto w-40" />
-            </div>
-          }
-          skeleton={<SkeletonUser />}
-        />
-      </div>
-    );
-  }
-
-  const users = snakeToCamel(data.edges.map(({ node: user }) => user));
+  const users = snakeToCamel(data?.edges.map(({ node: user }) => user));
 
   return (
-    <div className="flex flex-col bg-bgSecondary">
+    <CollapseWrapper
+      direction="right"
+      expandedSize="min-w-60 max-w-60"
+      btnClassName="top-16"
+      className={twMerge('flex flex-col min-h-0 bg-bgSecondary', className)}
+    >
       <Search
         setDebouncedSearch={setDebouncedSearch}
         placeholder="Search users"
         className="first:*:bg-bgPrimary"
       />
-      <List
-        top={
-          <h5 className="py-2 text-center">Users in Chat ({users.length})</h5>
-        }
-        item={User}
-        data={users}
-        onEndReached={fetchMore}
-        className={twMerge('flex flex-col size-full', className)}
-      />
-    </div>
+      {data ? (
+        <List
+          top={
+            <h5 className="py-2 pl-8 text-center">
+              Users in Chat ({users.length})
+            </h5>
+          }
+          item={User}
+          data={users}
+          onEndReached={fetchMore}
+          className={twMerge('flex flex-col size-full', className)}
+        />
+      ) : (
+        <SkeletonList
+          top={<Skeleton type="h5" className="mx-auto py-2 w-40" />}
+          skeleton={<SkeletonUser />}
+        />
+      )}
+    </CollapseWrapper>
   );
 }

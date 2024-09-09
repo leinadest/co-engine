@@ -17,7 +17,7 @@ export default function AccountPage() {
   const me = snakeToCamel(meQuery.data);
 
   return (
-    <main className="flex flex-col p-4 h-full bg-bgPrimary">
+    <main className="flex-1 flex flex-col mx-auto max-w-screen-lg p-4 bg-bgPrimary">
       <h1 className="my-4 text-center">Account</h1>
       {me ? (
         <AccountForm username={me.username} email={me.email} />

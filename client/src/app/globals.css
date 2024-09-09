@@ -225,7 +225,7 @@
     }
 
     &.avatar {
-      @apply min-w-12 max-w-12 min-h-12 max-h-12 rounded-full;
+      @apply flex-none size-12 rounded-full;
     }
 
     &.container {

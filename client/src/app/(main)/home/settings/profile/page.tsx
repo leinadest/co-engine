@@ -17,7 +17,7 @@ export default function ProfilePage() {
   const me = snakeToCamel(data);
 
   return (
-    <main className="relative p-4 pt-[60px] min-w-96 bg-bgPrimary shade-top before:inset-x-4 before:rounded-b-2xl">
+    <main className="flex-1 relative p-4 pt-[60px] min-w-96 bg-bgPrimary shade-top before:inset-x-4 before:rounded-b-2xl">
       {me ? <ProfileForm me={me} /> : <SkeletonProfileForm />}
     </main>
   );

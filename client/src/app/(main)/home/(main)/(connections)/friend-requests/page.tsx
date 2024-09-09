@@ -58,7 +58,7 @@ export default function FriendRequests() {
     !outgoingRequestsQuery.data
   ) {
     return (
-      <div className="flex flex-col">
+      <>
         <div className="bg-bgSecondary">
           <Search
             setDebouncedSearch={setDebouncedSearch}
@@ -66,17 +66,19 @@ export default function FriendRequests() {
             className="bg-bgSecondary first:*:bg-bgPrimary"
           />
         </div>
-        <div className="flex justify-evenly items-center m-4 mt-0 py-4 border-b">
-          <Skeleton type="h5" className="w-56" />
-          <Skeleton type="h5" className="w-56" />
-        </div>
         <main className="overflow-auto min-h-0">
           <SkeletonList
+            top={
+              <div className="flex justify-evenly items-center m-4 mt-0 py-4 border-b">
+                <Skeleton type="h5" className="w-56" />
+                <Skeleton type="h5" className="w-56" />
+              </div>
+            }
             skeleton={<SkeletonFriendRequest />}
             className="mx-auto p-2 max-w-screen-lg"
           />
         </main>
-      </div>
+      </>
     );
   }
 
@@ -91,7 +93,7 @@ export default function FriendRequests() {
   );
 
   return (
-    <div className="flex flex-col min-h-0">
+    <>
       <div className="bg-bgSecondary">
         <Search
           setDebouncedSearch={setDebouncedSearch}
@@ -130,6 +132,6 @@ export default function FriendRequests() {
           className="mx-auto max-w-screen-lg h-full"
         />
       </main>
-    </div>
+    </>
   );
 }

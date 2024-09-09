@@ -34,9 +34,9 @@ export default function PreferencesPage() {
   }
 
   return (
-    <main className="flex flex-col p-4 bg-bgPrimary">
-      <h1 className="my-4 mb-8 text-center">Preferences</h1>
-      <form className="flex flex-col grow">
+    <main className="flex-1 flex flex-col p-4 bg-bgPrimary">
+      <h1 className="mt-4 mb-8 text-center">Preferences</h1>
+      <form className="flex flex-col mx-auto size-full max-w-screen-lg">
         <ToggleField label="Dark Mode" name="darkMode" form={form} />
         <ResetSaveBtns form={form} onSubmit={onSubmit} />
       </form>

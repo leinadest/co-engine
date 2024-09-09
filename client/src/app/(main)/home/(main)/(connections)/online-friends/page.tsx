@@ -49,37 +49,29 @@ export default function OnlineFriends() {
     });
   }, [userUpdated.data, setData]);
 
-  if (!data) {
-    return (
-      <main className="flex flex-col min-h-0">
-        <Search
-          setDebouncedSearch={setDebouncedSearch}
-          placeholder="Search friends"
+  return (
+    <>
+      <Search
+        setDebouncedSearch={setDebouncedSearch}
+        placeholder="Search friends"
+      />
+      {data ? (
+        <List
+          top={
+            <h5 className="text-center">Online Friends ({data.totalCount})</h5>
+          }
+          item={Friend}
+          data={onlineFriends}
+          onEndReached={fetchMore}
+          className="mx-auto max-w-screen-lg"
         />
+      ) : (
         <SkeletonList
           top={<Skeleton type="h5" className="mx-auto w-40" />}
           skeleton={<SkeletonFriend />}
           className="mx-auto max-w-screen-lg"
         />
-      </main>
-    );
-  }
-
-  return (
-    <main className="flex flex-col min-h-0">
-      <Search
-        setDebouncedSearch={setDebouncedSearch}
-        placeholder="Search friends"
-      />
-      <List
-        top={
-          <h5 className="text-center">Online Friends ({data.totalCount})</h5>
-        }
-        item={Friend}
-        data={onlineFriends}
-        onEndReached={fetchMore}
-        className="mx-auto max-w-screen-lg"
-      />
-    </main>
+      )}
+    </>
   );
 }

@@ -65,14 +65,14 @@ export default function FriendRequest({
       {incoming && (
         <button
           onClick={() => acceptFriendRequest(sender.id)}
-          className="rounded-full size-8 bg-bgSecondary focus-by-brightness"
+          className="flex-none rounded-full size-8 bg-bgSecondary focus-by-brightness"
         >
           ✓
         </button>
       )}
       <button
         onClick={() => deleteFriendRequest(sender.id, receiver.id)}
-        className="rounded-full size-8 bg-bgSecondary focus-by-brightness"
+        className="flex-none rounded-full size-8 bg-bgSecondary focus-by-brightness"
       >
         ✕
       </button>

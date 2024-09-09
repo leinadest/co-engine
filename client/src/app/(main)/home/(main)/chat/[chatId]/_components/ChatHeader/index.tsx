@@ -61,7 +61,7 @@ export default function ChatHeader() {
     'Empty Chat';
 
   return (
-    <header className="flex wrap-none justify-between items-center py-2 px-4 gap-2 border-b border-b-border dark:border-b-border-dark overflow-x-auto overflow-y-clip">
+    <header className="flex wrap-none justify-between items-center px-4 min-h-16 border-b border-b-border dark:border-b-border-dark overflow-x-auto overflow-y-clip">
       {otherUsers.length === 1 ? (
         <Link href={`/home/user/${otherUsers[0].id}`}>
           <ChatIdentity name={name} otherUser={otherUsers[0]} />
@@ -72,7 +72,7 @@ export default function ChatHeader() {
       <Search
         setDebouncedSearch={setDebouncedSearch}
         placeholder="Search messages"
-        className="p-0 w-60"
+        className="py-0 w-60 first:*:min-w-0"
       />
       <div className="flex items-center gap-2">
         {chat.creatorId === me.id && (

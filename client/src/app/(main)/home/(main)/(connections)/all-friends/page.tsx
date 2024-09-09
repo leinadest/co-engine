@@ -26,13 +26,23 @@ export default function AllFriends() {
     if (error) throw error;
   }, [error, data]);
 
-  if (!data) {
-    return (
-      <main className="flex flex-col min-h-0">
-        <Search
-          setDebouncedSearch={setDebouncedSearch}
-          placeholder="Search friends"
+  const friends = data?.edges.map((edge) => snakeToCamel(edge.node));
+
+  return (
+    <>
+      <Search
+        setDebouncedSearch={setDebouncedSearch}
+        placeholder="Search friends"
+      />
+      {data ? (
+        <List
+          top={<h5 className="text-center">All Friends ({data.totalCount})</h5>}
+          item={Friend}
+          data={friends}
+          onEndReached={fetchMore}
+          className="mx-auto max-w-screen-lg"
         />
+      ) : (
         <SkeletonList
           top={
             <Skeleton type="h5" className="mt-4 mb-2 shrink-0 mx-auto w-40" />
@@ -40,25 +50,7 @@ export default function AllFriends() {
           skeleton={<SkeletonFriend />}
           className="mx-auto p-2 max-w-screen-lg"
         />
-      </main>
-    );
-  }
-
-  const friends = data.edges.map((edge) => snakeToCamel(edge.node));
-
-  return (
-    <main className="flex flex-col min-h-0">
-      <Search
-        setDebouncedSearch={setDebouncedSearch}
-        placeholder="Search friends"
-      />
-      <List
-        top={<h5 className="text-center">All Friends ({data.totalCount})</h5>}
-        item={Friend}
-        data={friends}
-        onEndReached={fetchMore}
-        className="mx-auto max-w-screen-lg"
-      />
-    </main>
+      )}
+    </>
   );
 }

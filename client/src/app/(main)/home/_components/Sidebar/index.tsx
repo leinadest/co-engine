@@ -15,8 +15,17 @@ import AddChatBtn from './AddChatBtn';
 import List from '@/components/common/List';
 import Chat, { ChatProps } from '@/app/(main)/home/_components/Sidebar/Chat';
 import Search from '@/components/Search';
+import CollapseWrapper from '@/components/wrappers/CollapseWrapper';
 
-export default function Sidebar({ className }: { className?: string }) {
+interface SidebarProps {
+  className?: string;
+  isCollapsed?: boolean;
+}
+
+export default function Sidebar({
+  className,
+  isCollapsed = true,
+}: SidebarProps) {
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const { data, error, refetch, fetchMoreChats } = useMe({
@@ -39,9 +48,13 @@ export default function Sidebar({ className }: { className?: string }) {
   });
 
   return (
-    <div
+    <CollapseWrapper
+      direction="left"
+      expandedSize="min-w-80 max-w-80"
+      isCollapsed={isCollapsed}
+      btnClassName="top-20"
       className={twMerge(
-        'relative flex flex-col items-stretch min-h-0 border-r border-r-border bg-bgPrimary dark:border-r-border-dark',
+        'flex flex-col items-stretch h-full border-r border-r-border bg-bgPrimary dark:border-r-border-dark transition-all',
         className
       )}
     >
@@ -56,6 +69,7 @@ export default function Sidebar({ className }: { className?: string }) {
       <Search
         setDebouncedSearch={setDebouncedSearch}
         placeholder="Search chats"
+        className="pr-10"
       />
 
       <AddChatBtn />
@@ -75,6 +89,6 @@ export default function Sidebar({ className }: { className?: string }) {
           <SkeletonClient />
         </>
       )}
-    </div>
+    </CollapseWrapper>
   );
 }

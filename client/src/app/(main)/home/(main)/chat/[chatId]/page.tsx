@@ -10,11 +10,11 @@ import ChatDisplay from './_components/ChatDisplay';
 import { ChatContext } from './_providers/ChatContextProvider';
 import ChatHeader from './_components/ChatHeader';
 import ChatInput from './_components/ChatInput';
-import ChatUsersDisplay from './_components/ChatUsersDisplay';
 import SkeletonList from '@/components/skeletons/SkeletonList';
 import SkeletonMessage from '@/features/messages/components/SkeletonMessage';
 import { snakeToCamel } from '@/utils/helpers';
 import useUserBlocks from '@/features/blocked/hooks/useUserBlocks';
+import ChatUsersDisplay from './_components/ChatUsersDisplay';
 
 interface ChatPageProps {
   params: {
@@ -66,13 +66,8 @@ export default function ChatPage({
     .reverse() as any[] | undefined;
 
   return (
-    <div
-      className={twMerge(
-        'grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_280px] grid-rows-[100%] size-full',
-        className
-      )}
-    >
-      <div className="relative flex flex-col bg-bgPrimary">
+    <div className={twMerge('flex-1 flex min-w-0 overflow-clip', className)}>
+      <div className="grow relative flex flex-col min-w-0 bg-bgPrimary">
         <ChatHeader />
         {messages ? (
           <ChatDisplay
@@ -87,7 +82,7 @@ export default function ChatPage({
         )}
         <ChatInput />
       </div>
-      <ChatUsersDisplay className="hidden sm:flex" />
+      <ChatUsersDisplay />
     </div>
   );
 }

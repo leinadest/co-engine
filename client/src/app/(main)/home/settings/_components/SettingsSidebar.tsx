@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 export default function SettingsSideBar({ className }: { className?: string }) {
   const pathname = usePathname();
@@ -20,8 +21,17 @@ export default function SettingsSideBar({ className }: { className?: string }) {
     );
   });
 
+  const responsiveClasses =
+    'flex-none p-0 min-w-0 max-w-0 xs:p-4 xs:min-w-40 xs:max-w-40';
+
   return (
-    <div className={className + ' p-4 text-center bg-bgSecondary'}>
+    <div
+      className={twMerge(
+        'p-4 text-center bg-bgSecondary',
+        responsiveClasses,
+        className
+      )}
+    >
       <h5>Settings</h5>
       <hr className="border-t-2" />
       <nav>
