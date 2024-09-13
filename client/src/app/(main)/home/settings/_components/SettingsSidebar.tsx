@@ -1,11 +1,20 @@
+import useLocalStorage from '@/hooks/useLocalStorage';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 export default function SettingsSideBar({ className }: { className?: string }) {
   const pathname = usePathname();
   useEffect(() => {}, [pathname]);
+
+  const { setStorage } = useLocalStorage('accessToken');
+  const router = useRouter();
+
+  function onLogOut() {
+    setStorage({ accessToken: '' });
+    router.push('/login');
+  }
 
   const listLinks = ['Account', 'Profile', 'Preferences'].map((item) => {
     const href = `/home/settings/${item.toLowerCase()}`;
@@ -38,7 +47,9 @@ export default function SettingsSideBar({ className }: { className?: string }) {
         <ol className="*:mb-1">{listLinks}</ol>
       </nav>
       <hr className="border-t-2" />
-      <button className="focus-by-brighten">Log out</button>
+      <button onClick={onLogOut} className="focus-by-brighten">
+        Log out
+      </button>
     </div>
   );
 }
