@@ -16,17 +16,14 @@ import { snakeToCamel } from '@/utils/helpers';
 import useUserBlocks from '@/features/blocked/hooks/useUserBlocks';
 import ChatUsersDisplay from './_components/ChatUsersDisplay';
 
-interface ChatPageProps {
+interface Props {
   params: {
     chatId: string;
+    className?: string;
   };
-  className?: string;
 }
 
-export default function ChatPage({
-  params: { chatId },
-  className,
-}: ChatPageProps) {
+export default function ChatPage({ params: { chatId, className } }: Props) {
   const { setChatId } = useContext(ChatContext);
   useEffect(() => setChatId(chatId), [setChatId, chatId]);
 

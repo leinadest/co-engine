@@ -2,25 +2,20 @@ services:
   client:
     build:
       context: ./client
-      dockerfile: Dockerfile
-      target: base
+      dockerfile: Dockerfile.dev
+      target: nodemon-dev
     volumes:
       - ./client/:/usr/src/app
     ports:
       - '3000:3000'
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:4000/api
-      - API_URL=http://server:4000/api
     command: ['npm', 'run', 'dev']
     depends_on:
       - server
   server:
     build:
       context: ./server
-      dockerfile: Dockerfile
-      target: base
-    volumes:
-      - ./server/:/usr/src/app
+      dockerfile: Dockerfile.dev
+      target: dev
     ports:
       - '4000:4000'
     environment:
@@ -32,7 +27,24 @@ services:
       - DISCORD_CLIENT_SECRET=OBkWRr8Rv8EyPE2CQ4tYK84o7BbfgUMv
       - DISCORD_REDIRECT_URI=http://localhost:4000/api/auth/discord/redirect
       - FRONTEND_BASE_URL=http://localhost:3000
-    command: sh -c 'npm run migrate:up && npm run seed && npm run start'
+      - CLOUDINARY_CLOUD_NAME=dzojdkynj
+      - CLOUDINARY_API_KEY=645568561683437
+      - CLOUDINARY_API_SECRET=9fHNpAgr7lv0jwuoKMt1kHZonkE
+    command: ['npm', 'run', 'dev']
+    volumes:
+      - ./server/:/usr/src/app
+    depends_on:
+      - migrations
+      - postgres
+      - mongo
+  migrations:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      target: migration
+    environment:
+      - POSTGRES_URL=postgresql://postgres:example@postgres:5432
+      - MONGO_URL=mongodb://root:example@mongo:27017/?directConnection=true
     depends_on:
       - postgres
       - mongo

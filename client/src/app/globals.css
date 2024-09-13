@@ -132,6 +132,10 @@
     &:hover {
       @apply bg-primaryLight;
     }
+
+    &:disabled {
+      @apply bg-bgSecondaryDark dark:bg-bgSecondaryDark-dark dark:text-black;
+    }
   }
 
   .btn-disabled {

@@ -26,13 +26,15 @@ export default function Home() {
       {lastChatId ? (
         <ErrorBoundary errorComponent={Error}>
           <ChatPageLayout>
-            <ChatPage params={{ chatId: lastChatId }} className="min-w-0 " />
+            <ChatPage params={{ chatId: lastChatId, className: 'min-w-0 ' }} />
           </ChatPageLayout>
         </ErrorBoundary>
       ) : (
-        <h1 className="m-auto text-6xl text-bgSecondary dark:text-bgSecondary-dark">
-          home
-        </h1>
+        <div className="flex justify-center items-center max-w-0 sm:max-w-full size-full overflow-clip">
+          <h1 className="text-6xl text-bgSecondary dark:text-bgSecondary-dark">
+            home
+          </h1>
+        </div>
       )}
     </div>
   );

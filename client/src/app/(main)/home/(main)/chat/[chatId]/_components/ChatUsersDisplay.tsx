@@ -47,7 +47,7 @@ export default function ChatUsersDisplay({
       <Search
         setDebouncedSearch={setDebouncedSearch}
         placeholder="Search users"
-        className="first:*:bg-bgPrimary"
+        className="first:*:bg-bgPrimary dark:first:*:bg-bgPrimary-dark"
       />
       {data ? (
         <List

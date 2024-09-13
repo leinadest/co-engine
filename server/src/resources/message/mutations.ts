@@ -5,7 +5,7 @@ import { GraphQLError } from 'graphql/error/GraphQLError';
 import { escape } from 'lodash';
 import { type ClientSession } from 'mongoose';
 
-import { Chat, ChatUser, Message } from '../';
+import { Chat, ChatUser, Message } from '..';
 import type AuthService from '../../services/authService';
 import { transaction } from '../../utils/api';
 import { type Transaction } from 'sequelize';

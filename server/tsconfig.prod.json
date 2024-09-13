@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.json", // Extend from base config if applicable
+  "compilerOptions": {
+    "target": "es6", // Target ECMAScript version (change as needed)
+    "module": "commonjs", // Module system (commonly commonjs for Node.js)
+    "outDir": "./dist", // Output directory for compiled files
+    "rootDir": "./src", // Root directory of your TypeScript source files
+    "sourceMap": false, // Disable source maps for production
+    "declaration": false, // Do not generate declaration files (.d.ts)
+    "strict": true, // Enable all strict type-checking options
+    "noImplicitAny": true, // Raise error on expressions and declarations with an implied 'any' type
+    "noUnusedParameters": true, // Raise error on unused parameters
+    "noUnusedLocals": true, // Raise error on unused local variables
+    "esModuleInterop": true, // Enable compatibility for default imports
+    "skipLibCheck": true // Skip type checking of all declaration files (can improve build speed)
+  },
+  "include": [
+    "src/**/*" // Include all TypeScript files in the 'src' directory
+  ],
+  "exclude": [
+    "node_modules", // Exclude node_modules
+    "dist" // Exclude output directory
+  ]
+}

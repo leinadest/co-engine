@@ -30,6 +30,7 @@ export default function Sidebar({
 
   const { data, error, refetch, fetchMoreChats } = useMe({
     variables: { search: debouncedSearch },
+    fetchPolicy: 'cache-and-network',
   });
 
   useEffect(() => {
@@ -74,7 +75,7 @@ export default function Sidebar({
 
       <AddChatBtn />
 
-      {data ? (
+      {chats ? (
         <>
           <List
             item={Chat}

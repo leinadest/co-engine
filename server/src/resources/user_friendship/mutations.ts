@@ -2,7 +2,8 @@ import { gql } from 'graphql-tag';
 import { GraphQLError } from 'graphql/error/GraphQLError';
 
 import type AuthService from '../../services/authService';
-import { UserFriendship } from '../';
+import { UserFriendship } from '..';
+import { Op } from 'sequelize';
 
 export const typeDefs = gql`
   extend type Mutation {
@@ -34,8 +35,16 @@ export const resolvers = {
 
       const result = await UserFriendship.destroy({
         where: {
-          user_id: authService.getUserId(),
-          friend_id: friendId,
+          [Op.or]: [
+            {
+              user_id: authService.getUserId(),
+              friend_id: friendId,
+            },
+            {
+              user_id: friendId,
+              friend_id: authService.getUserId(),
+            },
+          ],
         },
       });
       if (result === 0) {

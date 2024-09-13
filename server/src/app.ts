@@ -7,7 +7,7 @@ import cors from 'cors';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 import { expressMiddleware } from '@apollo/server/express4';
 
-import { verifySequelizeConnection } from './config/sequelize';
+import { connectToPostgres } from './config/sequelize';
 import connectToMongo from './config/mongo';
 import discordStrategy from './config/passport';
 import {
@@ -37,7 +37,7 @@ app.use('/api/auth/discord/redirect', redirectAuth);
 
 // Start the servers, database connections, and graphql route
 Promise.all([
-  verifySequelizeConnection(),
+  connectToPostgres(),
   connectToMongo(),
   startHttpServer(httpServer),
   apolloServer.start(),

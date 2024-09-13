@@ -2,7 +2,7 @@ import { gql } from 'graphql-tag';
 import { GraphQLError } from 'graphql/error/GraphQLError';
 import * as yup from 'yup';
 
-import { User } from '../';
+import { User } from '..';
 import type AuthService from '../../services/authService';
 import { type Context } from '../../config/apolloServer';
 

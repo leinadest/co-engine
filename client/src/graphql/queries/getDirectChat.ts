@@ -6,7 +6,9 @@ interface PartialUser {
   id: string;
   username: string;
   discriminator: string;
+  display_name: string;
   profile_pic_url: string;
+  is_online: boolean;
 }
 
 interface MessageNode {
@@ -45,7 +47,9 @@ const GET_DIRECT_CHAT: TypedDocumentNode<
         id
         username
         discriminator
+        display_name
         profile_pic_url
+        is_online
       }
       messages {
         edges {
@@ -56,7 +60,9 @@ const GET_DIRECT_CHAT: TypedDocumentNode<
               id
               username
               discriminator
+              display_name
               profile_pic_url
+              is_online
             }
             created_at
             edited_at

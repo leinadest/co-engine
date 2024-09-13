@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -64,6 +66,7 @@ export default function AddChatBtn() {
     }
   }, [createChatResult.error, createChatResult.data, router]);
 
+  const isHydrated = !!meQuery.data;
   const disabled = !form.formState.isDirty || form.formState.isSubmitting;
 
   return (
@@ -71,6 +74,7 @@ export default function AddChatBtn() {
       <div className="flex justify-between items-center px-4 py-2 text-bold">
         <p>Direct Chats</p>
         <button
+          disabled={!isHydrated}
           onClick={() => setShowDialog(!showDialog)}
           className="relative size-6 rounded-md bg-bgPrimary focus-by-brightness"
         >

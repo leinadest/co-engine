@@ -2,7 +2,7 @@ import { gql } from 'graphql-tag';
 import { GraphQLError } from 'graphql/error/GraphQLError';
 
 import type AuthService from '../../services/authService';
-import { User, UserFriendRequest } from '../';
+import { User, UserFriendRequest } from '..';
 import { type Context } from '../../config/apolloServer';
 import { Op } from 'sequelize';
 
@@ -38,7 +38,7 @@ const resolvers = {
     sendFriendRequest: async (
       _parent: any,
       { userId }: { userId: string },
-      { authService, dataSources }: Context
+      { authService }: Context
     ) => {
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {

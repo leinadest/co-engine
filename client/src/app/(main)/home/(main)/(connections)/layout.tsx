@@ -32,7 +32,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   });
 
   return (
-    <div className="flex-1 flex flex-col min-w-80">
+    <div className="relative flex-1 flex flex-col min-w-80">
       <nav className="flex overflow-x-auto overflow-y-clip min-h-16 border-b border-b-border dark:border-b-border-dark">
         <ul className="grow self-center flex justify-evenly items-center min-w-[450px]">
           {optionsList}

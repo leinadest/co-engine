@@ -78,7 +78,7 @@ const resolvers = {
     chat: async (
       _: any,
       { id }: { id: string },
-      { authService, dataSources }: Context
+      { authService }: Context
     ): Promise<Chat | null> => {
       if (authService.getUserId() === null) {
         throw new GraphQLError('Not authenticated', {

@@ -40,9 +40,9 @@ export default function ChatHeader() {
       <header className="flex justify-between items-center p-2 px-4 gap-6 border-b border-b-border dark:border-b-border-dark">
         <SkeletonChatIdentity />
         <input type="text" placeholder="Search messages" disabled />
-        <button className="p-2 rounded-md bg-bgPrimary focus-by-brightness">
+        <div className="p-2 rounded-md">
           <Image src="/door_open.png" alt="leave chat" width={26} height={26} />
-        </button>
+        </div>
       </header>
     );
   }

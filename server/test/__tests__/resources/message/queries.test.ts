@@ -8,7 +8,7 @@ import {
   Message,
   User,
   UserBlock,
-} from '../../../../src/resources/';
+} from '../../../../src/resources';
 import { type IMessage } from '../../../../src/resources/message/model';
 import { executeOperation } from '../helpers';
 import AuthService from '../../../../src/services/authService';

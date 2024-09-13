@@ -4,7 +4,7 @@ import { merge } from 'lodash';
 import queries from './queries';
 import mutations from './mutations';
 import subscriptions from './subscriptions';
-import { type IMessage } from '../message/model';
+import { type IMessage } from './model';
 import { type Context } from '../../config/apolloServer';
 
 const typeDefs = gql`

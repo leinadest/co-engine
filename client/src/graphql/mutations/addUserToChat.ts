@@ -3,6 +3,7 @@ import { gql, TypedDocumentNode } from '@apollo/client';
 export interface AddUserToChatResult {
   addUserToChat: {
     user_id: string;
+    chat_id: string;
   };
 }
 
@@ -27,6 +28,7 @@ const ADD_USER_TO_CHAT: TypedDocumentNode<
       discriminator: $discriminator
     ) {
       user_id
+      chat_id
     }
   }
 `;

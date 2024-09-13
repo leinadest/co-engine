@@ -9,27 +9,37 @@ import REMOVE_USER_FROM_CHAT, {
   RemoveUserFromChatResult,
   RemoveUserFromChatVariables,
 } from '@/graphql/mutations/removeUserFromChat';
-import { GET_ME } from '@/graphql/queries/getMe';
 import GET_USERS from '@/graphql/queries/getUsers';
+import { GET_ME } from '@/graphql/queries/getMe';
 
 export default function useChatUser() {
   const [mutateAdd] = useMutation(ADD_USER_TO_CHAT);
+
   const [mutateRemove] = useMutation(REMOVE_USER_FROM_CHAT, {
     update(cache, { data }) {
       if (!data) return;
 
+      let removedSelf = false;
+
       cache.updateQuery({ query: GET_ME }, (prevData) => {
         if (!prevData) return prevData;
-        const newChatEdges = prevData.me.chats.edges.filter(
+        removedSelf = data.removeUserFromChat.user_id === prevData.me.id;
+        if (!removedSelf) return prevData;
+        const newEdges = prevData.me.chats.edges.filter(
           ({ node: chat }) => chat.id !== data.removeUserFromChat.chat_id
         );
         return {
           me: {
             ...prevData.me,
-            chats: { ...prevData.me.chats, edges: newChatEdges },
+            chats: {
+              edges: newEdges,
+              pageInfo: prevData.me.chats.pageInfo,
+            },
           },
         };
       });
+
+      if (removedSelf) return;
 
       cache.updateQuery(
         {
@@ -70,6 +80,12 @@ export default function useChatUser() {
     return mutateAdd({
       ...options,
       variables: { chatId, username, discriminator },
+      refetchQueries: [
+        {
+          query: GET_USERS,
+          variables: { contextType: 'chat', contextId: chatId },
+        },
+      ],
     })
       .then((res) => setData(res.data?.addUserToChat))
       .catch((err) => setError(err))

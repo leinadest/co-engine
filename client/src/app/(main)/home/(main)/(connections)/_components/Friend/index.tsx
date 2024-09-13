@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -6,6 +8,7 @@ import TrackerLink from '@/components/TrackerLink';
 import Avatar from '@/components/Avatar';
 import useUserUpdated from '@/features/users/hooks/useUserUpdated';
 import { snakeToCamel } from '@/utils/helpers';
+import DeleteFriendshipBtn from './DeleteFriendshipBtn';
 
 export interface FriendProps {
   id: string;
@@ -56,6 +59,7 @@ export default function Friend({
           status={data.isOnline ? 'online' : 'offline'}
         />
       </Link>
+
       <div className="mr-auto">
         <Link
           href={`/home/user/${id}`}
@@ -73,6 +77,9 @@ export default function Friend({
         </Link>
         <p>{data.isOnline ? 'Online' : 'Offline'}</p>
       </div>
+
+      <DeleteFriendshipBtn friendId={id} friendDisplayName={data.displayName} />
+
       <TrackerLink
         href={`/home/chat?userId=${id}`}
         className="p-2 rounded-lg bg-bgPrimary focus-by-brightness"

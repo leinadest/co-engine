@@ -1,11 +1,14 @@
 import dotenv from 'dotenv';
 
-if (dotenv.config().error !== undefined) {
-  throw dotenv.config().error as Error;
+if (
+  dotenv.config().error !== undefined &&
+  process.env.NODE_ENV === 'development'
+) {
+  console.log('Error loading environment variables:', dotenv.config().error);
 }
 
 const variables = {
-  NODE_ENV: process.env.NODE_EN ?? 'development',
+  NODE_ENV: process.env.NODE_ENV ?? 'development',
   PORT: process.env.PORT ?? '3000',
 
   POSTGRES_URL: process.env.POSTGRES_URL as string,
@@ -25,12 +28,12 @@ const variables = {
 };
 
 Object.entries(variables).forEach(([key, value]) => {
-  if (value === undefined) {
-    throw new Error(`Missing environment variable: ${key}`);
+  if (value === undefined && process.env.NODE_ENV === 'development') {
+    console.log('Missing environment variable:', key);
   }
 });
 
-if (variables.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'development') {
   console.log(variables);
 }
 

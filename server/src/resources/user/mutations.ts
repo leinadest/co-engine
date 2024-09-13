@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql/error/GraphQLError';
 import { type FileUpload } from 'graphql-upload/processRequest.js';
 
-import { User } from '../';
+import { User } from '..';
 import AuthService from '../../services/authService';
 import { pubsub, type Context } from '../../config/apolloServer';
 import { deleteImage, uploadImage } from '../../services/cloudinaryService';

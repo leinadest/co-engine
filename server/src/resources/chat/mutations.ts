@@ -3,7 +3,7 @@ import { GraphQLError } from 'graphql/error/GraphQLError';
 import * as yup from 'yup';
 
 import { type Context } from '../../config/apolloServer';
-import { Chat, ChatUser, User } from '../';
+import { Chat, ChatUser, User } from '..';
 
 export const typeDefs = gql`
   extend type Mutation {

@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ESNext", // Latest JavaScript features
+    "module": "CommonJS", // CommonJS module system for Node.js
+    "lib": ["ESNext", "DOM"], // Include DOM types for browser tests
+    "types": ["node", "playwright"], // Include node and test libraries types
+    "esModuleInterop": true, // Enable ES module interop for compatibility
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "strict": true, // Enable strict type checking
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true, // Enforce consistent file naming
+    "outDir": "./dist", // Output directory for compiled files
+    "rootDir": "./", // Root directory of your source code
+    "moduleResolution": "node", // Node module resolution strategy
+    "resolveJsonModule": true, // Enable importing of .json files
+    "isolatedModules": true, // Isolated module compilation
+    "noEmit": false, // Disable emitting compiled files (when true)
+    "allowJs": true, // Allow JavaScript files
+    "sourceMap": true // Enable source maps for debugging
+  },
+  "include": ["config/**/*.ts", "tests/**/*.ts", "playwright.config.ts"], // Include test and source directories
+  "exclude": ["node_modules", "dist"] // Exclude these directories
+}

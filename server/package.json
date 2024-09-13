@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "main": "src/app.ts",
   "scripts": {
-    "start": "nodemon",
+    "dev": "nodemon",
+    "build": "tsc -p tsconfig.prod.json",
+    "start": "node dist/app.js",
     "lint": "npx eslint .",
     "test": "NODE_ENV=test npx jest --silent --color --runInBand --logHeapUsage --detectOpenHandles --coverage",
     "migrate:up": "ts-node scripts/migrate.ts up",

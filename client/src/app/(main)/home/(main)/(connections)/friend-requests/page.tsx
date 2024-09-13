@@ -63,7 +63,7 @@ export default function FriendRequests() {
           <Search
             setDebouncedSearch={setDebouncedSearch}
             placeholder="Search friend requests"
-            className="bg-bgSecondary first:*:bg-bgPrimary"
+            className="bg-bgSecondary first:*:bg-bgPrimary dark:first:*:bg-bgPrimary-dark"
           />
         </div>
         <main className="overflow-auto min-h-0">
@@ -98,7 +98,7 @@ export default function FriendRequests() {
         <Search
           setDebouncedSearch={setDebouncedSearch}
           placeholder="Search friend requests"
-          className="bg-bgSecondary first:*:bg-bgPrimary"
+          className="bg-bgSecondary first:*:bg-bgPrimary dark:first:*:bg-bgPrimary-dark"
         />
       </div>
       <main className="min-h-0">

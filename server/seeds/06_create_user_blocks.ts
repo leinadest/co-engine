@@ -22,7 +22,7 @@ const prodData: typeof devData = {
   userBlocksIds: [],
 };
 
-const data = NODE_ENV === 'development' ? devData : prodData;
+const data = NODE_ENV === 'production' ? prodData : devData;
 
 export const up = async (): Promise<void> => {
   try {

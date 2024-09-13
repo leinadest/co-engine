@@ -33,7 +33,7 @@ export default function Alert({
 
   return (
     <div
-      className={`fixed top-4 right-4 p-4 rounded shadow-lg text-white transition-opacity ${
+      className={`fixed z-50 top-4 right-4 p-4 rounded shadow-lg text-white transition-opacity ${
         type === 'success' ? 'bg-success' : 'bg-error'
       } ${visible ? '' : 'pointer-events-none opacity-0'}`}
       role="alert"

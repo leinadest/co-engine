@@ -12,7 +12,9 @@ export interface CreateChatResult {
       id: string;
       username: string;
       discriminator: string;
+      display_name: string;
       profile_pic_url: string;
+      is_online: boolean;
     }>;
   };
 }
@@ -37,7 +39,9 @@ const CREATE_CHAT: TypedDocumentNode<
         id
         username
         discriminator
+        display_name
         profile_pic_url
+        is_online
       }
     }
   }

@@ -24,7 +24,7 @@ const prodData: typeof devData = {
   usersIds: [],
 };
 
-const data = NODE_ENV === 'development' ? devData : prodData;
+const data = NODE_ENV === 'production' ? prodData : devData;
 
 export const up = async (): Promise<void> => {
   try {

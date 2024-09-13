@@ -8,6 +8,9 @@ const connectToMongo = async (): Promise<void> => {
     console.log('Connected to MongoDB');
   } catch (error: any) {
     console.log('Error connection to MongoDB:', error);
+    setTimeout(() => {
+      void connectToMongo();
+    }, 5000);
   }
 };
 

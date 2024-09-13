@@ -57,6 +57,8 @@ export default function LogInForm({ formValues }: { formValues?: FormValues }) {
     }
   }, [error, form, router, data]);
 
+  const disabled = !form || form.formState.isSubmitting;
+
   return (
     <form onSubmit={form.handleSubmit(logIn)}>
       <InputField
@@ -73,10 +75,7 @@ export default function LogInForm({ formValues }: { formValues?: FormValues }) {
         placeholder="Enter your password"
         form={form}
       />
-      <button
-        disabled={form.formState.isSubmitting}
-        className="btn mt-8 w-full"
-      >
+      <button disabled={disabled} className="btn mt-8 w-full">
         Log in
       </button>
     </form>
