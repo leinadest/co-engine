@@ -26,6 +26,8 @@ const discordStrategy = new DiscordStrategy(
       if (oauth2User === null) {
         const user = await User.create({
           username: profile.username,
+          display_name: profile.displayName,
+          profile_pic_url: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png?size=256`,
         });
         oauth2User = await OAuth2User.create({
           oauth2_user_id: profile.id,

@@ -20,8 +20,8 @@ export default function Avatar({
     <Image
       src={src}
       alt={alt ?? 'profile'}
-      width={100}
-      height={100}
+      width={256}
+      height={256}
       className={twMerge('profile-circle', status, className)}
     />
   ) : (
