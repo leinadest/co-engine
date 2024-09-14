@@ -1,5 +1,4 @@
 import type http from 'http';
-import debug from 'debug';
 
 import { PORT } from './environment';
 
@@ -9,7 +8,7 @@ import { PORT } from './environment';
  * @return {Promise<void>} A Promise that resolves when the server is successfully started.
  */
 const startHttpServer = async (httpServer: http.Server): Promise<void> => {
-  const onError = (error: any): void => {
+  httpServer.on('error', (error: any) => {
     if (error.syscall !== 'listen') {
       throw error;
     }
@@ -29,18 +28,16 @@ const startHttpServer = async (httpServer: http.Server): Promise<void> => {
       default:
         throw error;
     }
-  };
+  });
 
-  const onListening = (): void => {
+  httpServer.listen({ host: '0.0.0.0', port: PORT }, (): void => {
     const addr = httpServer.address();
     const bind =
-      typeof addr === 'string' ? `pipe ${addr}` : `port ${addr?.port}`;
-    debug('server:server')(`Listening on ${bind}`);
-  };
-
-  httpServer.listen(PORT);
-  httpServer.on('error', onError);
-  httpServer.on('listening', onListening);
+      typeof addr === 'string'
+        ? `pipe ${addr}`
+        : `${addr?.address}:${addr?.port}`;
+    console.log(`Listening on ${bind}`);
+  });
 };
 
 export default startHttpServer;

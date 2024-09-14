@@ -22,7 +22,6 @@
     "cloudinary": "^2.4.0",
     "cors": "^2.8.5",
     "dataloader": "^2.2.2",
-    "debug": "^4.3.5",
     "dotenv": "^16.4.5",
     "graphql": "^16.9.0",
     "graphql-pg-subscriptions": "^3.2.5",
