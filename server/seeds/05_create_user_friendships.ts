@@ -18,11 +18,20 @@ const devData: { userFriendships: any[]; userFriendshipsIds: number[] } = {
 };
 
 const prodData: typeof devData = {
-  userFriendships: [{}],
+  userFriendships: [
+    ...Array.from({ length: 9 }, (_, i) => ({
+      user_id: 1,
+      friend_id: i + 2,
+    })),
+    ...Array.from({ length: 9 }, (_, i) => ({
+      user_id: i + 2,
+      friend_id: 1,
+    })),
+  ],
   userFriendshipsIds: [],
 };
 
-const data = NODE_ENV === 'production' ? prodData : devData;
+const data = NODE_ENV === 'development' ? devData : prodData;
 
 export const up = async (): Promise<void> => {
   try {

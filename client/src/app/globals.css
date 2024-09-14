@@ -171,7 +171,7 @@
   }
 
   .profile-circle {
-    @apply size-8 xs:size-12 bg-bgSecondary rounded-full;
+    @apply size-8 xs:size-12 object-cover bg-bgSecondary rounded-full;
   }
 
   .online {

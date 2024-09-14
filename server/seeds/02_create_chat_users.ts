@@ -23,11 +23,24 @@ const devData: { chatUsers: any[]; chatUsersIds: number[] } = {
 };
 
 const prodData: typeof devData = {
-  chatUsers: [{}],
+  chatUsers: [
+    ...Array.from({ length: 10 }, (_, i) => ({
+      user_id: 1,
+      chat_id: i + 1,
+    })),
+    ...Array.from({ length: 9 }, (_, i) => ({
+      user_id: i + 2,
+      chat_id: i + 2,
+    })),
+    ...Array.from({ length: 9 }, (_, i) => ({
+      user_id: i + 2,
+      chat_id: 1,
+    })),
+  ],
   chatUsersIds: [],
 };
 
-const data = NODE_ENV === 'production' ? prodData : devData;
+const data = NODE_ENV === 'development' ? devData : prodData;
 
 export const up = async (): Promise<void> => {
   try {

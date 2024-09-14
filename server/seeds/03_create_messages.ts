@@ -24,11 +24,27 @@ const devData: { messages: any[]; messagesIds: string[] } = {
 };
 
 const prodData: typeof devData = {
-  messages: [{}],
+  messages: [
+    "Hey, how's it going?",
+    "I'm doing well, thanks. How about you?",
+    "I'm good. I was thinking about our weekend plans. Do you have any good ideas for what we could do?",
+    "I've beeing thinking we could either go hiking or maybe check out that new cafe downtown. What do you think?",
+    "Both sound great! I've been wanting to try that cafe. But if the weather is nice, hiking would be awesome too.",
+    'True, the weather has been great lately. How about we keep it flexible? We can decide on Saturday morning based on the weather.',
+    'Sounds like a plan. Do you want to meet at the café first thing, or should we check the weather and then decide?',
+    "Let's check the weather in the morning and decide. If we go to the café, maybe we could meet there at 10 AM?",
+    "Perfect. I'll check the weather first thing and text you around 9 AM.",
+    "Great! I'll keep my phone handy. Looking forward to it!",
+  ].map((msg, i) => ({
+    context_type: 'chat',
+    context_id: '2',
+    creator_id: i % 2 === 0 ? 1 : 2,
+    content: msg,
+  })),
   messagesIds: [],
 };
 
-const data = NODE_ENV === 'production' ? prodData : devData;
+const data = NODE_ENV === 'development' ? devData : prodData;
 
 export const up = async (): Promise<void> => {
   try {

@@ -1,4 +1,5 @@
-import { v2 as cloudinary } from 'cloudinary';
+import { v2 as cloudinary, type UploadApiOptions } from 'cloudinary';
+import { type FileUpload } from 'graphql-upload/processRequest.js';
 
 import {
   CLOUDINARY_CLOUD_NAME,
@@ -13,37 +14,39 @@ cloudinary.config({
   secure: true,
 });
 
-export async function uploadImage({
-  filename,
-  mimetype,
-  encoding,
-  createReadStream,
-}: {
-  filename: string;
-  mimetype: string;
-  encoding: string;
-  createReadStream: () => NodeJS.ReadableStream;
-}): Promise<{
+export async function uploadImage(
+  fileUpload: FileUpload,
+  options?: UploadApiOptions
+): Promise<{
   publicId: string;
   url: string;
 }> {
-  const options = { use_filename: true, filename, mimetype, encoding };
-  const result = await new Promise<{ public_id: string; url: string }>(
-    (resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        options,
-        (error, result) => {
-          if (error !== undefined) {
-            reject(error);
-          }
-          if (result !== undefined) {
-            resolve(result);
-          }
+  const executor = (
+    resolve: (reason?: any) => void,
+    reject: (reason?: any) => void
+  ): void => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        ...options,
+        ...fileUpload,
+        use_filename: true,
+      },
+      (error, result) => {
+        if (error !== undefined) {
+          reject(error);
         }
-      );
-      createReadStream().pipe(stream);
-    }
+        if (result !== undefined) {
+          resolve(result);
+        }
+      }
+    );
+    fileUpload.createReadStream().pipe(stream);
+  };
+
+  const result = await new Promise<{ public_id: string; url: string }>(
+    executor
   );
+
   return { publicId: result.public_id, url: result.url };
 }
 
