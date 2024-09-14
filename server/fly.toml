@@ -1,0 +1,36 @@
+# fly.toml app configuration file generated for co-engine-server on 2024-09-13T17:42:01-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'co-engine-server'
+primary_region = 'ord'
+
+[env]
+  PORT = "4000"
+
+[processes]
+  app = "npm start"
+
+[deploy]
+  strategy = "canary"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "10s"
+  method = "GET"
+  timeout = "3s"
+  path = "/"
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1

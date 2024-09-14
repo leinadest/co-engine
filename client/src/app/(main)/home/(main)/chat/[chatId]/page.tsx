@@ -72,10 +72,7 @@ export default function ChatPage({ params: { chatId, className } }: Props) {
             fetchMoreMessages={chatQuery.fetchMoreMessages}
           />
         ) : (
-          <SkeletonList
-            skeleton={<SkeletonMessage />}
-            className="p-2 pb-0 *:mb-4 last:*:mb-0"
-          />
+          <SkeletonList skeleton={<SkeletonMessage />} />
         )}
         <ChatInput />
       </div>

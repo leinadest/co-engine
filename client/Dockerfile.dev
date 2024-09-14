@@ -1,5 +1,4 @@
 # Nodemon develop stage
-# Build image to run client with nodemon
 FROM node:20-alpine AS nodemon-dev
 
 WORKDIR /usr/src/app
@@ -12,10 +11,9 @@ COPY . .
 
 CMD ["npm", "run", "dev"]
 
-### Develop production multistage
+### DEVELOP PRODUCTION MULTISTAGE
 
 # Develop build stage
-# Build image to build client's .next/
 FROM node:20 AS builder
 
 WORKDIR /usr/src/app
@@ -31,7 +29,6 @@ ENV NEXT_PUBLIC_API_URL=http://localhost:4000/api
 RUN npm run build
 
 # Develop production stage
-# Build image to run builder with only production dependencies
 FROM node:20-alpine AS prod
 
 WORKDIR /usr/src/app

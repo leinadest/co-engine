@@ -41,7 +41,9 @@ test.describe('Friend Remove', () => {
     await page.getByRole('button', { name: 'Unfriend' }).click();
 
     // Expect tester2#0 to not be in the friends list
-    await page.waitForLoadState('networkidle');
+    await page
+      .getByRole('button', { name: 'Unfriend' })
+      .waitFor({ state: 'hidden' });
     await expect(page.getByText('tester2#0')).not.toBeVisible();
   });
 });

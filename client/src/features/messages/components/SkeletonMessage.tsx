@@ -2,7 +2,7 @@ import Skeleton from '@/components/skeletons/Skeleton';
 
 export default function SkeletonMessage() {
   return (
-    <div className="flex px-2 gap-4">
+    <div className="flex px-4 py-2 gap-4">
       <Skeleton type="avatar" />
       <div className="grow flex flex-col gap-1">
         <div className="flex gap-4">

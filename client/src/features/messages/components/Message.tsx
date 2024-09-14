@@ -37,7 +37,7 @@ export default function Message({
     : formatTime(createdAt);
 
   return (
-    <div className="flex px-2 gap-4">
+    <div className="flex px-4 py-2 gap-4">
       <Link href={`/home/user/${creator.id}`} className="shrink-0">
         <Avatar
           src={creator.profilePicUrl}

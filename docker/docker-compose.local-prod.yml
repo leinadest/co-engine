@@ -4,18 +4,16 @@ services:
       context: ../client
       dockerfile: Dockerfile.dev
       target: prod
-    environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:4000/api
-      - API_URL=http://server:4000/api
     ports:
       - '3000:3000'
     command: ['npm', 'start']
     depends_on:
       - server
+
   server:
     build:
       context: ../server
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
       target: prod
     ports:
       - '4000:4000'
@@ -23,23 +21,24 @@ services:
       - PORT=4000
       - POSTGRES_URL=postgresql://postgres:example@postgres:5432
       - MONGO_URL=mongodb://root:example@mongo:27017/?directConnection=true
-      - JWT_SECRET=secret1211
-      - DISCORD_CLIENT_ID=1262427700925300780
-      - DISCORD_CLIENT_SECRET=OBkWRr8Rv8EyPE2CQ4tYK84o7BbfgUMv
+      - JWT_SECRET=${JWT_SECRET}
+      - DISCORD_CLIENT_ID=${DISCORD_CLIENT_ID}
+      - DISCORD_CLIENT_SECRET=${DISCORD_CLIENT_SECRET}
       - DISCORD_REDIRECT_URI=http://localhost:4000/api/auth/discord/redirect
       - FRONTEND_BASE_URL=http://localhost:3000
-      - CLOUDINARY_CLOUD_NAME=dzojdkynj
-      - CLOUDINARY_API_KEY=645568561683437
-      - CLOUDINARY_API_SECRET=9fHNpAgr7lv0jwuoKMt1kHZonkE
+      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
     command: ['npm', 'start']
     depends_on:
       - migrations
       - postgres
       - mongo
+
   migrations:
     build:
       context: ../server
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
       target: migration
     environment:
       - POSTGRES_URL=postgresql://postgres:example@postgres:5432
@@ -47,6 +46,7 @@ services:
     depends_on:
       - postgres
       - mongo
+
   postgres:
     image: postgres
     restart: always
@@ -54,6 +54,7 @@ services:
       - '5432:5432'
     environment:
       - POSTGRES_PASSWORD=example
+
   mongo:
     image: mongo
     restart: always
