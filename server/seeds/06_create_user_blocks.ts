@@ -18,11 +18,16 @@ const devData: { userBlocks: any[]; userBlocksIds: number[] } = {
 };
 
 const prodData: typeof devData = {
-  userBlocks: [{}],
+  userBlocks: [
+    ...Array.from({ length: 4 }, (_, i) => ({
+      user_id: 1,
+      blocked_user_id: 17 + i,
+    })),
+  ],
   userBlocksIds: [],
 };
 
-const data = NODE_ENV === 'production' ? prodData : devData;
+const data = NODE_ENV === 'development' ? devData : prodData;
 
 export const up = async (): Promise<void> => {
   try {

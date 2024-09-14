@@ -22,7 +22,10 @@ const validationSchema = yup.object().shape({
     .required('Username is required')
     .min(3, 'Username must be between 3 and 30 characters long')
     .max(30, 'Username must be between 3 and 30 characters long')
-    .matches(/^[a-zA-Z0-9]+$/, 'Username must contain only letters or numbers')
+    .matches(
+      /^[a-zA-Z0-9_]+$/,
+      'Username must contain only letters, numbers, or underscores'
+    )
     .lowercase(),
   email: yup
     .string()

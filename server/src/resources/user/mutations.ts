@@ -103,8 +103,8 @@ const createUserInputSchema = yup.object().shape({
       .min(3, 'Username must be between 3 and 30 characters long')
       .max(30, 'Username must be between 3 and 30 characters long')
       .matches(
-        /^[a-zA-Z0-9]+$/,
-        'Username must contain only letters or numbers'
+        /^[a-zA-Z0-9_]+$/,
+        'Username must contain only letters, numbers, or underscores'
       )
       .lowercase(),
     email: yup
@@ -243,7 +243,14 @@ const resolvers = {
       }
       if (profilePic !== undefined) {
         const fileUpload = (await profilePic) as FileUpload;
-        const { publicId, url } = await uploadImage(fileUpload);
+        const { publicId, url } = await uploadImage(fileUpload, {
+          transformation: {
+            width: 256,
+            height: 256,
+            crop: 'lfill',
+            gravity: 'auto',
+          },
+        });
         user.profile_pic = publicId;
         user.profile_pic_url = url;
       }
