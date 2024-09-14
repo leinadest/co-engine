@@ -1,6 +1,5 @@
 import List from '@/components/common/List';
 import Message, { MessageProps } from '@/features/messages/components/Message';
-import { RelayConnection } from '@/types/api';
 import { snakeToCamel } from '@/utils/helpers';
 import TimeDivider from './TimeDivider';
 
@@ -44,7 +43,6 @@ function ChatDisplay({ data, fetchMoreMessages }: ChatDisplayProps) {
       items={messages}
       startAtBottom={true}
       onEndReached={fetchMoreMessages}
-      className="p-2 pb-0 *:mb-4 last:*:mb-0"
     />
   );
 }

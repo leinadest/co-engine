@@ -22,39 +22,9 @@ RUN npm ci
 
 COPY . .
 
-ENV POSTGRES_URL=postgresql://postgres:example@postgres:5432
-ENV MONGO_URL=mongodb://root:example@mongo:27017/?directConnection=true
+ARG POSTGRES_URL
+ARG MONGO_URL
+ENV POSTGRES_URL=${POSTGRES_URL}
+ENV MONGO_URL=${MONGO_URL}
 
 CMD ["sh", "-c", "npm run migrate:up && npm run seed"]
-
-### LOCAL PRODUCTION MULTISTAGE
-
-# Local build stage
-FROM node:20 AS builder
-
-WORKDIR /usr/src/app
-
-COPY package.json package-lock.json ./
-
-RUN npm ci
-
-COPY . .
-
-RUN npm run build
-
-# Local production stage
-FROM node:20-slim AS prod
-
-WORKDIR /usr/src/app
-
-COPY --chown=node:node --from=builder /usr/src/app/dist ./dist
-COPY --chown=node:node --from=builder /usr/src/app/package.json ./package.json
-COPY --chown=node:node --from=builder /usr/src/app/package-lock.json ./package-lock.json
-
-RUN npm ci --only=production
-
-USER node
-
-EXPOSE 4000
-
-CMD ["npm", "start"]

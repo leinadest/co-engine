@@ -33,7 +33,7 @@ node_modules
 npm-debug.log
 
 # Environment
-.env
+.env*
 
 # Playwright
 test-results/

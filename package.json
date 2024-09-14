@@ -6,8 +6,8 @@
     "test": "tests"
   },
   "scripts": {
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down -v",
+    "docker:up": "docker-compose -f docker/docker-compose.dev.yml up -d",
+    "docker:down": "docker-compose -f docker/docker-compose.dev.yml down -v",
     "docker:up:local": "docker-compose -f docker/docker-compose.local-prod.yml up -d",
     "docker:down:local": "docker-compose -f docker/docker-compose.local-prod.yml down -v",
     "docker:up:e2e": "docker-compose -f docker/docker-compose.e2e.yml up -d",

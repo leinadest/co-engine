@@ -4,11 +4,11 @@ import SkeletonMessage from '@/features/messages/components/SkeletonMessage';
 
 export default function SkeletonChatPage() {
   return (
-    <div className="flex flex-col">
-      <header className="flex items-center p-2 gap-6 overflow-clip">
+    <div className="flex-1 flex flex-col">
+      <header className="flex items-center px-4 py-2 gap-6 border-b overflow-clip">
         <SkeletonChatIdentity />
       </header>
-      <main className="grow p-2 overflow-auto min-w-96">
+      <main className="grow overflow-auto min-w-96">
         <SkeletonList skeleton={<SkeletonMessage />} />
       </main>
       <div className="grow">
