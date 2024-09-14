@@ -17,13 +17,15 @@ export default function Avatar({
   status,
 }: AvatarProps) {
   return src ? (
-    <Image
-      src={src}
-      alt={alt ?? 'profile'}
-      width={256}
-      height={256}
-      className={twMerge('profile-circle', status, className)}
-    />
+    <div className={twMerge('rounded-full', status, className)}>
+      <Image
+        src={src}
+        alt={alt ?? 'profile'}
+        width={256}
+        height={256}
+        className="profile-circle"
+      />
+    </div>
   ) : (
     <div
       className={twMerge(
@@ -37,7 +39,7 @@ export default function Avatar({
         alt={alt ?? 'profile'}
         width={26}
         height={26}
-        className="size-4 xs:size-6"
+        className={twMerge('size-4 xs:size-6')}
       />
     </div>
   );

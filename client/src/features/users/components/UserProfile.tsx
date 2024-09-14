@@ -1,3 +1,5 @@
+import { twMerge } from 'tailwind-merge';
+
 import Avatar from '@/components/Avatar';
 import { formatTime } from '@/utils/helpers';
 
@@ -27,7 +29,12 @@ export default function UserProfile({
         defaultSrc="/person.png"
         alt="profile"
         status={isOnline ? 'online' : 'offline'}
-        className="mx-auto size-40 xs:size-40 bg-bgSecondaryDark first:*:size-24 before:size-10 "
+        className={twMerge(
+          'mx-auto size-40 xs:size-40 bg-bgSecondaryDark before:size-10',
+          profilePicUrl
+            ? 'first:*:size-40 xs:first:*:size-40'
+            : 'first:*:size-24 before:size-10'
+        )}
       />
       <h1 className="text-center">{displayName}</h1>
       <h5 className="mb-4 text-center">

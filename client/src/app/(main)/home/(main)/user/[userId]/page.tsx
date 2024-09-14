@@ -72,14 +72,14 @@ export default function UserPage({ params: { userId } }: UserPageProps) {
 
   if (!user || !me) {
     return (
-      <main className="flex flex-col relative p-4 pt-[60px] shade-top">
+      <main className="flex-1 flex flex-col relative p-4 pt-[60px] shade-top">
         <SkeletonUserProfile />
       </main>
     );
   }
 
   return (
-    <main className="flex flex-col relative p-4 pt-[60px] shade-top before:inset-x-4 before:rounded-b-2xl">
+    <main className="flex-1 flex flex-col relative p-4 pt-[60px] shade-top before:inset-x-4 before:rounded-b-2xl">
       {me.id !== userId && (
         <div className="flex gap-4 absolute top-4 self-center">
           <TrackerLink href={`/home/chat?userId=${userId}`}>

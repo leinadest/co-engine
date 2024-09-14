@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import PictureUploader from '@/components/form/PictureUploader';
 import Avatar from '@/components/Avatar';
+import { twMerge } from 'tailwind-merge';
 
 interface PreviewProps {
   me: any;
@@ -28,7 +29,12 @@ export default function PreviewPictureUploader({ me, form }: PreviewProps) {
           defaultSrc={'/person.png'}
           alt="profile preview"
           status="online"
-          className="size-40 xs:size-40 bg-bgSecondaryDark first:*:size-24 xs:first:*:size-24 before:size-10"
+          className={twMerge(
+            'size-40 xs:size-40 bg-bgSecondaryDark before:size-10',
+            preview
+              ? 'first:*:size-40 xs:first:*:size-40'
+              : 'first:*:size-24 xs:first:*:size-24'
+          )}
         />
         <button
           type="button"
