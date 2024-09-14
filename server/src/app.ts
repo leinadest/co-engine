@@ -5,15 +5,13 @@ import express from 'express';
 import passport from 'passport';
 import cors from 'cors';
 import graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
-import { expressMiddleware } from '@apollo/server/express4';
 
 import { connectToPostgres } from './config/sequelize';
 import connectToMongo from './config/mongo';
 import discordStrategy from './config/passport';
 import {
   createApolloServer,
-  expressMiddlewareConfig,
-  type Context,
+  createExpressMiddleware,
 } from './config/apolloServer';
 import { auth, redirectAuth } from './middleware/auth';
 import startHttpServer from './config/httpServer';
@@ -31,7 +29,12 @@ const apolloServer = createApolloServer(httpServer, wsServerCleanup);
 passport.use(discordStrategy);
 
 // Routes setup
-app.use(cors(), express.json());
+app.use(
+  cors<cors.CorsRequest>({
+    origin: ['http://localhost:3000', 'https://co-engine.vercel.app'],
+  }),
+  express.json()
+);
 app.use('/api/auth/discord', auth('discord'));
 app.use('/api/auth/discord/redirect', redirectAuth);
 
@@ -46,7 +49,7 @@ Promise.all([
     app.use(
       '/api/graphql',
       graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }),
-      expressMiddleware<Context>(apolloServer, expressMiddlewareConfig)
+      createExpressMiddleware(apolloServer)
     );
   })
   .catch((error: Error) => {

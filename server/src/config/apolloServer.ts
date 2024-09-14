@@ -3,11 +3,11 @@ import { type Server } from 'http';
 import { ApolloServer } from '@apollo/server';
 import { type Disposable } from 'graphql-ws';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
-import { type ExpressMiddlewareOptions } from '@apollo/server/express4';
-import { type WithRequired } from '@apollo/utils.withrequired';
+import { expressMiddleware } from '@apollo/server/express4';
 import { type Sequelize } from 'sequelize';
 import { PostgresPubSub } from 'graphql-pg-subscriptions';
 import { Client } from 'pg';
+import { type RequestHandler } from 'express';
 
 import sequelize from './sequelize';
 import AuthService from '../services/authService';
@@ -77,12 +77,11 @@ export const createApolloServer = (
   });
 };
 
-export const expressMiddlewareConfig: WithRequired<
-  ExpressMiddlewareOptions<Context>,
-  'context'
-> = {
-  context: async ({ req }) => {
-    const authorization = req.headers.authorization;
+export const createExpressMiddleware = (
+  apolloServer: ApolloServer<Context>
+): RequestHandler => {
+  const context = async ({ req }: any): Promise<any> => {
+    const authorization = req.headers.authorization as string;
     const accessToken = authorization?.replace('Bearer ', '');
 
     const authService = new AuthService(accessToken ?? '');
@@ -106,11 +105,15 @@ export const expressMiddlewareConfig: WithRequired<
         blocksDB,
       },
     };
-  },
+  };
+
+  return expressMiddleware<Context>(apolloServer, { context });
 };
 
-const client = new Client({ connectionString: POSTGRES_URL });
+const createPubSub = (): PostgresPubSub => {
+  const client = new Client({ connectionString: POSTGRES_URL });
+  client.connect();
+  return new PostgresPubSub({ client });
+};
 
-client.connect();
-
-export const pubsub = new PostgresPubSub({ client });
+export const pubsub = createPubSub();
