@@ -6,6 +6,8 @@ services:
       target: prod
     ports:
       - '3000:3000'
+    environment:
+      - NODE_ENV=production
     command: ['npm', 'start']
     depends_on:
       - server
@@ -18,6 +20,7 @@ services:
     ports:
       - '4000:4000'
     environment:
+      - NODE_ENV=production
       - PORT=4000
       - POSTGRES_URL=postgresql://postgres:example@postgres:5432
       - MONGO_URL=mongodb://root:example@mongo:27017/?directConnection=true
@@ -41,6 +44,7 @@ services:
       dockerfile: Dockerfile.dev
       target: migration
     environment:
+      - NODE_ENV=production
       - POSTGRES_URL=postgresql://postgres:example@postgres:5432
       - MONGO_URL=mongodb://root:example@mongo:27017/?directConnection=true
     depends_on:
