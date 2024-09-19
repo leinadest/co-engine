@@ -1,5 +1,5 @@
 import { NODE_ENV } from '../src/config/environment';
-import Message from '../src/resources/message/model';
+import { Message } from '../src/resources';
 
 const devData: { messages: any[]; messagesIds: string[] } = {
   messages: [

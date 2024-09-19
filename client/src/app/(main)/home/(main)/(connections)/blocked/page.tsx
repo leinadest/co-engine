@@ -12,7 +12,7 @@ import List from '@/components/common/List';
 import Search from '@/components/Search';
 
 export default function Blocked() {
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState<string>();
 
   const { data, loading, error, refetch, fetchMore } = useUserBlocks({
     fetchPolicy: 'cache-and-network',

@@ -26,7 +26,7 @@ export default function Sidebar({
   className,
   isCollapsed = true,
 }: SidebarProps) {
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState<string>();
 
   const { data, error, refetch, fetchMoreChats } = useMe({
     variables: { search: debouncedSearch },

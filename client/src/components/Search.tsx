@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 import { useDebounce } from 'use-debounce';
 
 interface SearchProps {
-  setDebouncedSearch: React.Dispatch<SetStateAction<string>>;
+  setDebouncedSearch: React.Dispatch<SetStateAction<string | undefined>>;
   placeholder?: string;
   className?: string;
 }

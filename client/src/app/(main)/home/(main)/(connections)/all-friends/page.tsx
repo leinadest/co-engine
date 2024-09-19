@@ -12,7 +12,7 @@ import List from '@/components/common/List';
 import Search from '@/components/Search';
 
 export default function AllFriends() {
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState<string>();
   const { data, error, refetch, fetchMore } = useFriends({
     variables: { search: debouncedSearch },
     fetchPolicy: 'cache-and-network',

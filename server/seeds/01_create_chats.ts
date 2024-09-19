@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 
 import { NODE_ENV } from '../src/config/environment';
-import Chat from '../src/resources/chat/model';
+import { Chat } from '../src/resources';
 
 const getTimeAgo = (
   num: number,
@@ -22,7 +22,6 @@ const getTimeAgo = (
 const devData: { chats: any[]; chatsIds: number[] } = {
   chats: [
     ...Array.from({ length: 100 }, (_, i) => ({
-      name: `test${i}`,
       creator_id: i + 1,
       last_message_at: new Date(),
       last_message:
