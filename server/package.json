@@ -6,7 +6,7 @@
     "dev": "nodemon",
     "build": "tsc -p tsconfig.prod.json",
     "start": "node dist/app.js",
-    "lint": "npx eslint .",
+    "lint": "eslint . && tsc --noEmit",
     "test": "NODE_ENV=test npx jest --silent --color --runInBand --logHeapUsage --detectOpenHandles --coverage",
     "migrate:up": "ts-node scripts/migrate.ts up",
     "migrate:down": "ts-node scripts/migrate.ts down",

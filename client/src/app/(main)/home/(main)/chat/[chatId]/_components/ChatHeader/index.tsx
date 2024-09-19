@@ -32,7 +32,9 @@ export default function ChatHeader() {
   const { setMessageSearch } = useContext(ChatContext);
 
   useEffect(() => {
-    setMessageSearch(debouncedSearch);
+    if (debouncedSearch !== undefined) {
+      setMessageSearch(debouncedSearch);
+    }
   }, [setMessageSearch, debouncedSearch]);
 
   if (!meQuery.data || !chatQuery.data) {
