@@ -3,7 +3,7 @@ import * as yup from 'yup';
 import bcrypt from 'bcrypt';
 import { GraphQLError } from 'graphql/error/GraphQLError';
 import { escape } from 'lodash';
-import { type ClientSession } from 'mongoose';
+// import { type ClientSession } from 'mongoose';
 
 import { Chat, ChatUser, Message } from '..';
 import type AuthService from '../../services/authService';
@@ -106,8 +106,8 @@ export const resolvers = {
       }
 
       const createMessageAndUpdateContext = async (
-        transaction: Transaction,
-        session: ClientSession
+        transaction: Transaction
+        // session: ClientSession
       ): Promise<IMessage & Required<{ _id: unknown }>> => {
         const newMessage = new Message({
           context_type: message.contextType,
@@ -118,7 +118,9 @@ export const resolvers = {
         const messageContext = message.contextType === 'chat' ? Chat : Chat;
 
         const [createdMessage] = await Promise.all([
-          newMessage.save({ session }),
+          newMessage.save({
+            // session
+          }),
           messageContext.update(
             { last_message: message.content, last_message_at: new Date() },
             { where: { id: message.contextId }, transaction }
@@ -186,15 +188,17 @@ export const resolvers = {
       }
 
       const updateMessageAndUpdateContext = async (
-        transaction: Transaction,
-        session: ClientSession
+        transaction: Transaction
+        // session: ClientSession
       ): Promise<IMessage & Required<{ _id: unknown }>> => {
         message.content = content;
         message.edited_at = new Date();
         const messageContext = message.context_type === 'chat' ? Chat : Chat;
 
         const [updatedMessage] = await Promise.all([
-          message.save({ session }),
+          message.save({
+            // session
+          }),
           messageContext.update(
             { last_message: content, last_message_at: new Date() },
             { where: { id: message.context_id }, transaction }

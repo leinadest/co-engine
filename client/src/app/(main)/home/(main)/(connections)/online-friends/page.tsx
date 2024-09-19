@@ -12,7 +12,7 @@ import useUserUpdated from '@/features/users/hooks/useUserUpdated';
 import Search from '@/components/Search';
 
 export default function OnlineFriends() {
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState<string>();
 
   const { data, setData, error, refetch, fetchMore } = useFriends({
     variables: { status: 'online', search: debouncedSearch },

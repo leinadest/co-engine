@@ -7,7 +7,7 @@
   },
   "extends": ["standard-with-typescript", "prettier"],
   "overrides": [{ "files": ["*.ts"] }],
-  "ignorePatterns": ["dist", "node_modules", "coverage"],
+  "ignorePatterns": ["dist", "node_modules", "coverage", "scripts"],
   "parserOptions": {
     "ecmaVersion": "latest"
   },

@@ -18,7 +18,7 @@ export default function ChatUsersDisplay({
   className?: string;
 }) {
   const { chatId } = useContext(ChatContext);
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState<string>();
 
   const { data, error, refetch, fetchMore } = useUsers({
     variables: chatId

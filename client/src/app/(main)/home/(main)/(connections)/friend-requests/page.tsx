@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { twMerge } from 'tailwind-merge';
 
 export default function FriendRequests() {
-  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState<string>();
 
   const { refetch: refetchIncoming, ...incomingRequestsQuery } =
     useFriendRequests({

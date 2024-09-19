@@ -6,15 +6,15 @@ import { ChatUser } from '../src/resources';
 
 const devData: { chatUsers: any[]; chatUsersIds: number[] } = {
   chatUsers: [
-    ...Array.from({ length: 10 }, (_, i) => ({
+    ...Array.from({ length: 50 }, (_, i) => ({
       user_id: i + 1,
       chat_id: i + 1,
     })),
-    ...Array.from({ length: 50 }, (_, i) => ({
+    ...Array.from({ length: 49 }, (_, i) => ({
       user_id: 1,
       chat_id: i + 2,
     })),
-    ...Array.from({ length: 50 }, (_, i) => ({
+    ...Array.from({ length: 49 }, (_, i) => ({
       user_id: i + 2,
       chat_id: 1,
     })),

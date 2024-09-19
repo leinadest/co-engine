@@ -18,7 +18,7 @@ class ChatsDataSource {
   }
 
   async getChats({
-    search,
+    search = '',
     orderBy = 'last_message_at',
     orderDirection = 'DESC',
     after,
@@ -35,9 +35,6 @@ class ChatsDataSource {
 
     const op = orderDirection === 'DESC' ? Op.lt : Op.gt;
 
-    if (search !== undefined) {
-      where = { name: { [Op.substring]: search } };
-    }
     if (after !== undefined) {
       const cursor = decodeCursor(after) as Record<string, any>;
       where = {
@@ -73,14 +70,26 @@ class ChatsDataSource {
 
     const userId = this.authService.getUserId() as string;
 
-    const chats = await Chat.findAll({
+    const userWithChatIds = (await User.findByPk(userId, {
       include: {
-        model: User,
-        as: 'users',
-        where: { id: userId },
-        attributes: [],
+        model: Chat,
+        as: 'chats',
+        attributes: ['id'],
       },
+    })) as User & { chats: Chat[] };
+
+    const chatIds = userWithChatIds.chats.map((chat: any) => chat.id) ?? [];
+
+    let chats = (await Chat.findAll({
+      include: [
+        {
+          model: User,
+          as: 'users',
+          attributes: ['id', 'display_name'],
+        },
+      ],
       where: {
+        id: { [Op.in]: chatIds },
         ...where,
         ...whereUnblocked,
       },
@@ -88,9 +97,36 @@ class ChatsDataSource {
         [orderBy, orderDirection],
         ['id', 'DESC'],
       ],
-      limit: first,
+      limit: search === '' ? first : undefined,
       attributes: { exclude: ['creator_id', 'created_at'] },
-    });
+    })) as unknown as Array<Chat & { users: User[] }>;
+
+    if (search !== '') {
+      chats = chats.filter((chat) => {
+        const otherUsers = chat.users.filter(
+          (user) => user.id.toString() !== userId
+        );
+        if (
+          typeof chat.name === 'string' &&
+          chat.name.toLowerCase().includes(search.toLowerCase())
+        ) {
+          return true;
+        }
+        if (
+          otherUsers.length === 0 &&
+          'empty chat'.includes(search.toLowerCase())
+        ) {
+          return true;
+        }
+        if (otherUsers.length === 0) {
+          return false;
+        }
+        const match = otherUsers.find((user) =>
+          user.display_name.toLowerCase().includes(search.toLowerCase())
+        );
+        return match !== undefined;
+      });
+    }
 
     const edges = chats.map((chat) => ({
       cursor: encodeCursor({
