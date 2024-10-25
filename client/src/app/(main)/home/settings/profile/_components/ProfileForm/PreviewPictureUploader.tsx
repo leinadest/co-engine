@@ -32,7 +32,7 @@ export default function PreviewPictureUploader({ me, form }: PreviewProps) {
           className={twMerge(
             'size-40 xs:size-40 bg-bgSecondaryDark before:size-10',
             preview
-              ? 'first:*:size-40 xs:first:*:size-40'
+              ? 'first:*:min-w-40 first:*:min-h-40'
               : 'first:*:size-24 xs:first:*:size-24'
           )}
         />

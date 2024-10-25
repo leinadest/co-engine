@@ -32,7 +32,7 @@ export default function UserProfile({
         className={twMerge(
           'mx-auto size-40 xs:size-40 bg-bgSecondaryDark before:size-10',
           profilePicUrl
-            ? 'first:*:size-40 xs:first:*:size-40'
+            ? 'first:*:min-w-40 first:*:min-h-40'
             : 'first:*:size-24 before:size-10'
         )}
       />
