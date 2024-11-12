@@ -31,10 +31,10 @@ export interface Context {
   };
 }
 
-export const createApolloServer = (
+export const createApolloServer = async (
   httpServer: Server,
   serverCleanup: Disposable
-): ApolloServer<Context> => {
+): Promise<ApolloServer<Context>> => {
   const formatError = (
     formattedError: GraphQLFormattedError,
     originalError: any
@@ -110,10 +110,42 @@ export const createExpressMiddleware = (
   return expressMiddleware<Context>(apolloServer, { context });
 };
 
-const createPubSub = (): PostgresPubSub => {
-  const client = new Client({ connectionString: POSTGRES_URL });
-  client.connect();
-  return new PostgresPubSub({ client });
-};
+export let pubsub: PostgresPubSub;
 
-export const pubsub = createPubSub();
+export const connectPubSub = async (
+  retries = 5,
+  delay = 3000
+): Promise<void> => {
+  const client = new Client({ connectionString: POSTGRES_URL });
+
+  client.on('error', async (err: any) => {
+    console.error('Database connection error:', err);
+    if (retries > 0) {
+      console.log(`Reconnecting in ${delay / 1000} seconds...`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      retries--;
+      await connectPubSub(retries, delay); // Retry connection
+    } else {
+      console.error('Max reconnection attempts reached.');
+    }
+  });
+
+  try {
+    await client.connect();
+    console.log('Connected to PostgreSQL');
+  } catch (err) {
+    console.error('Initial connection failed:', err);
+    if (retries > 0) {
+      console.log(`Retrying in ${delay / 1000} seconds...`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+      retries--;
+      await connectPubSub(retries, delay); // Retry connection
+    } else {
+      console.error(
+        'Max connection attempts reached. Please check your database.'
+      );
+    }
+  }
+
+  pubsub = new PostgresPubSub({ client });
+};
