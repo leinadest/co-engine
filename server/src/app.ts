@@ -10,6 +10,7 @@ import { connectToPostgres } from './config/sequelize';
 import connectToMongo from './config/mongo';
 import discordStrategy from './config/passport';
 import {
+  connectPubSub,
   createApolloServer,
   createExpressMiddleware,
 } from './config/apolloServer';
@@ -23,7 +24,6 @@ const app = express();
 // Servers setup
 const httpServer = http.createServer(app);
 const wsServerCleanup = createWsServer(httpServer);
-const apolloServer = createApolloServer(httpServer, wsServerCleanup);
 
 // Auth setup
 passport.use(discordStrategy);
@@ -39,19 +39,20 @@ app.use('/api/auth/discord', auth('discord'));
 app.use('/api/auth/discord/redirect', redirectAuth);
 
 // Start the servers, database connections, and graphql route
-Promise.all([
-  connectToPostgres(),
-  connectToMongo(),
-  startHttpServer(httpServer),
-  apolloServer.start(),
-])
-  .then(() => {
-    app.use(
-      '/api/graphql',
-      graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }),
-      createExpressMiddleware(apolloServer)
-    );
-  })
-  .catch((error: Error) => {
-    console.log(error);
-  });
+const start = async (): Promise<void> => {
+  const apolloServer = await createApolloServer(httpServer, wsServerCleanup);
+  await Promise.all([
+    connectToPostgres(),
+    connectPubSub(),
+    connectToMongo(),
+    startHttpServer(httpServer),
+    apolloServer.start(),
+  ]);
+  app.use(
+    '/api/graphql',
+    graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }),
+    createExpressMiddleware(apolloServer)
+  );
+};
+
+start().catch(console.log);
