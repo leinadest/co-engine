@@ -98,6 +98,7 @@ Technologies:
 
 ## Architecture
 
+**Data Flow Diagram for Messages and Relationship Management**
 ```mermaid
 graph TD
     B[Next.js Server]
@@ -118,6 +119,7 @@ graph TD
     C -->|GET, POST, DELETE Requests for Stored Images| G
 ```
 
+**Sequence Diagram for JWT Authentication**
 ```mermaid
 sequenceDiagram
     participant User
@@ -139,6 +141,7 @@ sequenceDiagram
     Next.js Frontend-->>User: Displays data
 ```
 
+**Sequence Diagram for Discord Oauth2**
 ```mermaid
 sequenceDiagram
     participant User
