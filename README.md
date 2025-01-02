@@ -15,9 +15,11 @@ Technologies:
 
 - Next.js
 - Express
+- Passport
 - GraphQL with Apollo
 - PostgreSQL with Sequelize
 - MongoDB with Mongoose
+- Playwright
 
 ## Prerequisites
 
