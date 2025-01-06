@@ -100,7 +100,12 @@ Technologies:
 
 ## Architecture
 
+**Entity Relationship Diagram**
+
+![ERD](https://i.imgur.com/Alk2AH0.png)
+
 **Data Flow Diagram for Messages and Relationship Management**
+
 ```mermaid
 graph TD
     B[Next.js Server]
@@ -113,15 +118,16 @@ graph TD
     B -->|Streams Server-Side Rendering| A
 
     A -->|GET Requests Frontend| B
-    A -->|GET, POST, PUT, DELETE Requests for Relationships and User Data| C
+    A -->|GET and POST Requests for Relationships and User Data| C
     A <-->|Opens WebSocket Connection for Messages| C
 
-    C -->|GET, POST, PUT, DELETE Requests for Stored Messages| D
-    C -->|GET, POST, PUT, DELETE Requests for Relationships and User Data| E
-    C -->|GET, POST, DELETE Requests for Stored Images| G
+    C -->|GET and POST Requests for Stored Messages| D
+    C -->|GET and POST Requests for Relationships and User Data| E
+    C -->|GET and POST, DELETE Requests for Stored Images| G
 ```
 
 **Sequence Diagram for JWT Authentication**
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -144,6 +150,7 @@ sequenceDiagram
 ```
 
 **Sequence Diagram for Discord Oauth2**
+
 ```mermaid
 sequenceDiagram
     participant User
