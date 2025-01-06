@@ -12,6 +12,7 @@ import ResetSaveBtns from '@/components/form/ResetSaveBtns';
 import useUploadMe from '@/features/users/hooks/useUploadMe';
 import useUpdateMe from '@/features/users/hooks/useUpdateMe';
 import InputField from '@/components/form/InputField';
+import { formatError } from '@/utils/api';
 
 interface FormValues {
   profilePic?: File;
@@ -65,7 +66,7 @@ export default function ProfileForm({ me }: ProfileFormProps) {
       setAlert({
         visible: true,
         type: 'error',
-        message: `$Error: ${error.message || 'Something went wrong'}`,
+        message: `$Error: ${formatError(error).message}`,
       });
     }
     if (!error && (uploadData || updateData)) {

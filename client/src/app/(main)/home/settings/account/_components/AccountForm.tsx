@@ -9,6 +9,7 @@ import InputField from '@/components/form/InputField';
 import useUpdateMe from '@/features/users/hooks/useUpdateMe';
 import Alert, { AlertState } from '@/components/common/Alert';
 import ResetSaveBtns from '@/components/form/ResetSaveBtns';
+import { formatError } from '@/utils/api';
 
 interface FormValues {
   username: string;
@@ -57,7 +58,8 @@ export default function AccountForm({ username, email }: FormValues) {
     }
 
     if (name === false) {
-      setAlert({ visible: true, type: 'error', message: error?.message });
+      const message = formatError(error).message;
+      setAlert({ visible: true, type: 'error', message });
     }
 
     if (error) {

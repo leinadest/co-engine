@@ -23,6 +23,9 @@ services:
       target: prod
     ports:
       - '3000:3000'
+    environment:
+      - NODE_ENV=test
+      - NEXT_PUBLIC_API_URL=http://localhost:4000/api
     command: ['npm', 'start']
     depends_on:
       - server

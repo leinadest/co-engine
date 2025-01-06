@@ -16,6 +16,7 @@ import useMe from '@/features/users/hooks/useMe';
 import { snakeToCamel } from '@/utils/helpers';
 import { ChatContext } from '../../../_providers/ChatContextProvider';
 import useLocalStorage from '@/hooks/useLocalStorage';
+import { formatError } from '@/utils/api';
 
 interface ConfirmationDialogProps {
   showDialog: boolean;
@@ -38,7 +39,7 @@ export default function ConfirmationDialog({
       setAlert({
         visible: true,
         type: 'error',
-        message: `Error: ${error.message || 'Something went wrong'}`,
+        message: `Error: ${formatError(error).message}`,
       });
     }
     if (!error && removeUserResult.data) {

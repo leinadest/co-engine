@@ -7,7 +7,7 @@ import { PORT } from './environment';
  *
  * @return {Promise<void>} A Promise that resolves when the server is successfully started.
  */
-const startHttpServer = async (httpServer: http.Server): Promise<void> => {
+const startHttpServer = (httpServer: http.Server): void => {
   httpServer.on('error', (error: any) => {
     if (error.syscall !== 'listen') {
       throw error;

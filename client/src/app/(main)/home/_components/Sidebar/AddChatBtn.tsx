@@ -11,6 +11,7 @@ import useCreateChat from '@/features/chats/hooks/useCreateChat';
 import Alert, { AlertState } from '@/components/common/Alert';
 import { ApolloError } from '@apollo/client';
 import useMe from '@/features/users/hooks/useMe';
+import { formatError } from '@/utils/api';
 
 const validationSchema = yup.object().shape({
   name: yup
@@ -51,13 +52,11 @@ export default function AddChatBtn() {
 
   useEffect(() => {
     if (createChatResult.error) {
-      const message =
-        createChatResult.error instanceof ApolloError &&
-        createChatResult.error.message;
+      const message = formatError(createChatResult.error).message;
       setAlert({
         visible: true,
         type: 'error',
-        message: `Error: ${message || 'Something went wrong'}`,
+        message: `Error: ${message}`,
       });
     }
     if (!createChatResult.error && createChatResult.data) {

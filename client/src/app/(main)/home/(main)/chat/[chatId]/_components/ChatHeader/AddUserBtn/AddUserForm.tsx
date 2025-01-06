@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form';
 import { AlertState } from '@/components/common/Alert';
 import useChatUser from '@/features/chats/hooks/useChatUser';
 import { ChatContext } from '../../../_providers/ChatContextProvider';
+import { formatError } from '@/utils/api';
 
 const validationSchema = yup.object().shape({
   name: yup
@@ -37,11 +38,10 @@ function AddUserForm({ setAlert }: AddUserFormProps) {
 
   useEffect(() => {
     if (error) {
-      const message = error instanceof ApolloError && error.message;
       setAlert({
         visible: true,
         type: 'error',
-        message: `Error: ${message || 'Something went wrong'}`,
+        message: `Error: ${formatError(error).message}`,
       });
     }
     if (!error && data) {

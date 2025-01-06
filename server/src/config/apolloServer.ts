@@ -31,10 +31,10 @@ export interface Context {
   };
 }
 
-export const createApolloServer = async (
+export const createApolloServer = (
   httpServer: Server,
   serverCleanup: Disposable
-): Promise<ApolloServer<Context>> => {
+): ApolloServer<Context> => {
   const formatError = (
     formattedError: GraphQLFormattedError,
     originalError: any

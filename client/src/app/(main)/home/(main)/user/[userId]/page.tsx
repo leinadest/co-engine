@@ -12,6 +12,7 @@ import Alert, { AlertState } from '@/components/common/Alert';
 import useBlockUser from '@/features/blocked/hooks/useBlockUser';
 import UserProfile from '@/features/users/components/UserProfile';
 import SkeletonUserProfile from '@/features/users/components/SkeletonUserProfile';
+import { formatError } from '@/utils/api';
 
 interface UserPageProps {
   params: { userId: string };
@@ -36,7 +37,7 @@ export default function UserPage({ params: { userId } }: UserPageProps) {
       setAlert({
         visible: true,
         type: 'error',
-        message: requestResult.error.message,
+        message: `Error: ${formatError(requestResult.error).message}`,
       });
     }
     if (!requestResult.error && requestResult.data) {

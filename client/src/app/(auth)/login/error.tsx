@@ -1,12 +1,13 @@
 'use client';
 
 import LogInForm from '@/features/auth/components/LogInForm';
+import { formatError } from '@/utils/api';
 
 export default function ErrorPage({ error }: { error: any }) {
   return (
     <>
       <div className="p-4 text-center bg-warning">
-        <p>{error.message}</p>
+        <p>{formatError(error).message}</p>
       </div>
       <main className="flex-col-center mx-auto p-8 max-w-sm *:w-full">
         <h1 className="text-center mb-4 text-2xl">Login</h1>
