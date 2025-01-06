@@ -5,6 +5,7 @@ import { FormEvent, useContext, useEffect, useState } from 'react';
 import useCreateMessage from '@/features/messages/hooks/useCreateMessage';
 import { ChatContext } from '../_providers/ChatContextProvider';
 import Alert, { AlertState } from '@/components/common/Alert';
+import { formatError } from '@/utils/api';
 
 export default function ChatInput() {
   const { createMessage, error } = useCreateMessage();
@@ -15,7 +16,7 @@ export default function ChatInput() {
       setAlert({
         visible: true,
         type: 'error',
-        message: `Error: ${error.message || 'Something went wrong'}`,
+        message: `Error: ${formatError(error).message}`,
       });
     }
   }, [error]);

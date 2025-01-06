@@ -1,7 +1,6 @@
 'use client';
 
-import { APIError } from '@/types/api';
-import { ApolloError } from '@apollo/client';
+import { formatError } from '@/utils/api';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -23,52 +22,9 @@ export default function Error({
   const router = useRouter();
 
   useEffect(() => {
-    if (!(error instanceof ApolloError)) return;
-
-    const { code } = error.cause as APIError;
-
-    switch (code) {
-      case 'UNAUTHENTICATED':
-        setCode('Unauthorized');
-        setMessage('You must be logged in to access this page.');
-        router.replace('/login');
-        break;
-      case 'FORBIDDEN':
-        setCode('Forbidden');
-        setMessage('You do not have permission to access this page.');
-        break;
-      case 'NOT_FOUND':
-        setCode('Not Found');
-        setMessage('The requested resource was not found.');
-        break;
-    }
-
-    if (code) return;
-
-    if (error.networkError) {
-      setCode('Network Error');
-      setMessage(
-        'An error occurred while making a network request. Please try again later.'
-      );
-    }
-    if (error.graphQLErrors.length) {
-      setCode('GraphQL Error');
-      setMessage(
-        'An error occurred while processing your GraphQL request. Please try again.'
-      );
-    }
-    if (error.clientErrors.length) {
-      setCode('Client Error');
-      setMessage(
-        'An error occurred while processing your request. Please try again.'
-      );
-    }
-    if (error.protocolErrors.length) {
-      setCode('Protocol Error');
-      setMessage(
-        'An error occurred while processing your request. Please try again later.'
-      );
-    }
+    const errorData = formatError(error);
+    setCode(errorData.code);
+    setMessage(errorData.message);
   }, [error, router]);
 
   return (
