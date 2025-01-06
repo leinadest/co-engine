@@ -123,7 +123,7 @@ graph TD
 
     C -->|GET and POST Requests for Stored Messages| D
     C -->|GET and POST Requests for Relationships and User Data| E
-    C -->|GET and POST, DELETE Requests for Stored Images| G
+    C -->|GET and POST Requests for Stored Images| G
 ```
 
 **Sequence Diagram for JWT Authentication**
