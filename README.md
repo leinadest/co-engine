@@ -1,5 +1,7 @@
 # Co-Engine
 
+![App Screenshot](https://i.imgur.com/cpf5wKN.png)
+
 ## Description
 
 A platform for driving connections with others.
@@ -20,6 +22,8 @@ Technologies:
 - PostgreSQL with Sequelize
 - MongoDB with Mongoose
 - Playwright
+
+Try out the app yourself on the [demo](https://co-engine.vercel.app).
 
 ## Prerequisites
 
